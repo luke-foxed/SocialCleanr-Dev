@@ -28,7 +28,7 @@ router.get('/', async (req, res) => {
 
     var authUrl = graph.getOauthUrl({
       client_id: facebookID,
-      redirect_uri: 'http://localhost:5000/api/auth',
+      redirect_uri: 'http://localhost:3000/dashboard',
       scope: 'email'
     });
 

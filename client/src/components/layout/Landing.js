@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Header, Grid, Divider, Button } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import LoginModal from '../auth/LoginModal';
 
 const containerStyle = {
   width: '100%',
@@ -10,27 +11,22 @@ const containerStyle = {
   display: 'table'
 };
 
-class Landing extends React.Component {
-  constructor(props) {
-    super(props);
-  }
+const Landing = () => {
+  const [isModalVisible, setModalVisible] = useState(false);
+  const toggleModal = () => setModalVisible(!isModalVisible);
 
-  _onButtonClick() {}
+  return (
+    <Container textAlign='center' style={containerStyle}>
+      <Divider horizontal />
+      <Header inverted size='large' color='blue' textAlign='center'>
+        WELCOME TO SOCIAL CLEANER!
+      </Header>
+      <Divider horizontal />
+      <Button onClick={toggleModal}>Get Started</Button>
 
-  render() {
-    return (
-      <Container textAlign='center' style={containerStyle}>
-        <Divider horizontal />
-        <Header inverted size='large' color='blue' textAlign='center'>
-          WELCOME TO SOCIAL CLEANER!
-        </Header>
-        <Divider horizontal />
-        <Link to='/login'>
-          <Button>Get Started</Button>
-        </Link>
-      </Container>
-    );
-  }
-}
+      <LoginModal open={isModalVisible} onClose={toggleModal} />
+    </Container>
+  );
+};
 
 export default Landing;

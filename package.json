@@ -35,7 +35,8 @@
     "python-shell": "^1.0.8",
     "react-router-dom": "^5.1.0",
     "request": "^2.88.0",
-    "selenium-webdriver": "^4.0.0-alpha.5"
+    "selenium-webdriver": "^4.0.0-alpha.5",
+    "semantic-ui-react": "^0.88.1"
   },
   "devDependencies": {
     "concurrently": "^4.1.2",
