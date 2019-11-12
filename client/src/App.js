@@ -1,19 +1,18 @@
 import React, { Fragment } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Container } from 'semantic-ui-react';
-import Register from './components/auth/register';
-import RegisterFacebook from './components/auth/registerFacebook';
+import LoginModal from './components/auth/LoginModal';
+import Landing from './components/layout/Landing';
 
 const App = () => (
   <Router>
     <Fragment className='App'>
-      <Route exact path='/' />
-      <div className='container'>
+      <Route exact path='/' component={Landing} />
+      <Container className='container'>
         <Switch>
-          <Route exact path='/register' component={Register} />
-          <Route exact path='/register-facebook' component={RegisterFacebook} />
+          <Route exact path='/login' component={LoginModal} />
         </Switch>
-      </div>
+      </Container>
     </Fragment>
   </Router>
 );
