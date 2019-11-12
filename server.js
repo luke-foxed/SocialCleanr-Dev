@@ -9,9 +9,19 @@ const passport = require('passport');
 // Connect to DB
 connectDB();
 
+app.use(session({ secret: 'test', cookie: {} }));
+
+// Fix Cors error
+app.use(
+  cors({
+    origin: 'http://localhost:3000', // allow to server to accept request from different origin
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true // allow session cookie from browser to pass through
+  })
+);
+
 // Init middleware
 app.use(cookies());
-app.use(cors());
 app.use(express.json({ extended: false }));
 
 // Init passport
@@ -20,39 +30,33 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Init session
-app.use(
-  session({
-    secret: 'secret',
-    resave: true,
-    saveUninitialized: true
-  })
-);
 
-app.get('/', (req, res) => res.send('API Running'));
+const authCheck = (req, res, next) => {
+  if (!req.user) {
+    res.status(401).json({
+      authenticated: false,
+      message: 'user has not been authenticated'
+    });
+  } else {
+    next();
+  }
+};
+
+app.get('/', authCheck, (req, res) => {
+  res.status(200).json({
+    authenticated: true,
+    message: 'user successfully authenticated',
+    user: req.user,
+    cookies: req.cookies
+  });
+});
 
 // Define routes here
-app.use('/facebook-auth', require('./routes/api/auth'));
-app.use('/scrape', require('./routes/api/scrape'));
-app.use('/user', require('./routes/api/user'));
-
+app.use('/api/facebook-auth', require('./routes/api/auth'));
+app.use('/api/scrape', require('./routes/api/scrape'));
+app.use('/api/profile', require('./routes/api/user'));
+app.use('/api/passport-auth', require('./routes/api/auth-passport'));
 /////
-
-app.get('/auth/facebook', passport.authenticate('facebook'));
-
-app.get(
-  '/auth/facebook/callback',
-  passport.authenticate('facebook', { failureRedirect: '/login' }),
-  function(req, res) {
-    // res.json(req.user);
-    res
-      .cookie('token', req.user.token, {
-        expires: new Date(Date.now() + 9999999),
-        secure: true,
-        httpOnly: true
-      })
-      .send('success');
-  }
-);
 
 const PORT = process.env.PORT || 5000;
 

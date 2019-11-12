@@ -1,9 +1,11 @@
 const config = require('config');
-const cookie = require('cookie-parser');
+const User = require('../models/User');
 const FacebookStrategy = require('passport-facebook').Strategy;
 
 let facebookID = config.facebookTESTAppID;
 let facebookSecret = config.facebookTESTSecret;
+
+// TODO: Find way to serialize user and the access token
 
 module.exports = function(passport) {
   passport.use(
@@ -11,27 +13,42 @@ module.exports = function(passport) {
       {
         clientID: facebookID,
         clientSecret: facebookSecret,
-        callbackURL: '/auth/facebook/callback'
+        callbackURL: '/api/passport-auth/auth/facebook/callback'
       },
-      function(accessToken, refreshToken, profile, done) {
-        var user = {
-          id: profile.id,
-          token: accessToken
-        };
-        return done(null, user);
+      async (accessToken, refreshToken, profile, done) => {
+        const currentUser = await User.findOne({
+          facebook_id: profile.id
+        });
+
+        if (!currentUser) {
+          const newUser = await new User({
+            facebook_id: profile.id,
+            name: profile.displayName
+          }).save();
+          if (newUser) {
+            done(null, newUser);
+          }
+        }
+        done(null, currentUser);
       }
     )
   );
 
-  passport.serializeUser(function(user, done) {
-    done(null, {
-      token: user['token']
-    });
+  passport.serializeUser((user, done) => {
+    console.log(user);
+    done(null, user.id);
   });
 
-  passport.deserializeUser(function(id, done) {
-    User.findById(id, function(err, user) {
-      done(err, user);
-    });
+  // deserialize the cookieUserId to user in the database
+  passport.deserializeUser((id, done) => {
+    User.findById(id)
+      .then(user => {
+        console.log(user);
+        done(null, user);
+      })
+      .catch(e => {
+        console.log('error');
+        done(new Error('Failed to deserialize an user'));
+      });
   });
 };

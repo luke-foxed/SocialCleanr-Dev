@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Input,
   Modal,
@@ -14,8 +15,9 @@ import './LoginModal.css';
 const ReactDOM = require('react-dom');
 
 const authenticateWithFacebook = async () => {
-  let response = await axios.get('http://localhost:5000/facebook-auth');
-  console.log(response.body);
+  // let response = await axios.get('http://localhost:5000/api/passport-auth');
+  // console.log(response.body);
+  window.open('http://localhost:5000/api/passport-auth', '_self');
 };
 
 const authenticateInternally = async () => {

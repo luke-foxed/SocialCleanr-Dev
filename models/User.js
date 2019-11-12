@@ -1,20 +1,15 @@
 const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  password: {
+  facebook_id: {
     type: String,
     required: true
   },
 
-  facebook_id: {
+  name: {
     type: String,
     required: true
   }
 });
 
-module.exports = User = mongoose.model('AuthFacebook', UserSchema);
+module.exports = User = mongoose.model('User', UserSchema);
