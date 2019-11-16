@@ -16,6 +16,11 @@ module.exports = function(passport) {
         callbackURL: '/api/passport-auth/auth/facebook/callback'
       },
       async (accessToken, refreshToken, profile, done) => {
+        let user = {
+          data: [],
+          token: accessToken
+        };
+
         const currentUser = await User.findOne({
           facebook_id: profile.id
         });
@@ -25,26 +30,36 @@ module.exports = function(passport) {
             facebook_id: profile.id,
             name: profile.displayName
           }).save();
+
+          user.data = newUser;
+
           if (newUser) {
-            done(null, newUser);
+            done(null, user);
           }
         }
-        done(null, currentUser);
+        user.data = currentUser;
+        done(null, user);
       }
     )
   );
 
   passport.serializeUser((user, done) => {
-    console.log(user);
-    done(null, user.id);
+    done(null, {
+      id: user.data.id,
+      token: user.token
+    });
   });
 
   // deserialize the cookieUserId to user in the database
-  passport.deserializeUser((id, done) => {
-    User.findById(id)
+  passport.deserializeUser((profile, done) => {
+    User.findById(profile.id)
       .then(user => {
-        console.log(user);
-        done(null, user);
+        var userToken = {
+          user: user,
+          token: profile.token
+        };
+
+        done(null, userToken);
       })
       .catch(e => {
         console.log('error');

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
+const authCheck = require('../../middleware/auth');
 
 const CLIENT_HOMEPAGE = 'http://localhost:3000/dashboard';
 
@@ -28,10 +29,17 @@ router.get(
     successRedirect: CLIENT_HOMEPAGE,
     failureRedirect: '/auth/login/failed'
   })
+  //   function(req, res) {
+  //     let token = req.user;
+  //     console.log('\nTOKEN\n');
+  //     console.log(token);
+  //     res.send('success');
+  //   }
 );
 
-router.get('/login/success', (req, res) => {
+router.get('/login/success', authCheck, (req, res) => {
   if (req.user) {
+    res.cookie('token', req.user.token);
     res.json({
       success: true,
       message: 'user has successfully authenticated',

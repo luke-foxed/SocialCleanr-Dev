@@ -1,14 +1,18 @@
 const express = require('express');
 const graph = require('fbgraph');
 const router = express.Router();
+const authCheck = require('../../middleware/auth');
+
+let tempToken = '';
 
 router.get('/me', async (req, res) => {
-  // does not work console.log(req.cookies);
+  let profile = '';
   graph.get(
-    '/me?fields=id,name,email,birthday,posts.limit(5)',
-    { access_token: req.cookies['token'] },
+    '/me?fields=id,name,email,posts{picture}',
+    // { access_token: req.cookies['token'] },
+    { access_token: tempToken },
     function(err, data) {
-      res.json(data);
+      res.send(data);
     }
   );
 });

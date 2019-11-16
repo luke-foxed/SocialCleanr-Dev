@@ -1,15 +1,13 @@
-module.exports = {
-  ensureAuthenticated: function(req, res, next) {
-    if (req.isAuthenticated()) {
-      return next();
-    }
-    req.flash('error_msg', 'Please log in to view that resource');
-    res.redirect('/users/login');
-  },
-  forwardAuthenticated: function(req, res, next) {
-    if (!req.isAuthenticated()) {
-      return next();
-    }
-    res.redirect('/dashboard');
+module.exports = function(req, res, next) {
+  console.log(req.cookies);
+  if (!req.user) {
+    res.status(401).json({
+      authenticated: false,
+      message: 'user has not been authenticated'
+    });
+  } else {
+    console.log('setting token: ' + req.user.token);
+    res.cookie('token', req.user.token);
+    next();
   }
 };

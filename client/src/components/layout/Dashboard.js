@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Header, Grid, Divider, Button } from 'semantic-ui-react';
+import axios from 'axios';
 
 const Dashboard = () => {
   const [userData, setUserData] = useState({
@@ -12,16 +13,18 @@ const Dashboard = () => {
 
   const { name, scans, text_cleaned, images_cleaned, facebookData } = userData;
 
-  //   const getFacebookProfile = async () => {
-  //     const res = await fetch('/api/profile/me');
-  //     const { data } = res.data;
-  //     setUserData({ ...userData, facebook: data });
-  //   };
+  const getFacebookProfile = async () => {
+    let res = await axios.get('http://localhost:5000/api/profile/me');
+    const { data } = await res;
+    console.log(data);
+    setUserData({ ...userData, facebookData: data });
+  };
 
-  //TODO: Clean up below function with better error handling
+  // TODO: Clean up below function with better error handling
 
   useEffect(() => {
-    const fetchUser = async (req, res) => {
+    const fetchUser = async () => {
+      // using fetch to issue cors headers
       let response = await fetch(
         'http://localhost:5000/api/passport-auth/login/success',
         {
@@ -37,7 +40,7 @@ const Dashboard = () => {
 
       if (response.status === 200) {
         let jsonData = await response.json();
-        setUserData({ ...userData, name: jsonData.user.name });
+        setUserData({ ...userData, name: jsonData.user.user.name });
       } else {
         return 'Error';
       }
@@ -47,9 +50,10 @@ const Dashboard = () => {
   }, [userData.name]);
 
   return (
-    <Container>
+    <Container textAlign='center'>
       <Header>Welcome</Header>
       <p>{name}</p>
+      <Button onClick={getFacebookProfile}>fetch Profile</Button>
     </Container>
   );
 };
