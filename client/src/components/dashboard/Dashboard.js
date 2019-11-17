@@ -1,6 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Header, Grid, Divider, Button } from 'semantic-ui-react';
+import {
+  Container,
+  Header,
+  Segment,
+  Grid,
+  Divider,
+  Button,
+  Menu
+} from 'semantic-ui-react';
+import SidebarMenu from './sidebar/SidebarMenu';
 import axios from 'axios';
+
+const containerStyle = {
+  width: '100%',
+  height: '400px',
+  backgroundColor: 'grey',
+  display: 'table'
+};
 
 const Dashboard = () => {
   const [userData, setUserData] = useState({
@@ -50,10 +66,15 @@ const Dashboard = () => {
   }, [userData.name]);
 
   return (
-    <Container textAlign='center'>
-      <Header>Welcome</Header>
-      <p>{name}</p>
-      <Button onClick={getFacebookProfile}>fetch Profile</Button>
+    <Container textAlign='center' style={containerStyle}>
+      <Container fluid>
+        <SidebarMenu></SidebarMenu>
+      </Container>
+      <Segment>
+        <Header>Welcome</Header>
+        <p>{name}</p>
+        <Button onClick={getFacebookProfile}>fetch Profile</Button>
+      </Segment>
     </Container>
   );
 };

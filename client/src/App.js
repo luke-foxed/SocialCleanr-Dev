@@ -4,7 +4,7 @@ import { Container } from 'semantic-ui-react';
 
 import LoginModal from './components/auth/LoginModal';
 import Landing from './components/layout/Landing';
-import Dashboard from './components/layout/Dashboard';
+import Dashboard from './components/dashboard/Dashboard';
 
 const App = () => (
   <Router>
