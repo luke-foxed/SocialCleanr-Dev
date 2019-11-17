@@ -1,52 +1,31 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
-const authCheck = require('../../middleware/auth');
+const graph = require('fbgraph');
+const { ensureAuthenticated } = require('../../middleware/auth');
 
-const CLIENT_HOMEPAGE = 'http://localhost:3000/dashboard';
+const SUCCESS_REDIRECT = 'http://localhost:3000/dashboard';
+const FAILURE_REDIRECT = 'http://localhost:3000/';
 
-// router.get('/', passport.authenticate('facebook'));
+// AUTHENTICATION //
 
-// router.get(
-//   '/auth/facebook/callback',
-//   passport.authenticate('facebook', { failureRedirect: '/login' }),
-//   function(req, res) {
-//     res
-//       .cookie('token', req.user.token, {
-//         expires: new Date(Date.now() + 9999999),
-//         secure: true,
-//         httpOnly: true
-//       })
-//       .send('success');
-//   }
-// );
-
-router.get('/', passport.authenticate('facebook'));
+router.get('/login', passport.authenticate('facebook'));
 
 router.get(
   '/auth/facebook/callback',
   passport.authenticate('facebook', {
-    successRedirect: CLIENT_HOMEPAGE,
-    failureRedirect: '/auth/login/failed'
+    successRedirect: SUCCESS_REDIRECT,
+    failureRedirect: FAILURE_REDIRECT
   })
-  //   function(req, res) {
-  //     let token = req.user;
-  //     console.log('\nTOKEN\n');
-  //     console.log(token);
-  //     res.send('success');
-  //   }
 );
 
-router.get('/login/success', authCheck, (req, res) => {
-  if (req.user) {
-    res.cookie('token', req.user.token);
-    res.json({
-      success: true,
-      message: 'user has successfully authenticated',
-      user: req.user,
-      cookies: req.cookies
-    });
-  }
+router.get('/login/success', ensureAuthenticated, (req, res) => {
+  res.json({
+    success: true,
+    message: 'user has successfully authenticated',
+    user: req.user,
+    cookies: req.cookies
+  });
 });
 
 router.get('/login/failed', (req, res) => {
@@ -54,6 +33,20 @@ router.get('/login/failed', (req, res) => {
     success: false,
     message: 'user failed to authenticate.'
   });
+});
+
+////
+
+// USER
+
+router.get('/me', ensureAuthenticated, (req, res) => {
+  graph.get(
+    '/me?fields=id,name,email,posts{picture}',
+    { access_token: req.user.token },
+    function(err, data) {
+      res.send(data);
+    }
+  );
 });
 
 module.exports = router;

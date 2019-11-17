@@ -17,7 +17,7 @@ const ReactDOM = require('react-dom');
 const authenticateWithFacebook = async () => {
   // let response = await axios.get('http://localhost:5000/api/passport-auth');
   // console.log(response.body);
-  window.open('http://localhost:5000/api/passport-auth', '_self');
+  window.open('http://localhost:5000/api/passport-auth/login', '_self');
 };
 
 const authenticateInternally = async () => {

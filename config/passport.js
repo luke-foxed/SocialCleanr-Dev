@@ -1,4 +1,5 @@
 const config = require('config');
+const tokenHelper = require('../utils/tokenHelper');
 const User = require('../models/User');
 const FacebookStrategy = require('passport-facebook').Strategy;
 
@@ -16,11 +17,6 @@ module.exports = function(passport) {
         callbackURL: '/api/passport-auth/auth/facebook/callback'
       },
       async (accessToken, refreshToken, profile, done) => {
-        let user = {
-          data: [],
-          token: accessToken
-        };
-
         const currentUser = await User.findOne({
           facebook_id: profile.id
         });
@@ -28,41 +24,37 @@ module.exports = function(passport) {
         if (!currentUser) {
           const newUser = await new User({
             facebook_id: profile.id,
-            name: profile.displayName
+            name: profile.displayName,
+            token: accessToken
           }).save();
 
-          user.data = newUser;
-
           if (newUser) {
-            done(null, user);
+            done(null, newUser);
           }
         }
-        user.data = currentUser;
-        done(null, user);
+        done(null, currentUser);
       }
     )
   );
 
-  passport.serializeUser((user, done) => {
-    done(null, {
-      id: user.data.id,
-      token: user.token
-    });
+  passport.serializeUser((profile, done) => {
+    // tokenHelper.validateToken(profile.token);
+    done(null, profile.id);
   });
 
   // deserialize the cookieUserId to user in the database
-  passport.deserializeUser((profile, done) => {
-    User.findById(profile.id)
+  passport.deserializeUser((id, done) => {
+    User.findById(id)
       .then(user => {
-        var userToken = {
-          user: user,
-          token: profile.token
-        };
-
-        done(null, userToken);
+        if (!tokenHelper.validateToken(user)) {
+          done(new Error('Token no longer valid'));
+        } else {
+          tokenHelper.extendToken(user.token);
+          done(null, user);
+        }
       })
       .catch(e => {
-        console.log('error');
+        console.log('ERROR: ' + e);
         done(new Error('Failed to deserialize an user'));
       });
   });

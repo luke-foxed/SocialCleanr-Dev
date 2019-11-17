@@ -9,7 +9,7 @@ const passport = require('passport');
 // Connect to DB
 connectDB();
 
-app.use(session({ secret: 'test', cookie: {} }));
+app.use(session({ secret: 'test' }));
 
 // Fix Cors error
 app.use(
@@ -21,7 +21,6 @@ app.use(
 );
 
 // Init middleware
-app.use(cookies());
 app.use(express.json({ extended: false }));
 
 // Init passport
@@ -30,7 +29,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Init session
-
 app.get('/', (req, res) => {
   res.send('welcome');
 });
@@ -38,7 +36,6 @@ app.get('/', (req, res) => {
 // Define routes here
 app.use('/api/facebook-auth', require('./routes/api/auth'));
 app.use('/api/scrape', require('./routes/api/scrape'));
-app.use('/api/profile', require('./routes/api/user'));
 app.use('/api/passport-auth', require('./routes/api/auth-passport'));
 /////
 

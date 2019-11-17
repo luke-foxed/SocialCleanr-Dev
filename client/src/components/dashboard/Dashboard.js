@@ -30,7 +30,9 @@ const Dashboard = () => {
   const { name, scans, text_cleaned, images_cleaned, facebookData } = userData;
 
   const getFacebookProfile = async () => {
-    let res = await axios.get('http://localhost:5000/api/profile/me');
+    let res = await axios.get('http://localhost:5000/api/passport-auth/me', {
+      withCredentials: true
+    });
     const { data } = await res;
     console.log(data);
     setUserData({ ...userData, facebookData: data });
@@ -56,8 +58,9 @@ const Dashboard = () => {
 
       if (response.status === 200) {
         let jsonData = await response.json();
-        setUserData({ ...userData, name: jsonData.user.user.name });
+        setUserData({ ...userData, name: jsonData.user.name });
       } else {
+        // show error modal
         return 'Error';
       }
     };
@@ -73,7 +76,7 @@ const Dashboard = () => {
       <Segment>
         <Header>Welcome</Header>
         <p>{name}</p>
-        <Button onClick={getFacebookProfile}>fetch Profile</Button>
+        <Button onClick={getFacebookProfile}>Fetch Profile</Button>
       </Segment>
     </Container>
   );
