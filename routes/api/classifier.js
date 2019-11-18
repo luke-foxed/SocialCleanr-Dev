@@ -5,10 +5,10 @@ const { JSDOM } = jsdom;
 const express = require('express');
 const router = express.Router();
 const tf = require('@tensorflow/tfjs-node');
-require('@tensorflow/tfjs-node');
 const tfImage = require('@teachablemachine/image');
 const modelPaths = require('../../classification/paths');
 const mobilenet = require('@tensorflow-models/mobilenet');
+require('@tensorflow/tfjs-node');
 
 // needed to overcome teachablemachine dom requirements
 const dom = new JSDOM('<!DOCTYPE html>');
@@ -39,8 +39,10 @@ router.post('/male_clothed_tf_image', async (req, res) => {
 
   let converted = await getTensor3dObject(req.body.image);
 
-  console.log('My Model: \n' + (await generatedModel.predict(converted)));
-  console.log('Mobilenet: \n' + (await mobilenetModel.classify(converted)));
+  console.log('My Model: \n');
+  console.log(await generatedModel.predict(converted));
+  console.log('MobileNet: \n');
+  console.log(await mobilenetModel.classify(converted));
 
   // working solution -->
   // need to cut canvas
