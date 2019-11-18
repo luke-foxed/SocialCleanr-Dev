@@ -8,12 +8,13 @@ require('@tensorflow/tfjs-node');
 const tfImage = require('@teachablemachine/image');
 const modelPaths = require('../../classification/paths');
 
+const toUint8array = require('base64-to-uint8array');
+const mobilenet = require('@tensorflow-models/mobilenet');
+
 // needed to overcome teachablemachine dom requirements
-const dom = new JSDOM('<!DOCTYPE html><p>Hello world</p>');
+const dom = new JSDOM('<!DOCTYPE html>');
 global.fetch = require('node-fetch');
 global.document = dom.window.document;
-
-let maleClothedModel, femaleClothedModel;
 
 let modelUrl = 'https://teachablemachine.withgoogle.com/models/LFYzUB9j/';
 
@@ -36,12 +37,22 @@ router.post('/male_clothed_tf', async (req, res) => {
 
 router.post('/male_clothed_tf_image', async (req, res) => {
   const model = await tfImage.load(
-    modelPaths.maleClothed.model,
-    modelPaths.maleClothed.metadata
+    modelUrl + 'model.json',
+    modelUrl + 'metadata.json'
   );
 
+  const maxPredictions = model.getTotalClasses();
+  console.log(maxPredictions);
+
+  const mobilenetModel = await mobilenet.load({
+    version: 1,
+    alpha: 0.25 | 0.5 | 0.75 | 1.0
+  });
+
   let converted = await getTensor3dObject(req.body.image);
+
   console.log(await model.predict(converted));
+  console.log(await mobilenetModel.classify(converted));
 });
 
 module.exports = router;
