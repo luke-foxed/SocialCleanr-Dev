@@ -1,6 +1,7 @@
 const express = require('express');
 const session = require('express-session');
 const connectDB = require('./config/db');
+const bodyParser = require('body-parser');
 const cookies = require('cookie-parser');
 const cors = require('cors');
 const app = express();
@@ -11,6 +12,11 @@ connectDB();
 
 app.use(session({ secret: 'test' }));
 
+// Init middleware
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: false })); // support encoded bodies
+app.use(express.json({ extended: false }));
+
 // Fix Cors error
 app.use(
   cors({
@@ -19,9 +25,6 @@ app.use(
     credentials: true // allow session cookie from browser to pass through
   })
 );
-
-// Init middleware
-app.use(express.json({ extended: false }));
 
 // Init passport
 require('./config/passport')(passport);
@@ -37,6 +40,7 @@ app.get('/', (req, res) => {
 app.use('/api/facebook-auth', require('./routes/api/auth'));
 app.use('/api/scrape', require('./routes/api/scrape'));
 app.use('/api/passport-auth', require('./routes/api/auth-passport'));
+app.use('/api/classifier', require('./routes/api/classifier'));
 /////
 
 const PORT = process.env.PORT || 5000;
