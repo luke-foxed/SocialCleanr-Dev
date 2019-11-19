@@ -30,18 +30,6 @@ const Dashboard = () => {
 
   const { name, scans, text_cleaned, images_cleaned, post_images } = userData;
 
-  const getFacebookProfile = async () => {
-    let res = await axios.get('http://localhost:5000/api/passport-auth/me', {
-      withCredentials: true
-    });
-    const { data } = await res;
-    setUserData({
-      ...userData,
-      post_images: data.posts.data,
-      profile_id: data.name
-    });
-  };
-
   // TODO: Clean up below function with better error handling
 
   useEffect(() => {
@@ -90,7 +78,6 @@ const Dashboard = () => {
       <Segment>
         <Header>Welcome</Header>
         <p>{name}</p>
-        <Button onClick={getFacebookProfile}>Fetch Profile</Button>
       </Segment>
 
       <Segment>
