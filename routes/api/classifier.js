@@ -1,5 +1,6 @@
 const axios = require('axios');
 const jsdom = require('jsdom');
+const requestImageSize = require('request-image-size');
 const { Image, createCanvas } = require('canvas');
 const { JSDOM } = jsdom;
 const express = require('express');
@@ -8,6 +9,7 @@ const tf = require('@tensorflow/tfjs-node');
 const tfImage = require('@teachablemachine/image');
 const modelPaths = require('../../classification/paths');
 const mobilenet = require('@tensorflow-models/mobilenet');
+const cocoSSD = require('@tensorflow-models/coco-ssd');
 require('@tensorflow/tfjs-node');
 
 // needed to overcome teachablemachine dom requirements
@@ -15,43 +17,49 @@ const dom = new JSDOM('<!DOCTYPE html>');
 global.fetch = require('node-fetch');
 global.document = dom.window.document;
 
-let modelUrl = 'https://teachablemachine.withgoogle.com/models/LFYzUB9j/';
-
-// (3 = jpg), (4 = png);
-const getTensor3dObject = async inputImage => {
-  let req = await axios.get(inputImage, {
+// unused method, but helpful for converting images into tensor objects
+const getTensor3dObject = async imageURL => {
+  let req = await axios.get(imageURL, {
     responseType: 'arraybuffer'
   });
-
+  // 3 = jpg, 4 = png
   return tf.node.decodeJpeg(req.data, 3);
 };
 
-router.post('/male_clothed_tf_image', async (req, res) => {
-  const generatedModel = await tfImage.load(
-    modelUrl + 'model.json',
-    modelUrl + 'metadata.json'
-  );
-
+router.post('/mobilenet', async (req, res) => {
   const mobilenetModel = await mobilenet.load({
     version: 2,
     alpha: 0.25 | 0.5 | 0.75 | 1.0
   });
 
-  let converted = await getTensor3dObject(req.body.image);
+  let tensor = await getTensor3dObject(req.body.image);
 
-  console.log('My Model: \n');
-  console.log(await generatedModel.predict(converted));
   console.log('MobileNet: \n');
-  console.log(await mobilenetModel.classify(converted));
+  console.log(await mobilenetModel.classify(tensor));
+});
 
-  // working solution -->
-  // need to cut canvas
-  let canvas = createCanvas(600, 600);
+router.post('/coco_ssd', async (req, res) => {
+  const cocoSSDModel = await cocoSSD.load({
+    base: 'mobilenet_v2'
+  });
+
+  let tensor = await getTensor3dObject(req.body.image);
+  let prediction = await cocoSSDModel.detect(tensor);
+  res.send('Number of people: ' + prediction.length);
+});
+
+router.post('/male_clothed', async (req, res) => {
+  const generatedModel = await tfImage.load(
+    modelPaths.maleClothed.model,
+    modelPaths.maleClothed.metadata
+  );
+
+  let canvas = createCanvas(500, 500);
   let ctx = canvas.getContext('2d');
-
   let img = new Image();
+
   img.onload = async () => {
-    await ctx.drawImage(img, 0, 0, 600, 600);
+    await ctx.drawImage(img, 0, 0, img.width, img.height);
     res.send(await generatedModel.predict(canvas));
   };
   img.src = req.body.image;

@@ -1,8 +1,12 @@
 const maleClothed = {
-  metadata: 'https://storage.googleapis.com/tm-model/LFYzUB9j/metadata.json',
-  model: 'https://storage.googleapis.com/tm-model/LFYzUB9j/model.json'
+  metadata:
+    'https://teachablemachine.withgoogle.com/models/LFYzUB9j/metadata.json',
+  model: 'https://teachablemachine.withgoogle.com/models/LFYzUB9j/model.json'
 };
 
+const femaleClothed = {};
+
 module.exports = {
-  maleClothed
+  maleClothed,
+  femaleClothed
 };
