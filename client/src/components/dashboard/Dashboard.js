@@ -6,7 +6,7 @@ import {
   Grid,
   Divider,
   Button,
-  Menu
+  Image
 } from 'semantic-ui-react';
 import SidebarMenu from './sidebar/SidebarMenu';
 import axios from 'axios';
@@ -24,18 +24,22 @@ const Dashboard = () => {
     scans: '',
     text_cleaned: '',
     images_cleaned: '',
-    facebookData: []
+    post_images: [],
+    profile_id: ''
   });
 
-  const { name, scans, text_cleaned, images_cleaned, facebookData } = userData;
+  const { name, scans, text_cleaned, images_cleaned, post_images } = userData;
 
   const getFacebookProfile = async () => {
     let res = await axios.get('http://localhost:5000/api/passport-auth/me', {
       withCredentials: true
     });
     const { data } = await res;
-    console.log(data);
-    setUserData({ ...userData, facebookData: data });
+    setUserData({
+      ...userData,
+      post_images: data.posts.data,
+      profile_id: data.name
+    });
   };
 
   // TODO: Clean up below function with better error handling
@@ -63,6 +67,16 @@ const Dashboard = () => {
         // show error modal
         return 'Error';
       }
+
+      let res = await axios.get('http://localhost:5000/api/passport-auth/me', {
+        withCredentials: true
+      });
+      const { data } = await res;
+      setUserData({
+        ...userData,
+        post_images: data.posts.data,
+        profile_id: data.name
+      });
     };
 
     fetchUser();
@@ -77,6 +91,17 @@ const Dashboard = () => {
         <Header>Welcome</Header>
         <p>{name}</p>
         <Button onClick={getFacebookProfile}>Fetch Profile</Button>
+      </Segment>
+
+      <Segment>
+        {post_images.map(image => (
+          <Image
+            rounded
+            className='photoOfOrder'
+            key={image.id}
+            src={image.picture}
+          />
+        ))}
       </Segment>
     </Container>
   );
