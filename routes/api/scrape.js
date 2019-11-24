@@ -23,4 +23,9 @@ router.post('/', async (req, res) => {
   res.send(login);
 });
 
+router.get('/scrape', async (req, res) => {
+  const scrape = await scraper.testNavigation();
+  res.send(scrape);
+});
+
 module.exports = router;

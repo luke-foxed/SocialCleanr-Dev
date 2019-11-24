@@ -34,16 +34,45 @@ const loginFacebook = async (email, password, authCode) => {
 
     await page.waitFor(5000);
 
-    cookies = await JSON.stringify(page.cookies());
-    console.log('COOKIES:\n' + cookies);
+    cookies = await page.cookies();
+    console.log('COOKIES:\n');
+    console.log(cookies);
 
-    // let header = await page.$(
-    //   "//li[@id='navItem_100006292571516']/a[@class='_5afe' and 1]/div[@class='linkWrap noCount' and 1]"
-    // );
-    // return header.getProperty('textContent');
+    // need to checl if user is actually logged in
+
+    if (cookies != null) {
+      browser.close();
+      return 'logged in, cookies saved';
+    }
   } catch (e) {
     console.log('Error: ' + e);
   }
 };
 
-module.exports.loginFacebook = loginFacebook;
+const testNavigation = async () => {
+  console.log('COOKIES NOW:\n');
+  console.log(cookies);
+
+  if (cookies != null) {
+    var browser = await puppeteer.launch({ headless: false });
+    var context = await browser.defaultBrowserContext();
+    context.clearPermissionOverrides();
+    await context.overridePermissions('https://www.facebook.com', [
+      'notifications'
+    ]);
+
+    var page = await browser.newPage();
+    await page.setCookie(...cookies);
+
+    await page.goto('https://www.facebook.com/me/photos_all');
+
+    return 'success';
+  } else {
+    return 'no cookies';
+  }
+};
+
+module.exports = {
+  loginFacebook,
+  testNavigation
+};
