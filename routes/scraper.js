@@ -2,7 +2,6 @@ const puppeteer = require('puppeteer');
 const config = require('config');
 const fs = require('fs').promises;
 
-let authenticated = false;
 let cookies;
 
 const loginFacebook = async (email, password, authCode) => {
@@ -32,47 +31,87 @@ const loginFacebook = async (email, password, authCode) => {
     await page.click('#checkpointSubmitButton');
     await page.waitForNavigation();
 
-    await page.waitFor(5000);
-
     cookies = await page.cookies();
-    console.log('COOKIES:\n');
+    console.log('\nCOOKIES:\n');
     console.log(cookies);
 
-    // need to checl if user is actually logged in
+    // need to check if user is actually logged in
 
     if (cookies != null) {
       browser.close();
       return 'logged in, cookies saved';
     }
   } catch (e) {
-    console.log('Error: ' + e);
+    return 'Error: ' + e;
   }
 };
 
-const testNavigation = async () => {
-  console.log('COOKIES NOW:\n');
-  console.log(cookies);
-
+const scrapePhotos = async () => {
   if (cookies != null) {
-    var browser = await puppeteer.launch({ headless: false });
-    var context = await browser.defaultBrowserContext();
-    context.clearPermissionOverrides();
-    await context.overridePermissions('https://www.facebook.com', [
-      'notifications'
-    ]);
+    const images = [];
 
-    var page = await browser.newPage();
-    await page.setCookie(...cookies);
+    try {
+      var browser = await puppeteer.launch({ headless: false });
 
-    await page.goto('https://www.facebook.com/me/photos_all');
+      // remove notification window
+      var context = await browser.defaultBrowserContext();
+      context.clearPermissionOverrides();
+      await context.overridePermissions('https://www.facebook.com', [
+        'notifications'
+      ]);
 
-    return 'success';
+      var page = await browser.newPage();
+      await page.setCookie(...tempCookie);
+
+      await page.goto('https://www.facebook.com/me/photos_all');
+      await page.waitForSelector('a.uiMediaThumbMedium');
+
+      // get total images
+      let totalImages = await page.$$('a.uiMediaThumbMedium');
+
+      // click first thumbnail
+      await page.$$eval('a.uiMediaThumbMedium', thumbnails =>
+        $(thumbnails[0]).click()
+      );
+
+      await page.waitForNavigation();
+
+      // method 1
+      page.on('response', response => {
+        if (response.url().includes('t1.0-9')) images.push(response.url());
+      });
+
+      // // method 2
+      // const imageURL = await page.$eval('.spotlight', image => {
+      //   return image.getAttribute('src');
+      // });
+
+      // // method 3
+      // const text = await page.evaluate(() =>
+      //   document.querySelector('.spotlight').getAttribute('src')
+      // );
+
+      for (let i = 0; i < totalImages.length - 1; i++) {
+        await page.click(
+          '.fbPhotoSnowliftContainer > .clearfix > .stageWrapper > .snowliftPager:nth-child(7) > i'
+        );
+        page.on('response', response => {
+          if (response.url().includes('t1.0-9')) images.push(response.url());
+        });
+      }
+
+      browser.close();
+
+      return images;
+    } catch (e) {
+      return 'Error ' + e;
+    }
   } else {
-    return 'no cookies';
+    return 'User is not logged in';
   }
 };
 
 module.exports = {
   loginFacebook,
-  testNavigation
+  scrapePhotos
 };

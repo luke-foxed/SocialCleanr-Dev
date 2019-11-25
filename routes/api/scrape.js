@@ -24,7 +24,7 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/scrape', async (req, res) => {
-  const scrape = await scraper.testNavigation();
+  const scrape = await scraper.scrapePhotos();
   res.send(scrape);
 });
 
