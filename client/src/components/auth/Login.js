@@ -18,10 +18,9 @@ import {
   Button,
   FormControlLabel,
   Paper,
-  Grow,
-  Collapse
+  Collapse,
+  FormGroup
 } from '@material-ui/core';
-import { border } from '@material-ui/system';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -58,7 +57,7 @@ const useStyles = makeStyles(theme => ({
 
 const Login = () => {
   const classes = useStyles();
-  const [activeItem, setActiveItem] = useState('');
+  const [website, setWebsite] = useState('');
   const [checkbox, setCheckbox] = useState(false);
   const [userData, setUserData] = useState({
     email: '',
@@ -67,15 +66,31 @@ const Login = () => {
   });
 
   const toggleWebsite = e => {
-    setActiveItem(e.currentTarget.id);
+    setWebsite(e.currentTarget.id);
   };
 
   const toggleCheckbox = e => {
     setCheckbox(!checkbox);
   };
 
+  const submit = () => {
+    if (website === '') {
+      return 'Please Select A Website';
+    } else {
+      axios({
+        method: 'post',
+        url: '/api/scrape/login',
+        data: {
+          email: userData.email,
+          password: userData.password,
+          authcode: userData.authcode
+        }
+      });
+    }
+  };
+
   const passportAuthentication = async () => {
-    if (activeItem === '') {
+    if (website === '') {
       console.log('Please select a website');
     } else {
       window.open('http://localhost:5000/api/passport-auth/login', '_self');
@@ -100,7 +115,7 @@ const Login = () => {
               variant='outlined'
               id='facebook'
               style={
-                activeItem === 'facebook'
+                website === 'facebook'
                   ? { backgroundColor: colors.colorLightPink, color: 'white' }
                   : {}
               }
@@ -112,7 +127,7 @@ const Login = () => {
               onClick={toggleWebsite}
               variant='outlined'
               style={
-                activeItem === 'twitter'
+                website === 'twitter'
                   ? { backgroundColor: colors.colorLightPink, color: 'white' }
                   : {}
               }
@@ -123,11 +138,14 @@ const Login = () => {
           </ButtonGroup>
         </Tooltip>
 
-        <form className={classes.form} noValidate>
+        <FormGroup className={classes.form} onSubmit={e => e.preventDefault()}>
           <TextField
             margin='normal'
             required
             fullWidth
+            onInput={e =>
+              setUserData({ ...userData, [e.target.name]: e.target.value })
+            }
             id='email'
             label='Email Address'
             name='email'
@@ -142,6 +160,9 @@ const Login = () => {
             label='Password'
             type='password'
             id='password'
+            onInput={e =>
+              setUserData({ ...userData, [e.target.name]: e.target.value })
+            }
             autoComplete='current-password'
           />
           <FormControlLabel
@@ -159,30 +180,34 @@ const Login = () => {
           <Collapse in={checkbox}>
             <TextField
               margin='normal'
-              required
               fullWidth
               name='authcode'
               label='Auth Code'
-              id='password'
+              id='authcode'
+              onInput={e =>
+                setUserData({ ...userData, [e.target.name]: e.target.value })
+              }
             />
           </Collapse>
 
           <Button
             type='submit'
+            onClick={submit}
             fullWidth
             variant='contained'
             color='primary'
             className={classes.submit}>
             Sign In
           </Button>
-        </form>
+        </FormGroup>
+
         <Divider variant='middle' />
         <Button
           color='secondary'
           variant='contained'
           onClick={passportAuthentication}
           className={classes.authenticateButton}>
-          Or Authenticate Via {activeItem !== '' ? activeItem : '...'}
+          Or Authenticate Via {website !== '' ? website : '...'}
         </Button>
       </Paper>
     </Container>

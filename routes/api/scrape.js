@@ -9,18 +9,15 @@ const config = require('config');
 @access  Public
 */
 
-router.post('/', async (req, res) => {
-  // let { email, password, authCode } = req.body;
-  // scraper.login(email, password, authCode).then(data => {
-  //   console.log(data);
-  // });
-
-  const login = await scraper.loginFacebook(
-    config.facebookEmail,
-    config.facebookPassword,
-    req.body.authCode
-  );
+router.post('/login', async (req, res) => {
+  let { email, password, authcode } = req.body;
+  const login = await scraper.loginFacebook(email, password, authcode);
   res.send(login);
+  // const login = await scraper.loginFacebook(
+  //   config.facebookEmail,
+  //   config.facebookPassword,
+  //   req.body.authCode
+  // );
 });
 
 router.get('/scrape', async (req, res) => {
