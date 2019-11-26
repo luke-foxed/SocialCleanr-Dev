@@ -16,12 +16,18 @@ import {
   Typography,
   TextField,
   Button,
-  FormControlLabel
+  FormControlLabel,
+  Paper,
+  Grow,
+  Collapse
 } from '@material-ui/core';
+import { border } from '@material-ui/system';
 
 const useStyles = makeStyles(theme => ({
   paper: {
     marginTop: theme.spacing(8),
+    paddingLeft: theme.spacing(4),
+    paddingRight: theme.spacing(4),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'
@@ -78,8 +84,8 @@ const Login = () => {
 
   return (
     <Container component='main' maxWidth='xs'>
-      <CssBaseline />
-      <div className={classes.paper}>
+      <Paper elevation={2} className={classes.paper}>
+        <CssBaseline />
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon fontSize='large' />
         </Avatar>
@@ -149,7 +155,8 @@ const Login = () => {
             }
             label='Does the account have 2FA?'
           />
-          {checkbox && (
+
+          <Collapse in={checkbox}>
             <TextField
               margin='normal'
               required
@@ -158,7 +165,8 @@ const Login = () => {
               label='Auth Code'
               id='password'
             />
-          )}
+          </Collapse>
+
           <Button
             type='submit'
             fullWidth
@@ -176,7 +184,7 @@ const Login = () => {
           className={classes.authenticateButton}>
           Or Authenticate Via {activeItem !== '' ? activeItem : '...'}
         </Button>
-      </div>
+      </Paper>
     </Container>
   );
 };
