@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Landing from './components/layout/Landing';
 import Login from './components/auth/Login';
+import Dashboard from './components/dashboard/Dashboard';
 
 const App = () => (
   <Router>
@@ -10,6 +11,7 @@ const App = () => (
       <div className='container'>
         <Switch>
           <Route exact path='/login' component={Login}></Route>
+          <Route exact path='/dashboard' component={Dashboard}></Route>
         </Switch>
       </div>
     </Fragment>

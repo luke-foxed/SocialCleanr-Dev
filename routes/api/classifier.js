@@ -1,6 +1,5 @@
 const axios = require('axios');
 const jsdom = require('jsdom');
-const requestImageSize = require('request-image-size');
 const { Image, createCanvas } = require('canvas');
 const { JSDOM } = jsdom;
 const express = require('express');
