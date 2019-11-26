@@ -1,6 +1,7 @@
 const express = require('express');
 const session = require('express-session');
 const connectDB = require('./config/db');
+const bodyParser = require('body-parser');
 const cookies = require('cookie-parser');
 const cors = require('cors');
 const app = express();
@@ -9,10 +10,21 @@ const passport = require('passport');
 // Connect to DB
 connectDB();
 
+app.use(session({ secret: 'test' }));
+
 // Init middleware
-app.use(cookies());
-app.use(cors());
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: false })); // support encoded bodies
 app.use(express.json({ extended: false }));
+
+// Fix Cors error
+app.use(
+  cors({
+    origin: 'http://localhost:3000', // allow to server to accept request from different origin
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true // allow session cookie from browser to pass through
+  })
+);
 
 // Init passport
 require('./config/passport')(passport);
@@ -20,39 +32,14 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Init session
-app.use(
-  session({
-    secret: 'secret',
-    resave: true,
-    saveUninitialized: true
-  })
-);
-
-app.get('/', (req, res) => res.send('API Running'));
+app.get('/', (req, res) => {
+  res.send('welcome');
+});
 
 // Define routes here
-app.use('/facebook-auth', require('./routes/api/auth'));
-app.use('/scrape', require('./routes/api/scrape'));
-app.use('/user', require('./routes/api/user'));
-
+app.use('/api/facebook-auth', require('./routes/api/auth-passport'));
+app.use('/api/scrape', require('./routes/api/scrape'));
 /////
-
-app.get('/auth/facebook', passport.authenticate('facebook'));
-
-app.get(
-  '/auth/facebook/callback',
-  passport.authenticate('facebook', { failureRedirect: '/login' }),
-  function(req, res) {
-    // res.json(req.user);
-    res
-      .cookie('token', req.user.token, {
-        expires: new Date(Date.now() + 9999999),
-        secure: true,
-        httpOnly: true
-      })
-      .send('success');
-  }
-);
 
 const PORT = process.env.PORT || 5000;
 
