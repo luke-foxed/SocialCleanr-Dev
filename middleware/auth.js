@@ -1,10 +1,12 @@
+// credit: https://github.com/bradtraversy/node_passport_login/blob/master/config/auth.js
+
 module.exports = {
   ensureAuthenticated: function(req, res, next) {
-    if (req.isAuthenticated()) {
+    if (req.user) {
       return next();
     }
-    req.flash('error_msg', 'Please log in to view that resource');
-    res.redirect('/users/login');
+    console.log('NOT AUTH');
+    res.send('authentication error');
   },
   forwardAuthenticated: function(req, res, next) {
     if (!req.isAuthenticated()) {
