@@ -1,16 +1,22 @@
 const express = require('express');
 const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 const connectDB = require('./config/db');
 const bodyParser = require('body-parser');
-const cookies = require('cookie-parser');
 const cors = require('cors');
 const app = express();
 const passport = require('passport');
+const mongoose = require('mongoose');
 
 // Connect to DB
 connectDB();
 
-app.use(session({ secret: 'test' }));
+app.use(
+  session({
+    secret: 'test',
+    store: new MongoStore({ mongooseConnection: mongoose.connection })
+  })
+);
 
 // Init middleware
 app.use(bodyParser.json()); // support json encoded bodies

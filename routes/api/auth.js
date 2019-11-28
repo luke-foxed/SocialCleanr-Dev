@@ -56,9 +56,7 @@ router.get('/', async (req, res) => {
         code: req.query.code
       },
       function(err, facebookRes) {
-        console.log(facebookRes);
         token = facebookRes.access_token;
-        console.log('RESPONSE ' + facebookRes.access_token);
         res.redirect('/');
       }
     );

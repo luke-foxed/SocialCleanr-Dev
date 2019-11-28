@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -17,6 +17,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
+import axios from 'axios';
 
 const drawerWidth = 240;
 
@@ -85,6 +86,36 @@ export default function MiniDrawer() {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+
+  const [userData, setUserData] = useState({
+    name: '',
+    scans: '',
+    text_cleaned: '',
+    images_cleaned: '',
+    post_images: [],
+    profile_id: ''
+  });
+
+  const { name, scans, text_cleaned, images_cleaned, post_images } = userData;
+
+  // TODO: Clean up below function with better error handling
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      let res = await axios.get('http://localhost:5000/api/passport-auth/me', {
+        withCredentials: true
+      });
+      const { data } = await res;
+      setUserData({
+        ...userData,
+        name: data.name
+        // post_images: data.posts.data,
+        // profile_id: data.name
+      });
+    };
+
+    fetchUser();
+  }, [userData.name]);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -165,7 +196,7 @@ export default function MiniDrawer() {
       </Drawer>
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        <Typography h1>COMPONENTS GO HERE</Typography>
+        <Typography h1>{name}</Typography>
       </main>
     </div>
   );
