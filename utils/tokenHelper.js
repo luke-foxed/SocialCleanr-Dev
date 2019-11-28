@@ -10,7 +10,7 @@ module.exports = {
         client_secret: config.facebookTESTSecret
       },
       function(err, facebookRes) {
-        console.log(facebookRes);
+        return facebookRes;
       }
     );
   },

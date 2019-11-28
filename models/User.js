@@ -14,6 +14,21 @@ const UserSchema = new mongoose.Schema({
   token: {
     type: String,
     required: true
+  },
+
+  scans: {
+    type: Number,
+    required: false
+  },
+
+  images_Cleaned: {
+    type: Number,
+    required: false
+  },
+
+  text_Cleaned: {
+    type: String,
+    required: false
   }
 });
 

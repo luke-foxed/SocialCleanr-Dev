@@ -6,8 +6,6 @@ const FacebookStrategy = require('passport-facebook').Strategy;
 let facebookID = config.facebookTESTAppID;
 let facebookSecret = config.facebookTESTSecret;
 
-// TODO: Find way to serialize user and the access token
-
 module.exports = function(passport) {
   passport.use(
     new FacebookStrategy(
@@ -22,10 +20,14 @@ module.exports = function(passport) {
         });
 
         if (!currentUser) {
+          tokenHelper.extendToken(accessToken);
           const newUser = await new User({
             facebook_id: profile.id,
             name: profile.displayName,
-            token: accessToken
+            token: accessToken,
+            scans: 0,
+            imagesCleaned: 0,
+            textCleaned: 0
           }).save();
 
           if (newUser) {
@@ -38,7 +40,6 @@ module.exports = function(passport) {
   );
 
   passport.serializeUser((profile, done) => {
-    // tokenHelper.validateToken(profile.token);
     done(null, profile.id);
   });
 
@@ -49,7 +50,6 @@ module.exports = function(passport) {
         if (!tokenHelper.validateToken(user)) {
           done(new Error('Token no longer valid'));
         } else {
-          tokenHelper.extendToken(user.token);
           done(null, user);
         }
       })
