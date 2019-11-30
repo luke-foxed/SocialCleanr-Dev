@@ -33,8 +33,9 @@ module.exports = function(passport) {
           if (newUser) {
             done(null, newUser);
           }
+        } else {
+          done(null, currentUser);
         }
-        done(null, currentUser);
       }
     )
   );
