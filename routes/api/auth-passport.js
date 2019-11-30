@@ -9,7 +9,7 @@ const FAILURE_REDIRECT = 'http://localhost:3000/';
 
 // AUTHENTICATION //
 
-router.get('/login', passport.authenticate('facebook'));
+router.get('/login-facebook', passport.authenticate('facebook'));
 
 router.get(
   '/auth/facebook/callback',
@@ -19,14 +19,15 @@ router.get(
   })
 );
 
-// router.get('/login/success', ensureAuthenticated, (req, res) => {
-//   res.json({
-//     success: true,
-//     message: 'user has successfully authenticated',
-//     user: req.user,
-//     cookies: req.cookies
-//   });
-// });
+router.get('/login-twitter', passport.authenticate('twitter'));
+
+router.get(
+  '/auth/twitter/callback',
+  passport.authenticate('twitter', {
+    successRedirect: SUCCESS_REDIRECT,
+    failureRedirect: FAILURE_REDIRECT
+  })
+);
 
 router.get('/login/failed', (req, res) => {
   res.status(401).json({
