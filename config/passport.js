@@ -57,6 +57,7 @@ module.exports = function(passport) {
       },
       async (accessToken, refreshToken, profile, done) => {
         authMethod = 'twitter';
+        console.log(profile);
         const currentUser = await TwitterUser.findOne({
           twitter_id: profile.id
         });
