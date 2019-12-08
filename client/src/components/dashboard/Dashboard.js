@@ -102,9 +102,15 @@ export default function MiniDrawer() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      let res = await axios.get('http://localhost:5000/api/passport-auth/me', {
-        withCredentials: true
-      });
+      let website = '';
+      if (window.location.href.includes('facebook')) website = 'facebook';
+      if (window.location.href.includes('twitter')) website = 'twitter';
+      let res = await axios.get(
+        `http://localhost:5000/api/passport-auth/my-${website}`,
+        {
+          withCredentials: true
+        }
+      );
       const { data } = await res;
       setUserData({
         ...userData,
