@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
   ImageSearch,
   Dashboard,
@@ -16,21 +17,21 @@ import {
 
 export const SidebarItems = (
   <div>
-    <ListItem button>
+    <ListItem button component={Link} to='/dashboard'>
       <ListItemIcon>
         <Dashboard />
       </ListItemIcon>
       <ListItemText primary='Dashboard' />
     </ListItem>
 
-    <ListItem button>
+    <ListItem button component={Link} to='/dashboard/scan'>
       <ListItemIcon>
         <ImageSearch />
       </ListItemIcon>
       <ListItemText primary='New Scan' />
     </ListItem>
 
-    <ListItem button>
+    <ListItem button component={Link} to='/dashboard/profile'>
       <ListItemIcon>
         <Face />
       </ListItemIcon>
