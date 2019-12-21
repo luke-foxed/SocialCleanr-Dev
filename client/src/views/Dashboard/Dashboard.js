@@ -16,10 +16,11 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 
 import { Route, BrowserRouter } from 'react-router-dom';
-import { SidebarItems } from '../../components/Dashboard/SidebarItems';
+import SidebarItems from '../../components/Dashboard/SidebarItems';
 import Profile from '../SidebarPages/Profile';
 import Home from '../SidebarPages/Home';
 import Scan from '../SidebarPages/Scan';
+import Upload from '../SidebarPages/Upload';
 
 const drawerWidth = 240;
 
@@ -137,7 +138,7 @@ const Dashboard = () => {
             color='inherit'
             noWrap
             className={classes.title}>
-            Dashboard
+            SocialCleanr
           </Typography>
           <IconButton color='inherit'>
             <Badge badgeContent={4} color='secondary'>
@@ -160,7 +161,9 @@ const Dashboard = () => {
           </div>
           <Divider />
 
-          <List>{SidebarItems}</List>
+          <List>
+            <SidebarItems></SidebarItems>
+          </List>
         </Drawer>
 
         <main className={classes.content}>
@@ -169,6 +172,7 @@ const Dashboard = () => {
             <Route exact path='/dashboard' component={Home} />
             <Route exact path='/dashboard/scan' component={Scan} />
             <Route exact path='/dashboard/profile' component={Profile} />
+            <Route exact path='/dashboard/upload' component={Upload} />
           </Container>
         </main>
       </BrowserRouter>
