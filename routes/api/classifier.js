@@ -11,7 +11,7 @@ const mobilenet = require('@tensorflow-models/mobilenet');
 const cocoSSD = require('@tensorflow-models/coco-ssd');
 require('@tensorflow/tfjs-node');
 
-// needed to overcome teachablemachine dom requirements
+// needed to overcome tensorflow dom requirements
 const dom = new JSDOM('<!DOCTYPE html>');
 global.fetch = require('node-fetch');
 global.document = dom.window.document;
