@@ -6,11 +6,15 @@ import {
   Switch,
   FormGroup,
   FormControlLabel,
-  Icon
+  Icon,
+  Box,
+  Typography,
+  TextField
 } from '@material-ui/core';
 import ProcessImage from 'react-imgpro';
 import * as colors from '../../components/colors';
 import { CloudUpload, Send } from '@material-ui/icons';
+import axios from 'axios';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -27,6 +31,12 @@ const useStyles = makeStyles(theme => ({
     borderRadius: 20,
     borderStyle: 'solid',
     borderColor: colors.colorPurple
+  },
+  divider: {
+    padding: theme.spacing(2)
+  },
+  checkboxes: {
+    padding: theme.spacing(2)
   }
 }));
 
@@ -54,8 +64,18 @@ const Upload = () => {
     setModels({ ...models, [name]: event.target.checked });
   };
 
-  const handleSubmit = () => {
-    console.log(models);
+  const beginClassification = () => {
+    alert(URL);
+    axios({
+      method: 'post',
+      url: '/api/classifier/male_clothed',
+      data: {
+        image: image,
+        models: {
+          ...models
+        }
+      }
+    });
   };
 
   return (
@@ -83,11 +103,23 @@ const Upload = () => {
             Upload
           </Button>
         </label>
-        <ProcessImage
-          image={image}
-          className={classes.image}
-          scaleToFit={{ width: 400, height: 400 }}></ProcessImage>
-        <FormGroup row>
+
+        <Typography className={classes.divider}>Or</Typography>
+
+        <TextField
+          id='url'
+          label='URL'
+          onChange={e => setImage(e.target.value)}
+        />
+
+        <Box style={image ? { display: 'block' } : { display: 'none' }}>
+          <ProcessImage
+            image={image}
+            className={classes.image}
+            scaleToFit={{ width: 400, height: 400 }}></ProcessImage>
+        </Box>
+
+        <FormGroup row className={classes.checkboxes}>
           <FormControlLabel
             control={
               <Switch
@@ -124,7 +156,7 @@ const Upload = () => {
           variant='contained'
           color='primary'
           className={classes.button}
-          onClick={handleSubmit}
+          onClick={beginClassification}
           endIcon={<Send />}>
           Submit
         </Button>
