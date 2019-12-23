@@ -3,10 +3,6 @@ import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
-<<<<<<< HEAD
-=======
-import Box from '@material-ui/core/Box';
->>>>>>> ef1cb00fb068ec4f55a80e224b90315f241be9c1
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
@@ -15,7 +11,6 @@ import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Badge from '@material-ui/core/Badge';
 import Container from '@material-ui/core/Container';
-<<<<<<< HEAD
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
@@ -26,15 +21,6 @@ import Profile from '../SidebarPages/Profile';
 import Home from '../SidebarPages/Home';
 import Scan from '../SidebarPages/Scan';
 import Upload from '../SidebarPages/Upload';
-=======
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Link from '@material-ui/core/Link';
-import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import { SidebarItems } from '../../components/dashboard/SidebarItems';
->>>>>>> ef1cb00fb068ec4f55a80e224b90315f241be9c1
 
 const drawerWidth = 240;
 
@@ -152,11 +138,7 @@ const Dashboard = () => {
             color='inherit'
             noWrap
             className={classes.title}>
-<<<<<<< HEAD
             SocialCleanr
-=======
-            Dashboard
->>>>>>> ef1cb00fb068ec4f55a80e224b90315f241be9c1
           </Typography>
           <IconButton color='inherit'>
             <Badge badgeContent={4} color='secondary'>
@@ -165,7 +147,6 @@ const Dashboard = () => {
           </IconButton>
         </Toolbar>
       </AppBar>
-<<<<<<< HEAD
       <BrowserRouter>
         <Drawer
           variant='permanent'
@@ -195,51 +176,6 @@ const Dashboard = () => {
           </Container>
         </main>
       </BrowserRouter>
-=======
-      <Drawer
-        variant='permanent'
-        classes={{
-          paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose)
-        }}
-        open={open}>
-        <div className={classes.toolbarIcon}>
-          <IconButton onClick={handleDrawerClose}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </div>
-        <Divider />
-
-        <List>{SidebarItems}</List>
-      </Drawer>
-      <main className={classes.content}>
-        <div className={classes.appBarSpacer} />
-        <Container maxWidth='lg' className={classes.container}>
-          <Grid container spacing={3}>
-            {/* Chart */}
-            <Grid item xs={12} md={8} lg={9}>
-              <Paper className={fixedHeightPaper}>
-                <h1>Chart</h1>
-                {/* <Chart /> */}
-              </Paper>
-            </Grid>
-            {/* Recent Deposits */}
-            <Grid item xs={12} md={4} lg={3}>
-              <Paper className={fixedHeightPaper}>
-                <h1>Deposit</h1>
-                {/* <Deposits /> */}
-              </Paper>
-            </Grid>
-            {/* Recent Orders */}
-            <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                <h1>Orders</h1>
-                {/* <Orders /> */}
-              </Paper>
-            </Grid>
-          </Grid>
-        </Container>
-      </main>
->>>>>>> ef1cb00fb068ec4f55a80e224b90315f241be9c1
     </div>
   );
 };
