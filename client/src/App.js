@@ -1,8 +1,9 @@
 import React, { Fragment } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import Landing from './components/layout/Landing';
-import Login from './components/auth/Login';
-import Dashboard from './components/dashboard/Dashboard';
+import Landing from './views/Landing';
+import Login from './components/Auth/Login';
+import Dashboard from './views/Dashboard/Dashboard';
+import Home from './views/SidebarPages/Home';
 
 const App = () => (
   <Router>
