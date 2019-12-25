@@ -9,11 +9,14 @@ import {
   Icon,
   Box,
   Typography,
-  TextField
+  TextField,
+  Input,
+  InputAdornment,
+  IconButton
 } from '@material-ui/core';
 import ProcessImage from 'react-imgpro';
 import * as colors from '../../components/colors';
-import { CloudUpload, Send } from '@material-ui/icons';
+import { CloudUpload, Send, GetApp, Face } from '@material-ui/icons';
 import axios from 'axios';
 
 const useStyles = makeStyles(theme => ({
@@ -109,16 +112,19 @@ const Upload = () => {
         <TextField
           id='url'
           label='URL'
-          onChange={e => setImage(e.target.value)}
+          onBlur={e => {
+            setImage(e.target.value);
+          }}
         />
 
-        <Box style={image ? { display: 'block' } : { display: 'none' }}>
-          <ProcessImage
-            image={image}
-            className={classes.image}
-            scaleToFit={{ width: 400, height: 400 }}></ProcessImage>
-        </Box>
-
+        {image !== '' && (
+          <Box>
+            <ProcessImage
+              image={image}
+              className={classes.image}
+              scaleToFit={{ width: 400, height: 400 }}></ProcessImage>
+          </Box>
+        )}
         <FormGroup row className={classes.checkboxes}>
           <FormControlLabel
             control={
@@ -152,6 +158,7 @@ const Upload = () => {
             label='Check Text'
           />
         </FormGroup>
+
         <Button
           variant='contained'
           color='primary'
