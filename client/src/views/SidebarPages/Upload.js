@@ -52,6 +52,10 @@ const Upload = () => {
     text: false,
     age: false
   });
+  const [results, setResults] = useState({
+    topless: '',
+    clothed: ''
+  });
 
   const handleInput = event => {
     if (event.target.files && event.target.files[0]) {
@@ -67,17 +71,24 @@ const Upload = () => {
     setModels({ ...models, [name]: event.target.checked });
   };
 
-  const beginClassification = () => {
-    alert(URL);
-    axios({
+  const beginClassification = async () => {
+    let response = await axios({
       method: 'post',
-      url: '/api/classifier/male_clothed',
+      url: '/api/classifier/predict_clothing',
       data: {
         image: image,
         models: {
           ...models
         }
       }
+    });
+
+    console.log(response.data);
+
+    setResults({
+      ...results,
+      topless: response.data[0][0].probability,
+      clothed: response.data[0][1].probability
     });
   };
 
@@ -167,6 +178,10 @@ const Upload = () => {
           endIcon={<Send />}>
           Submit
         </Button>
+      </Paper>
+      <Paper elevation={2} className={classes.paper}>
+        <Typography>Topless: {Number(results.topless).toFixed(2)}</Typography>
+        <Typography>Clothed: {Number(results.clothed).toFixed(2)}</Typography>
       </Paper>
     </div>
   );
