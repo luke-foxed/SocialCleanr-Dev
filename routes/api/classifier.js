@@ -1,6 +1,6 @@
 const axios = require('axios');
 const jsdom = require('jsdom');
-const { Image, createCanvas } = require('canvas');
+const { Canvas, Image, ImageData, createCanvas, loadImage } = require('canvas');
 const { JSDOM } = jsdom;
 const express = require('express');
 const router = express.Router();
@@ -9,12 +9,14 @@ const tfImage = require('@teachablemachine/image');
 const modelPaths = require('../../classification/paths');
 const mobilenet = require('@tensorflow-models/mobilenet');
 const cocoSSD = require('@tensorflow-models/coco-ssd');
+const faceapi = require('face-api.js');
 require('@tensorflow/tfjs-node');
 
 // needed to overcome tensorflow dom requirements
 const dom = new JSDOM('<!DOCTYPE html>');
 global.fetch = require('node-fetch');
 global.document = dom.window.document;
+faceapi.env.monkeyPatch({ Canvas, Image, ImageData, loadImage });
 
 // unused method, but helpful for converting images into tensor objects
 const getTensor3dObject = async imageURL => {
@@ -78,18 +80,19 @@ router.post('/predict_clothing', async (req, res) => {
   img.src = req.body.image;
 });
 
-// const predictGender = (image) => {
+router.post('/predict_age', async (req, res) => {
+  await faceapi.nets.ssdMobilenetv1.loadFromDisk('classification/faceAPI');
+  await faceapi.nets.ageGenderNet.loadFromDisk('classification/faceAPI');
 
-//   let canvas = createCanvas(500, 500);
-//   let ctx = canvas.getContext('2d');
-//   let img = new Image();
+  let canvas = createCanvas(500, 500);
+  let ctx = canvas.getContext('2d');
+  let img = new Image();
 
-//   img.onload = async () => {
-//     await ctx.drawImage(img, 0, 0, img.width, img.height);
-//     return await maleModel.predict(canvas);
-
-//   };
-//   img.src = req.body.image;
-// }
+  img.onload = async () => {
+    await ctx.drawImage(img, 0, 0, img.width, img.height);
+    res.send(await faceapi.detectAllFaces(canvas).withAgeAndGender());
+  };
+  img.src = req.body.image;
+});
 
 module.exports = router;
