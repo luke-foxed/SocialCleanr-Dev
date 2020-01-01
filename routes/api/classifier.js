@@ -7,6 +7,7 @@ const router = express.Router();
 const tf = require('@tensorflow/tfjs-node');
 const tfImage = require('@teachablemachine/image');
 const modelPaths = require('../../classification/paths');
+const classification = require('../../classification/classification');
 const mobilenet = require('@tensorflow-models/mobilenet');
 const cocoSSD = require('@tensorflow-models/coco-ssd');
 const faceapi = require('face-api.js');
@@ -54,30 +55,36 @@ router.post('/predict', async (req, res) => {
   }
 });
 
+// router.post('/predict_clothing', async (req, res) => {
+//   const maleModel = await tfImage.load(
+//     modelPaths.maleClothedV2.model,
+//     modelPaths.maleClothedV2.metadata
+//   );
+
+//   let results = [];
+
+//   const femaleModel = await tfImage.load(
+//     modelPaths.femaleClothedV2.model,
+//     modelPaths.femaleClothedV2.metadata
+//   );
+
+//   let canvas = createCanvas(500, 500);
+//   let ctx = canvas.getContext('2d');
+//   let img = new Image();
+
+//   img.onload = async () => {
+//     await ctx.drawImage(img, 0, 0, img.width, img.height);
+//     results.push(await maleModel.predict(canvas));
+//     //results.push(await femaleModel.predict(canvas));
+//     res.send(results);
+//   };
+//   img.src = req.body.image;
+// });
+
 router.post('/predict_clothing', async (req, res) => {
-  const maleModel = await tfImage.load(
-    modelPaths.maleClothedV2.model,
-    modelPaths.maleClothedV2.metadata
-  );
-
-  let results = [];
-
-  const femaleModel = await tfImage.load(
-    modelPaths.femaleClothedV2.model,
-    modelPaths.femaleClothedV2.metadata
-  );
-
-  let canvas = createCanvas(500, 500);
-  let ctx = canvas.getContext('2d');
-  let img = new Image();
-
-  img.onload = async () => {
-    await ctx.drawImage(img, 0, 0, img.width, img.height);
-    results.push(await maleModel.predict(canvas));
-    //results.push(await femaleModel.predict(canvas));
-    res.send(results);
-  };
-  img.src = req.body.image;
+  await classification.loadModels();
+  let results = await classification.detectClothing(req.body.image);
+  res.send(results);
 });
 
 router.post('/predict_age', async (req, res) => {

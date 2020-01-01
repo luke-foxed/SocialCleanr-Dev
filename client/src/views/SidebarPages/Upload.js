@@ -52,9 +52,11 @@ const Upload = () => {
     text: false,
     age: false
   });
+
   const [results, setResults] = useState({
     topless: '',
-    clothed: ''
+    clothed: '',
+    gender: ''
   });
 
   const handleInput = event => {
@@ -83,12 +85,13 @@ const Upload = () => {
       }
     });
 
-    console.log(response.data);
+    console.log(response);
 
     setResults({
       ...results,
-      topless: response.data[0][0].probability,
-      clothed: response.data[0][1].probability
+      topless: response.data.topless,
+      clothed: response.data.clothed,
+      gender: response.data.gender
     });
   };
 
@@ -180,6 +183,7 @@ const Upload = () => {
         </Button>
       </Paper>
       <Paper elevation={2} className={classes.paper}>
+        <Typography>Gender: {results.gender}</Typography>
         <Typography>Topless: {Number(results.topless).toFixed(2)}</Typography>
         <Typography>Clothed: {Number(results.clothed).toFixed(2)}</Typography>
       </Paper>
