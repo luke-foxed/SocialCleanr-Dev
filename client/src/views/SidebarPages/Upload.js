@@ -6,13 +6,10 @@ import {
   Switch,
   FormGroup,
   FormControlLabel,
-  Icon,
   Box,
   Typography,
   TextField,
-  Input,
-  InputAdornment,
-  IconButton
+  CircularProgress
 } from '@material-ui/core';
 import ProcessImage from 'react-imgpro';
 import * as colors from '../../components/colors';
@@ -21,7 +18,8 @@ import axios from 'axios';
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    marginTop: theme.spacing(8),
+    marginTop: theme.spacing(4),
+    marginBottom: theme.spacing(4),
     padding: theme.spacing(4),
     display: 'flex',
     flexDirection: 'column',
@@ -40,12 +38,16 @@ const useStyles = makeStyles(theme => ({
   },
   checkboxes: {
     padding: theme.spacing(2)
+  },
+  progress: {
+    margin: '0 auto'
   }
 }));
 
 const Upload = () => {
   const classes = useStyles();
   const [image, setImage] = useState('');
+  const [progressVisible, setProgressVisible] = useState(false);
   const [models, setModels] = useState({
     clothing: false,
     gestures: false,
@@ -74,6 +76,8 @@ const Upload = () => {
   };
 
   const beginClassification = async () => {
+    setProgressVisible(true);
+
     let response = await axios({
       method: 'post',
       url: '/api/classifier/predict_clothing',
@@ -85,7 +89,7 @@ const Upload = () => {
       }
     });
 
-    console.log(response);
+    setProgressVisible(false);
 
     setResults({
       ...results,
@@ -182,6 +186,16 @@ const Upload = () => {
           Submit
         </Button>
       </Paper>
+
+      {results.gender == '' && (
+        <CircularProgress
+          style={{ display: progressVisible ? 'block' : 'none' }}
+          value={0}
+          color='secondary'
+          className={classes.progress}
+        />
+      )}
+
       <Paper elevation={2} className={classes.paper}>
         <Typography>Gender: {results.gender}</Typography>
         <Typography>Topless: {Number(results.topless).toFixed(2)}</Typography>
