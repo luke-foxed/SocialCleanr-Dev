@@ -61,7 +61,8 @@ const detectAgeGender = async image => {
 
 const detectClothing = async image => {
   let gender = await detectAgeGender(image);
-  let img = await loadImage(image);
+  let canvasImage = await loadImage(image);
+
   let results = {
     gender: '',
     topless: '',
@@ -69,14 +70,14 @@ const detectClothing = async image => {
   };
 
   if (gender === 'male') {
-    let classifcation = await maleClothingModel.predict(img);
+    let classifcation = await maleClothingModel.predict(canvasImage);
     results.gender = 'male';
     results.topless = classifcation[0].probability;
     results.clothed = classifcation[1].probability;
   }
 
   if (gender === 'female') {
-    let classifcation = await femaleClothingModel.predict(img);
+    let classifcation = await femaleClothingModel.predict(canvasImage);
     results.gender = 'female';
     results.topless = classifcation[0].probability;
     results.clothed = classifcation[1].probability;

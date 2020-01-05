@@ -31,7 +31,8 @@ const useStyles = makeStyles(theme => ({
     border: 5,
     borderRadius: 20,
     borderStyle: 'solid',
-    borderColor: colors.colorPurple
+    borderColor: colors.colorPurple,
+    objectFit: 'cover'
   },
   divider: {
     padding: theme.spacing(2)
@@ -101,11 +102,11 @@ const Upload = () => {
 
   return (
     <div>
-      <h1>Upload An Image</h1>
-      <p>
+      <Typography variant='h4'>Upload An Image</Typography>
+      <Typography variant='subtitle1'>
         Want to check an image BEFORE you upload it to your profile? Give it a
         try below!
-      </p>
+      </Typography>
       <Paper elevation={2} className={classes.paper}>
         <input
           accept='image/*'
@@ -130,6 +131,7 @@ const Upload = () => {
         <TextField
           id='url'
           label='URL'
+          style={{ width: '25%' }}
           onBlur={e => {
             setImage(e.target.value);
           }}
@@ -140,7 +142,7 @@ const Upload = () => {
             <ProcessImage
               image={image}
               className={classes.image}
-              scaleToFit={{ width: 400, height: 400 }}></ProcessImage>
+              scaleToFit={{ width: 500, height: 500 }}></ProcessImage>
           </Box>
         )}
         <FormGroup row className={classes.checkboxes}>
@@ -196,10 +198,17 @@ const Upload = () => {
         />
       )}
 
+      <Typography variant='h4'>Results</Typography>
       <Paper elevation={2} className={classes.paper}>
-        <Typography>Gender: {results.gender}</Typography>
-        <Typography>Topless: {Number(results.topless).toFixed(2)}</Typography>
-        <Typography>Clothed: {Number(results.clothed).toFixed(2)}</Typography>
+        <Typography>
+          Gender: <b>{results.gender.toLocaleUpperCase()}</b>
+        </Typography>
+        <Typography>
+          Topless: {Number(results.topless).toFixed(2) * 100}%
+        </Typography>
+        <Typography>
+          Clothed: {Number(results.clothed).toFixed(2) * 100}%
+        </Typography>
       </Paper>
     </div>
   );
