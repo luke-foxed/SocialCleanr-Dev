@@ -77,6 +77,12 @@ const Upload = () => {
   };
 
   const beginClassification = async () => {
+    setResults({
+      topless: '',
+      clothed: '',
+      gender: ''
+    });
+
     setProgressVisible(true);
 
     let response = await axios({

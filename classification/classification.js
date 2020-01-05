@@ -23,24 +23,26 @@ let ctx = canvas.getContext('2d');
 // define models
 let maleClothingModel = '';
 let femaleClothingModel = '';
+let modelsLoaded = false;
 
 const loadModels = async () => {
-  personDetectionModel = await cocoSSD.load({
-    base: 'mobilenet_v2'
-  });
+  if (modelsLoaded) {
+    console.log('\nMODELS ALREADY LOADED\n');
+  } else {
+    maleClothingModel = await tfImage.load(
+      modelPaths.maleClothedV3.model,
+      modelPaths.maleClothedV3.metadata
+    );
 
-  maleClothingModel = await tfImage.load(
-    modelPaths.maleClothedV2.model,
-    modelPaths.maleClothedV2.metadata
-  );
+    femaleClothingModel = await tfImage.load(
+      modelPaths.femaleClothedV2.model,
+      modelPaths.femaleClothedV2.metadata
+    );
 
-  femaleClothingModel = await tfImage.load(
-    modelPaths.femaleClothedV2.model,
-    modelPaths.femaleClothedV2.metadata
-  );
-
-  await faceapi.nets.ssdMobilenetv1.loadFromDisk('classification/faceAPI');
-  await faceapi.nets.ageGenderNet.loadFromDisk('classification/faceAPI');
+    await faceapi.nets.ssdMobilenetv1.loadFromDisk('classification/faceAPI');
+    await faceapi.nets.ageGenderNet.loadFromDisk('classification/faceAPI');
+    modelsLoaded = true;
+  }
 };
 
 const getTensor3dObject = async imageURL => {
