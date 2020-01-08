@@ -82,6 +82,8 @@ router.post('/predict', async (req, res) => {
 // });
 
 router.post('/predict_clothing', async (req, res) => {
+  console.log('IM HERE');
+
   await classification.loadModels();
   let results = await classification.detectClothing(req.body.image);
   res.send(results);
