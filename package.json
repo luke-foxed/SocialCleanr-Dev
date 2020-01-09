@@ -61,6 +61,7 @@
     "react-router-dom": "^5.1.0",
     "request": "^2.88.0",
     "selenium-webdriver": "^4.0.0-alpha.5",
+    "tesseract.js": "^2.0.2",
     "twitter": "^1.7.1"
   },
   "devDependencies": {

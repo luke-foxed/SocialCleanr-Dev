@@ -8,6 +8,7 @@ const tfImage = require('@teachablemachine/image');
 const request = require('request');
 const cocoSSD = require('@tensorflow-models/coco-ssd');
 const faceapi = require('face-api.js');
+const { createWorker, createScheduler, OEM } = require('tesseract.js');
 require('@tensorflow/tfjs-node');
 
 // needed to overcome tensorflow dom requirements
@@ -16,14 +17,12 @@ global.fetch = require('node-fetch');
 global.document = dom.window.document;
 faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
 
-// canvas parameters for drawing image
-let canvas = createCanvas(500, 500);
-let ctx = canvas.getContext('2d');
-
 // define models
 let maleClothingModel = '';
 let femaleClothingModel = '';
 let modelsLoaded = false;
+
+const worker = createWorker();
 
 const loadModels = async () => {
   if (modelsLoaded) {
@@ -41,6 +40,11 @@ const loadModels = async () => {
 
     await faceapi.nets.ssdMobilenetv1.loadFromDisk('classification/faceAPI');
     await faceapi.nets.ageGenderNet.loadFromDisk('classification/faceAPI');
+
+    await worker.load();
+    await worker.loadLanguage('eng');
+    await worker.initialize('eng');
+
     modelsLoaded = true;
   }
 };
@@ -52,6 +56,8 @@ const getTensor3dObject = async imageURL => {
   // 3 = jpg, 4 = png
   return tf.node.decodeJpeg(req.data, 3);
 };
+
+// ----- CLASSIFICATION FUNCTIONALITY ----- //
 
 const detectAgeGender = async image => {
   let img = await loadImage(image);
@@ -88,8 +94,16 @@ const detectClothing = async image => {
   return results;
 };
 
+const convertText = async image => {
+  const { data } = await worker.detect(image);
+  console.log(data);
+
+  return results.data;
+};
+
 module.exports = {
   loadModels,
   detectClothing,
-  detectAgeGender
+  detectAgeGender,
+  convertText
 };

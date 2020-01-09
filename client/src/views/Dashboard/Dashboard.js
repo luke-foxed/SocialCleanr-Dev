@@ -16,7 +16,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 
 import { Route, BrowserRouter } from 'react-router-dom';
-import SidebarItems from '../../components/Dashboard/SidebarItems';
+import SidebarItems from '../../components/dashboard/SidebarItems';
 import Profile from '../SidebarPages/Profile';
 import Home from '../SidebarPages/Home';
 import Scan from '../SidebarPages/Scan';

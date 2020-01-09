@@ -87,7 +87,7 @@ const Upload = () => {
 
     let response = await axios({
       method: 'post',
-      url: '/api/classifier/predict_clothing',
+      url: '/api/classifier/filter_models',
       data: {
         image: image,
         models: {
@@ -96,14 +96,16 @@ const Upload = () => {
       }
     });
 
-    setProgressVisible(false);
+    console.log(response);
 
-    setResults({
-      ...results,
-      topless: response.data.topless,
-      clothed: response.data.clothed,
-      gender: response.data.gender
-    });
+    // setProgressVisible(false);
+
+    // setResults({
+    //   ...results,
+    //   topless: response.data.topless,
+    //   clothed: response.data.clothed,
+    //   gender: response.data.gender
+    // });
   };
 
   return (

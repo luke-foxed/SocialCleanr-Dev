@@ -55,51 +55,28 @@ router.post('/predict', async (req, res) => {
   }
 });
 
-// router.post('/predict_clothing', async (req, res) => {
-//   const maleModel = await tfImage.load(
-//     modelPaths.maleClothedV2.model,
-//     modelPaths.maleClothedV2.metadata
-//   );
-
-//   let results = [];
-
-//   const femaleModel = await tfImage.load(
-//     modelPaths.femaleClothedV2.model,
-//     modelPaths.femaleClothedV2.metadata
-//   );
-
-//   let canvas = createCanvas(500, 500);
-//   let ctx = canvas.getContext('2d');
-//   let img = new Image();
-
-//   img.onload = async () => {
-//     await ctx.drawImage(img, 0, 0, img.width, img.height);
-//     results.push(await maleModel.predict(canvas));
-//     //results.push(await femaleModel.predict(canvas));
-//     res.send(results);
-//   };
-//   img.src = req.body.image;
-// });
-
 router.post('/predict_clothing', async (req, res) => {
   await classification.loadModels();
   let results = await classification.detectClothing(req.body.image);
   res.send(results);
 });
 
-router.post('/predict_age', async (req, res) => {
-  await faceapi.nets.ssdMobilenetv1.loadFromDisk('classification/faceAPI');
-  await faceapi.nets.ageGenderNet.loadFromDisk('classification/faceAPI');
-
-  let canvas = createCanvas(500, 500);
-  let ctx = canvas.getContext('2d');
-  let img = new Image();
-
-  img.onload = async () => {
-    await ctx.drawImage(img, 0, 0, img.width, img.height);
-    res.send(await faceapi.detectAllFaces(canvas).withAgeAndGender());
-  };
-  img.src = req.body.image;
+router.post('/filter_models', async (req, res) => {
+  await classification.loadModels();
+  let selection = req.body.models;
+  switch (true) {
+    case selection.text:
+      console.log('/n SELECTED TEXT');
+      let results = await classification.convertText(req.body.image);
+      res.send(results);
+      break;
+    case selection.clothing:
+      console.log('/n SELECTED CLOTHING');
+      // code block
+      break;
+    case selection.gestures:
+      console.log('/n SELECTED GESTURES');
+  }
 });
 
 module.exports = router;
