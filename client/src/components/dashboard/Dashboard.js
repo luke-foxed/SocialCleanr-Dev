@@ -14,15 +14,16 @@ import Container from '@material-ui/core/Container';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-
 import { Route, BrowserRouter } from 'react-router-dom';
-import SidebarItems from '../../components/dashboard/SidebarItems';
-import Profile from '../SidebarPages/Profile';
-import Home from '../SidebarPages/Home';
-import Scan from '../SidebarPages/Scan';
-import Upload from '../SidebarPages/Upload';
+import { createHashHistory } from 'history';
+import SidebarItems from './SidebarItems';
+import Profile from './pages/Profile';
+import Home from './pages/Home';
+import Scan from './pages/Scan';
+import Upload from './pages/Upload';
 
 const drawerWidth = 240;
+const history = createHashHistory();
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -112,7 +113,6 @@ const Dashboard = () => {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   return (
     <div className={classes.root}>
@@ -147,7 +147,7 @@ const Dashboard = () => {
           </IconButton>
         </Toolbar>
       </AppBar>
-      <BrowserRouter>
+      <BrowserRouter history={history}>
         <Drawer
           variant='permanent'
           classes={{
@@ -172,7 +172,7 @@ const Dashboard = () => {
             <Route exact path='/dashboard' component={Home} />
             <Route exact path='/dashboard/scan' component={Scan} />
             <Route exact path='/dashboard/profile' component={Profile} />
-            <Route exact path='/dashboard/upload' component={Upload} />
+            <Route exact path='/dashboard/#upload' component={Upload} />
           </Container>
         </main>
       </BrowserRouter>

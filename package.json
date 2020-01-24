@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/Foxyf76/Automater-POC-javascript#readme",
   "dependencies": {
+    "@google-cloud/vision": "^1.8.0",
     "@material-ui/core": "^4.7.0",
     "@material-ui/icons": "^4.5.1",
     "@teachablemachine/image": "^0.8.4",

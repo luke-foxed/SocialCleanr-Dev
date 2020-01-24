@@ -12,7 +12,7 @@ import {
   CircularProgress
 } from '@material-ui/core';
 import ProcessImage from 'react-imgpro';
-import * as colors from '../../components/colors';
+import * as colors from '../../colors';
 import { CloudUpload, Send, GetApp, Face } from '@material-ui/icons';
 import axios from 'axios';
 
@@ -57,9 +57,9 @@ const Upload = () => {
   });
 
   const [results, setResults] = useState({
+    gender: '',
     topless: '',
-    clothed: '',
-    gender: ''
+    clothed: ''
   });
 
   const handleInput = event => {
@@ -77,12 +77,7 @@ const Upload = () => {
   };
 
   const beginClassification = async () => {
-    setResults({
-      topless: '',
-      clothed: '',
-      gender: ''
-    });
-
+    setResults({ gender: '', topless: '', clothed: '' });
     setProgressVisible(true);
 
     let response = await axios({
@@ -96,16 +91,13 @@ const Upload = () => {
       }
     });
 
-    console.log(response);
-
-    // setProgressVisible(false);
-
-    // setResults({
-    //   ...results,
-    //   topless: response.data.topless,
-    //   clothed: response.data.clothed,
-    //   gender: response.data.gender
-    // });
+    setProgressVisible(false);
+    setResults({
+      ...results,
+      topless: response.data.topless,
+      clothed: response.data.clothed,
+      gender: response.data.gender
+    });
   };
 
   return (
@@ -208,15 +200,7 @@ const Upload = () => {
 
       <Typography variant='h4'>Results</Typography>
       <Paper elevation={2} className={classes.paper}>
-        <Typography>
-          Gender: <b>{results.gender.toLocaleUpperCase()}</b>
-        </Typography>
-        <Typography>
-          Topless: {Number(results.topless).toFixed(2) * 100}%
-        </Typography>
-        <Typography>
-          Clothed: {Number(results.clothed).toFixed(2) * 100}%
-        </Typography>
+        <Typography>{JSON.stringify(results)}</Typography>
       </Paper>
     </div>
   );

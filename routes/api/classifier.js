@@ -63,16 +63,18 @@ router.post('/predict_clothing', async (req, res) => {
 
 router.post('/filter_models', async (req, res) => {
   await classification.loadModels();
+  let results = null;
   let selection = req.body.models;
   switch (true) {
     case selection.text:
       console.log('/n SELECTED TEXT');
-      let results = await classification.convertText(req.body.image);
+      results = await classification.convertText(req.body.image);
       res.send(results);
       break;
     case selection.clothing:
       console.log('/n SELECTED CLOTHING');
-      // code block
+      results = await classification.detectClothing(req.body.image);
+      res.send(results);
       break;
     case selection.gestures:
       console.log('/n SELECTED GESTURES');

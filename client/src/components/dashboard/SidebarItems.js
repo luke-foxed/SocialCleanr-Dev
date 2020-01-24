@@ -21,6 +21,7 @@ const SidebarItems = () => {
 
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
+    console.log(event);
   };
 
   return (

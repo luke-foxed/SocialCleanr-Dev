@@ -9,6 +9,7 @@ const request = require('request');
 const cocoSSD = require('@tensorflow-models/coco-ssd');
 const faceapi = require('face-api.js');
 const { createWorker, createScheduler, OEM } = require('tesseract.js');
+const vision = require('@google-cloud/vision');
 require('@tensorflow/tfjs-node');
 
 // needed to overcome tensorflow dom requirements
@@ -23,6 +24,7 @@ let femaleClothingModel = '';
 let modelsLoaded = false;
 
 const worker = createWorker();
+const client = new vision.ImageAnnotatorClient();
 
 const loadModels = async () => {
   if (modelsLoaded) {
@@ -95,10 +97,15 @@ const detectClothing = async image => {
 };
 
 const convertText = async image => {
-  const { data } = await worker.detect(image);
-  console.log(data);
+  // const { data } = await worker.detect(image);
+  // console.log(data);
 
-  return results.data;
+  const [result] = await client.textDetection(image);
+  const detections = result.textAnnotations;
+  console.log('Text:');
+  console.log(detections);
+
+  // return data;
 };
 
 module.exports = {
