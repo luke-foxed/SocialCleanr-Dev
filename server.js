@@ -19,6 +19,7 @@ app.use(
 );
 
 // Init middleware
+app.use(bodyParser({ limit: '50mb' }));
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: false })); // support encoded bodies
 app.use(express.json({ extended: false }));

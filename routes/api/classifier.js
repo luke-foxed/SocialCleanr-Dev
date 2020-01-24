@@ -1,20 +1,23 @@
 const axios = require('axios');
 const jsdom = require('jsdom');
-const { Image, createCanvas } = require('canvas');
+const { Canvas, Image, ImageData, createCanvas, loadImage } = require('canvas');
 const { JSDOM } = jsdom;
 const express = require('express');
 const router = express.Router();
 const tf = require('@tensorflow/tfjs-node');
 const tfImage = require('@teachablemachine/image');
 const modelPaths = require('../../classification/paths');
+const classification = require('../../classification/classification');
 const mobilenet = require('@tensorflow-models/mobilenet');
 const cocoSSD = require('@tensorflow-models/coco-ssd');
+const faceapi = require('face-api.js');
 require('@tensorflow/tfjs-node');
 
 // needed to overcome tensorflow dom requirements
 const dom = new JSDOM('<!DOCTYPE html>');
 global.fetch = require('node-fetch');
 global.document = dom.window.document;
+faceapi.env.monkeyPatch({ Canvas, Image, ImageData, loadImage });
 
 // unused method, but helpful for converting images into tensor objects
 const getTensor3dObject = async imageURL => {
@@ -47,21 +50,35 @@ router.post('/coco_ssd', async (req, res) => {
   res.send('Number of people: ' + prediction.length);
 });
 
-router.post('/male_clothed', async (req, res) => {
-  const generatedModel = await tfImage.load(
-    modelPaths.maleClothed.model,
-    modelPaths.maleClothed.metadata
-  );
+router.post('/predict', async (req, res) => {
+  if (req.models.clothing) {
+  }
+});
 
-  let canvas = createCanvas(500, 500);
-  let ctx = canvas.getContext('2d');
-  let img = new Image();
+router.post('/predict_clothing', async (req, res) => {
+  await classification.loadModels();
+  let results = await classification.detectClothing(req.body.image);
+  res.send(results);
+});
 
-  img.onload = async () => {
-    await ctx.drawImage(img, 0, 0, img.width, img.height);
-    res.send(await generatedModel.predict(canvas));
-  };
-  img.src = req.body.image;
+router.post('/filter_models', async (req, res) => {
+  await classification.loadModels();
+  let results = null;
+  let selection = req.body.models;
+  switch (true) {
+    case selection.text:
+      console.log('/n SELECTED TEXT');
+      results = await classification.convertText(req.body.image);
+      res.send(results);
+      break;
+    case selection.clothing:
+      console.log('/n SELECTED CLOTHING');
+      results = await classification.detectClothing(req.body.image);
+      res.send(results);
+      break;
+    case selection.gestures:
+      console.log('/n SELECTED GESTURES');
+  }
 });
 
 module.exports = router;

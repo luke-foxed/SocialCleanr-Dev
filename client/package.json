@@ -6,7 +6,7 @@
     "axios": "^0.19.0",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
-    "react-scripts": "3.1.1"
+    "react-scripts": "^3.3.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -29,5 +29,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:5000"
+  "proxy": "http://localhost:5000/"
 }

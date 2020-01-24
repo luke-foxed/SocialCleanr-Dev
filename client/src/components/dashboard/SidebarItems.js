@@ -31,7 +31,7 @@ const SidebarItems = () => {
         onClick={event => handleListItemClick(event, 0)}
         button
         component={Link}
-        to='/dashboard'>
+        to='/'>
         <ListItemIcon>
           <Dashboard />
         </ListItemIcon>
@@ -43,7 +43,7 @@ const SidebarItems = () => {
         onClick={event => handleListItemClick(event, 1)}
         button
         component={Link}
-        to='/dashboard/scan'>
+        to='/scan'>
         <ListItemIcon>
           <ImageSearch />
         </ListItemIcon>
@@ -55,7 +55,7 @@ const SidebarItems = () => {
         onClick={event => handleListItemClick(event, 2)}
         button
         component={Link}
-        to='/dashboard/upload'>
+        to='/upload'>
         <ListItemIcon>
           <Publish />
         </ListItemIcon>
@@ -67,7 +67,7 @@ const SidebarItems = () => {
         onClick={event => handleListItemClick(event, 3)}
         button
         component={Link}
-        to='/dashboard/profile'>
+        to='/profile'>
         <ListItemIcon>
           <Face />
         </ListItemIcon>
@@ -81,7 +81,7 @@ const SidebarItems = () => {
         onClick={event => handleListItemClick(event, 4)}
         button
         component={Link}
-        to='/dashboard/about'>
+        to='/about'>
         <ListItemIcon>
           <Info />
         </ListItemIcon>
@@ -93,7 +93,7 @@ const SidebarItems = () => {
         onClick={event => handleListItemClick(event, 5)}
         button
         component={Link}
-        to='/dashboard/Guide'>
+        to='/Guide'>
         <ListItemIcon>
           <MenuBook />
         </ListItemIcon>
