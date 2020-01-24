@@ -14,7 +14,7 @@ import Container from '@material-ui/core/Container';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import { Route, BrowserRouter } from 'react-router-dom';
+import { Route, HashRouter, Redirect } from 'react-router-dom';
 import { createHashHistory } from 'history';
 import SidebarItems from './SidebarItems';
 import Profile from './pages/Profile';
@@ -23,7 +23,6 @@ import Scan from './pages/Scan';
 import Upload from './pages/Upload';
 
 const drawerWidth = 240;
-const history = createHashHistory();
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -147,7 +146,7 @@ const Dashboard = () => {
           </IconButton>
         </Toolbar>
       </AppBar>
-      <BrowserRouter history={history}>
+      <HashRouter>
         <Drawer
           variant='permanent'
           classes={{
@@ -169,13 +168,14 @@ const Dashboard = () => {
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           <Container maxWidth='lg' className={classes.container}>
-            <Route exact path='/dashboard' component={Home} />
-            <Route exact path='/dashboard/scan' component={Scan} />
-            <Route exact path='/dashboard/profile' component={Profile} />
-            <Route exact path='/dashboard/#upload' component={Upload} />
+            <Redirect exact from='/*' to='/' />
+            <Route exact path='/' component={Home} />
+            <Route exact path='/scan' component={Scan} />
+            <Route exact path='/profile' component={Profile} />
+            <Route exact path='/upload' component={Upload} />
           </Container>
         </main>
-      </BrowserRouter>
+      </HashRouter>
     </div>
   );
 };
