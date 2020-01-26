@@ -59,16 +59,17 @@ const Upload = () => {
   const [results, setResults] = useState({
     gender: '',
     topless: '',
-    clothed: ''
+    clothed: '',
+    text: ''
   });
 
   const handleInput = event => {
     if (event.target.files && event.target.files[0]) {
       let reader = new FileReader();
-      reader.onload = e => {
-        setImage(e.target.result);
-      };
       reader.readAsDataURL(event.target.files[0]);
+      reader.onloadend = () => {
+        setImage(reader.result);
+      };
     }
   };
 
@@ -77,7 +78,7 @@ const Upload = () => {
   };
 
   const beginClassification = async () => {
-    setResults({ gender: '', topless: '', clothed: '' });
+    setResults({ gender: '', topless: '', clothed: '', text: '' });
     setProgressVisible(true);
 
     let response = await axios({
@@ -96,7 +97,8 @@ const Upload = () => {
       ...results,
       topless: response.data.topless,
       clothed: response.data.clothed,
-      gender: response.data.gender
+      gender: response.data.gender,
+      text: response.data.text
     });
   };
 
