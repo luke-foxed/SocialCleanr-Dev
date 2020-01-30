@@ -120,17 +120,29 @@ const convertText = async image => {
 
 /////
 
+const CLASSES = {
+  1: {
+    name: 'middle_finger',
+    index: '1'
+  }
+};
+
 const detectGesture = async image => {
+  // temp model, needs to be retrained
   let gestureModel = await tf.loadGraphModel('file://C:/WEB_MODEL/model.json');
-  const can = createCanvas(300, 300);
+  // needs to be dynamic for any image size
+  const can = createCanvas(1300, 731);
   const ctx = can.getContext('2d');
 
   const img = new Image();
   img.onload = async () => {
-    ctx.drawImage(img, 0, 0, 300, 300);
+    ctx.drawImage(img, 0, 0, 1300, 731);
 
-    let tensor = await tf.browser.fromPixels(can, 3);
+    let tensor = await tf.browser.fromPixels(can);
     tensor = await tensor.expandDims(0);
+
+    const height = tensor.shape[1];
+    const width = tensor.shape[2];
 
     let output = await gestureModel.executeAsync({ image_tensor: tensor }, [
       'detection_boxes',
@@ -139,14 +151,97 @@ const detectGesture = async image => {
       'num_detections'
     ]);
 
-    for (let i = 0; i < output.length; i++) {
-      console.log(output[i].dataSync());
-    }
+    const boxes = await output[0].dataSync();
+    const scores = await output[1].dataSync();
+
+    // clean the webgl tensors
+    tensor.dispose();
+    tf.dispose(output);
+
+    // why 300? is it because of the shape of that particular output node?
+    const [maxScores, classes] = calculateMaxScores(scores, 300, 1);
+
+    const prevBackend = tf.getBackend();
+    // run post process in cpu
+    tf.setBackend('cpu');
+
+    const boxes2 = tf.tensor2d(boxes, [output[0].shape[1], output[0].shape[2]]);
+    const indexTensor = await tf.image.nonMaxSuppressionAsync(
+      boxes2,
+      maxScores,
+      20, // maxNumBoxes,
+      0.5,
+      0.5
+    );
+
+    console.log(indexTensor);
+
+    const indexes = indexTensor.dataSync();
+    indexTensor.dispose();
+
+    // restore previous backend
+    tf.setBackend(prevBackend);
+
+    console.log(
+      buildDetectedObjects(width, height, boxes, maxScores, indexes, classes)
+    );
   };
   img.onerror = err => {
     throw err;
   };
   img.src = image;
+};
+
+////
+
+const calculateMaxScores = (scores, numBoxes, numClasses) => {
+  const maxes = [];
+  const classes = [];
+  for (let i = 0; i < numBoxes; i++) {
+    let max = Number.MIN_VALUE;
+    let index = -1;
+    for (let j = 0; j < numClasses; j++) {
+      if (scores[i * numClasses + j] > max) {
+        max = scores[i * numClasses + j];
+        index = j;
+      }
+    }
+    maxes[i] = max;
+    classes[i] = index;
+  }
+  return [maxes, classes];
+};
+
+const buildDetectedObjects = (
+  width,
+  height,
+  boxes,
+  scores,
+  indexes,
+  classes
+) => {
+  const count = indexes.length;
+  const objects = [];
+  for (let i = 0; i < count; i++) {
+    const bbox = [];
+    for (let j = 0; j < 4; j++) {
+      bbox[j] = boxes[indexes[i] * 4 + j];
+    }
+    const minY = bbox[0] * height;
+    const minX = bbox[1] * width;
+    const maxY = bbox[2] * height;
+    const maxX = bbox[3] * width;
+    bbox[0] = minX;
+    bbox[1] = minY;
+    bbox[2] = maxX;
+    bbox[3] = maxY;
+    objects.push({
+      bbox: bbox,
+      class: 'middle_finger',
+      score: scores[indexes[i]]
+    });
+  }
+  return objects;
 };
 
 module.exports = {
