@@ -1,6 +1,13 @@
 const axios = require('axios');
 const jsdom = require('jsdom');
-const { Canvas, Image, ImageData, createCanvas, loadImage } = require('canvas');
+const {
+  Canvas,
+  Image,
+  ImageData,
+  createCanvas,
+  loadImage,
+  getContext
+} = require('canvas');
 const { JSDOM } = jsdom;
 const tf = require('@tensorflow/tfjs-node');
 const modelPaths = require('./paths');
@@ -10,6 +17,7 @@ const cocoSSD = require('@tensorflow-models/coco-ssd');
 const faceapi = require('face-api.js');
 const { createWorker, createScheduler, OEM } = require('tesseract.js');
 const vision = require('@google-cloud/vision');
+const base64ArrayBuffer = require('base64-arraybuffer');
 require('@tensorflow/tfjs-node');
 
 // needed to overcome tensorflow dom requirements
@@ -21,6 +29,7 @@ faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
 // define models
 let maleClothingModel = '';
 let femaleClothingModel = '';
+let gestureModel = '';
 let modelsLoaded = false;
 
 const worker = createWorker();
@@ -48,6 +57,7 @@ const loadModels = async () => {
     await worker.initialize('eng');
 
     modelsLoaded = true;
+    console.log('\nMODELS LOADED \n');
   }
 };
 
@@ -108,9 +118,41 @@ const convertText = async image => {
   // return data;
 };
 
+/////
+
+const detectGesture = async image => {
+  let gestureModel = await tf.loadGraphModel('file://C:/WEB_MODEL/model.json');
+  const can = createCanvas(300, 300);
+  const ctx = can.getContext('2d');
+
+  const img = new Image();
+  img.onload = async () => {
+    ctx.drawImage(img, 0, 0, 300, 300);
+
+    let tensor = await tf.browser.fromPixels(can, 3);
+    tensor = await tensor.expandDims(0);
+
+    let output = await gestureModel.executeAsync({ image_tensor: tensor }, [
+      'detection_boxes',
+      'detection_scores',
+      'detection_classes',
+      'num_detections'
+    ]);
+
+    for (let i = 0; i < output.length; i++) {
+      console.log(output[i].dataSync());
+    }
+  };
+  img.onerror = err => {
+    throw err;
+  };
+  img.src = image;
+};
+
 module.exports = {
   loadModels,
   detectClothing,
   detectAgeGender,
+  detectGesture,
   convertText
 };

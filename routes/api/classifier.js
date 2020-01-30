@@ -78,6 +78,9 @@ router.post('/filter_models', async (req, res) => {
       break;
     case selection.gestures:
       console.log('/n SELECTED GESTURES');
+      results = await classification.detectGesture(req.body.image);
+      res.send(results);
+      break;
   }
 });
 
