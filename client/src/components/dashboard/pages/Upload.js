@@ -17,6 +17,20 @@ import { CloudUpload, Send, GetApp, Face } from '@material-ui/icons';
 import axios from 'axios';
 import BoundingBox from 'react-bounding-box';
 
+const bboxParams = {
+  options: {
+    colors: {
+      normal: 'rgba(255,50,50,1)',
+      selected: 'rgba(50,255,50,1)',
+      unselected: 'rgba(100,100,100,1)'
+    },
+    style: {
+      maxWidth: '100%',
+      maxHeight: '90vh'
+    }
+  }
+};
+
 const useStyles = makeStyles(theme => ({
   paper: {
     marginTop: theme.spacing(4),
@@ -61,18 +75,9 @@ const Upload = () => {
     gender: '',
     topless: '',
     clothed: '',
-    text: ''
+    text: '',
+    bbox: []
   });
-
-  const [objects, setObjects] = useState({
-    bbox: [],
-    score: '',
-    label: ''
-  });
-
-  const params = {
-    boxes: [[396.35917842388153, 226.42462894320488, 223, 331]]
-  };
 
   const handleInput = event => {
     if (event.target.files && event.target.files[0]) {
@@ -104,24 +109,17 @@ const Upload = () => {
     });
 
     setProgressVisible(false);
-    // setResults({
-    //   ...results,
-    //   topless: response.data.topless,
-    //   clothed: response.data.clothed,
-    //   gender: response.data.gender
-    // });
-
-    // setObjects({
-    //   bbox: response.data.bbox
-    // });
 
     let objects = response.data.gestures;
     let boxes = [];
     objects.forEach(obj => {
-      boxes.push(obj.bbox);
+      boxes.push({
+        coord: obj.bbox,
+        label: `Middle Finger: ${obj.score * 100}% `
+      });
     });
 
-    setObjects({ bbox: boxes });
+    setResults({ ...results, bbox: boxes });
   };
 
   return (
@@ -227,7 +225,11 @@ const Upload = () => {
         <Typography>{JSON.stringify(results)}</Typography>
       </Paper>
 
-      <BoundingBox image={image} boxes={objects.bbox}></BoundingBox>
+      <BoundingBox
+        image={image}
+        boxes={results.bbox}
+        scores={results.scores}
+        options={bboxParams.options}></BoundingBox>
     </div>
   );
 };

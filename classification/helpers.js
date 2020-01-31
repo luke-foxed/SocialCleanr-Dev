@@ -60,8 +60,8 @@ const buildDetectedObjects = (
     const maxX = bbox[3] * width;
     bbox[0] = minX;
     bbox[1] = minY;
-    bbox[2] = maxX;
-    bbox[3] = maxY;
+    bbox[2] = maxX - minX;
+    bbox[3] = maxY - minY;
     objects.push({
       bbox: bbox,
       class: 'middle_finger',
