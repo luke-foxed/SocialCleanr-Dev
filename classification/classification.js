@@ -1,23 +1,12 @@
-const axios = require('axios');
 const jsdom = require('jsdom');
-const {
-  Canvas,
-  Image,
-  ImageData,
-  createCanvas,
-  loadImage,
-  getContext
-} = require('canvas');
+const { Canvas, Image, ImageData, loadImage } = require('canvas');
 const { JSDOM } = jsdom;
 const tf = require('@tensorflow/tfjs-node');
 const modelPaths = require('./paths');
 const tfImage = require('@teachablemachine/image');
-const request = require('request');
-const cocoSSD = require('@tensorflow-models/coco-ssd');
 const faceapi = require('face-api.js');
-const { createWorker, createScheduler, OEM } = require('tesseract.js');
 const vision = require('@google-cloud/vision');
-const base64ArrayBuffer = require('base64-arraybuffer');
+const helpers = require('./helpers');
 require('@tensorflow/tfjs-node');
 
 // needed to overcome tensorflow dom requirements
@@ -32,7 +21,6 @@ let femaleClothingModel = '';
 let gestureModel = '';
 let modelsLoaded = false;
 
-const worker = createWorker();
 const client = new vision.ImageAnnotatorClient();
 
 const loadModels = async () => {
@@ -49,24 +37,14 @@ const loadModels = async () => {
       modelPaths.femaleClothedV2.metadata
     );
 
+    gestureModel = await tf.loadGraphModel('file://C:/WEB_MODEL/model.json');
+
     await faceapi.nets.ssdMobilenetv1.loadFromDisk('classification/faceAPI');
     await faceapi.nets.ageGenderNet.loadFromDisk('classification/faceAPI');
-
-    await worker.load();
-    await worker.loadLanguage('eng');
-    await worker.initialize('eng');
 
     modelsLoaded = true;
     console.log('\nMODELS LOADED \n');
   }
-};
-
-const getTensor3dObject = async imageURL => {
-  let req = await axios.get(imageURL, {
-    responseType: 'arraybuffer'
-  });
-  // 3 = jpg, 4 = png
-  return tf.node.decodeJpeg(req.data, 3);
 };
 
 // ----- CLASSIFICATION FUNCTIONALITY ----- //
@@ -136,139 +114,60 @@ const convertText = async image => {
   return results;
 };
 
-/////
-
-const CLASSES = {
-  1: {
-    name: 'middle_finger',
-    index: '1'
-  }
-};
-
 const detectGesture = async image => {
-  // temp model, needs to be retrained
-  let gestureModel = await tf.loadGraphModel('file://C:/WEB_MODEL/model.json');
-  // needs to be dynamic for any image size
-  const can = createCanvas(1300, 731);
-  const ctx = can.getContext('2d');
+  let canvasImage = await helpers.createCanvasImage(image);
+  let tensor = tf.browser.fromPixels(canvasImage);
+  tensor = tensor.expandDims(0);
 
-  const img = new Image();
-  let object = null;
-  img.onload = async () => {
-    ctx.drawImage(img, 0, 0, 1300, 731);
+  const height = tensor.shape[1];
+  const width = tensor.shape[2];
 
-    let tensor = await tf.browser.fromPixels(can);
-    tensor = await tensor.expandDims(0);
+  let output = await gestureModel.executeAsync({ image_tensor: tensor }, [
+    'detection_boxes',
+    'detection_scores',
+    'detection_classes',
+    'num_detections'
+  ]);
 
-    const height = tensor.shape[1];
-    const width = tensor.shape[2];
+  const boxes = await output[0].dataSync();
+  const scores = await output[1].dataSync();
 
-    let output = await gestureModel.executeAsync({ image_tensor: tensor }, [
-      'detection_boxes',
-      'detection_scores',
-      'detection_classes',
-      'num_detections'
-    ]);
+  // clean the webgl tensors
+  tensor.dispose();
+  tf.dispose(output);
 
-    const boxes = await output[0].dataSync();
-    const scores = await output[1].dataSync();
+  // why 300? is it because of the shape of that particular output node?
+  const [maxScores, classes] = helpers.calculateMaxScores(scores, 300, 1);
 
-    // clean the webgl tensors
-    tensor.dispose();
-    tf.dispose(output);
+  const prevBackend = tf.getBackend();
+  // run post process in cpu
+  tf.setBackend('cpu');
 
-    // why 300? is it because of the shape of that particular output node?
-    const [maxScores, classes] = calculateMaxScores(scores, 300, 1);
+  const boxes2 = tf.tensor2d(boxes, [output[0].shape[1], output[0].shape[2]]);
+  const indexTensor = await tf.image.nonMaxSuppressionAsync(
+    boxes2,
+    maxScores,
+    20, // maxNumBoxes,
+    0.5,
+    0.5
+  );
 
-    const prevBackend = tf.getBackend();
-    // run post process in cpu
-    tf.setBackend('cpu');
+  const indexes = indexTensor.dataSync();
+  indexTensor.dispose();
 
-    const boxes2 = tf.tensor2d(boxes, [output[0].shape[1], output[0].shape[2]]);
-    const indexTensor = await tf.image.nonMaxSuppressionAsync(
-      boxes2,
-      maxScores,
-      20, // maxNumBoxes,
-      0.5,
-      0.5
-    );
+  // restore previous backend
+  tf.setBackend(prevBackend);
 
-    const indexes = indexTensor.dataSync();
-    indexTensor.dispose();
+  const objects = helpers.buildDetectedObjects(
+    width,
+    height,
+    boxes,
+    maxScores,
+    indexes,
+    classes
+  );
 
-    // restore previous backend
-    tf.setBackend(prevBackend);
-
-    const objects = buildDetectedObjects(
-      width,
-      height,
-      boxes,
-      maxScores,
-      indexes,
-      classes
-    );
-
-    console.log(objects[0]);
-    object = objects[0];
-  };
-  img.onerror = err => {
-    throw err;
-  };
-  img.src = image;
-
-  return object;
-};
-
-////
-
-const calculateMaxScores = (scores, numBoxes, numClasses) => {
-  const maxes = [];
-  const classes = [];
-  for (let i = 0; i < numBoxes; i++) {
-    let max = Number.MIN_VALUE;
-    let index = -1;
-    for (let j = 0; j < numClasses; j++) {
-      if (scores[i * numClasses + j] > max) {
-        max = scores[i * numClasses + j];
-        index = j;
-      }
-    }
-    maxes[i] = max;
-    classes[i] = index;
-  }
-  return [maxes, classes];
-};
-
-const buildDetectedObjects = (
-  width,
-  height,
-  boxes,
-  scores,
-  indexes,
-  classes
-) => {
-  const count = indexes.length;
-  const objects = [];
-  for (let i = 0; i < count; i++) {
-    const bbox = [];
-    for (let j = 0; j < 4; j++) {
-      bbox[j] = boxes[indexes[i] * 4 + j];
-    }
-    const minY = bbox[0] * height;
-    const minX = bbox[1] * width;
-    const maxY = bbox[2] * height;
-    const maxX = bbox[3] * width;
-    bbox[0] = minX;
-    bbox[1] = minY;
-    bbox[2] = maxX;
-    bbox[3] = maxY;
-    objects.push({
-      bbox: bbox,
-      class: 'middle_finger',
-      score: scores[indexes[i]]
-    });
-  }
-  return objects;
+  console.log(objects[0]);
 };
 
 module.exports = {

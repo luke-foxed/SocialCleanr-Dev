@@ -104,7 +104,6 @@ const Upload = () => {
     });
 
     setProgressVisible(false);
-<<<<<<< HEAD
     // setResults({
     //   ...results,
     //   topless: response.data.topless,
@@ -114,14 +113,6 @@ const Upload = () => {
 
     setObjects({
       bbox: response.data.bbox
-=======
-    setResults({
-      ...results,
-      topless: response.data.topless,
-      clothed: response.data.clothed,
-      gender: response.data.gender,
-      text: response.data.text
->>>>>>> a4e6e584428227c9de21fc9936543c3a73d2931b
     });
 
     console.log(response.data.bbox);
