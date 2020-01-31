@@ -53,6 +53,7 @@ let results = {
   gender: '',
   topless: '',
   clothed: '',
+  gestures: '',
   text: []
 };
 
@@ -167,7 +168,9 @@ const detectGesture = async image => {
     classes
   );
 
-  console.log(objects[0]);
+  console.log(objects);
+  results.gestures = objects;
+  return results;
 };
 
 module.exports = {

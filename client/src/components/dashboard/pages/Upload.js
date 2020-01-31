@@ -111,11 +111,17 @@ const Upload = () => {
     //   gender: response.data.gender
     // });
 
-    setObjects({
-      bbox: response.data.bbox
+    // setObjects({
+    //   bbox: response.data.bbox
+    // });
+
+    let objects = response.data.gestures;
+    let boxes = [];
+    objects.forEach(obj => {
+      boxes.push(obj.bbox);
     });
 
-    console.log(response.data.bbox);
+    setObjects({ bbox: boxes });
   };
 
   return (
@@ -221,7 +227,7 @@ const Upload = () => {
         <Typography>{JSON.stringify(results)}</Typography>
       </Paper>
 
-      <BoundingBox image={image} boxes={params.boxes}></BoundingBox>
+      <BoundingBox image={image} boxes={objects.bbox}></BoundingBox>
     </div>
   );
 };
