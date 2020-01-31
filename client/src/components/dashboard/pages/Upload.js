@@ -15,6 +15,7 @@ import ProcessImage from 'react-imgpro';
 import * as colors from '../../colors';
 import { CloudUpload, Send, GetApp, Face } from '@material-ui/icons';
 import axios from 'axios';
+import BoundingBox from 'react-bounding-box';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -62,6 +63,16 @@ const Upload = () => {
     clothed: ''
   });
 
+  const [objects, setObjects] = useState({
+    bbox: [],
+    score: '',
+    label: ''
+  });
+
+  const params = {
+    boxes: [[396.35917842388153, 226.42462894320488, 223, 331]]
+  };
+
   const handleInput = event => {
     if (event.target.files && event.target.files[0]) {
       let reader = new FileReader();
@@ -92,12 +103,18 @@ const Upload = () => {
     });
 
     setProgressVisible(false);
-    setResults({
-      ...results,
-      topless: response.data.topless,
-      clothed: response.data.clothed,
-      gender: response.data.gender
+    // setResults({
+    //   ...results,
+    //   topless: response.data.topless,
+    //   clothed: response.data.clothed,
+    //   gender: response.data.gender
+    // });
+
+    setObjects({
+      bbox: response.data.bbox
     });
+
+    console.log(response.data.bbox);
   };
 
   return (
@@ -202,6 +219,8 @@ const Upload = () => {
       <Paper elevation={2} className={classes.paper}>
         <Typography>{JSON.stringify(results)}</Typography>
       </Paper>
+
+      <BoundingBox image={image} boxes={params.boxes}></BoundingBox>
     </div>
   );
 };

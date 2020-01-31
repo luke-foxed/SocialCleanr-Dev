@@ -60,6 +60,7 @@
     "passport-twitter": "^1.0.4",
     "puppeteer": "^2.0.0",
     "python-shell": "^1.0.8",
+    "react-bounding-box": "^0.5.9",
     "react-imgpro": "^1.4.1",
     "react-router-dom": "^5.1.0",
     "request": "^2.88.0",

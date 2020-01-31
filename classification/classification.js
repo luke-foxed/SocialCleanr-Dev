@@ -135,6 +135,7 @@ const detectGesture = async image => {
   const ctx = can.getContext('2d');
 
   const img = new Image();
+  let object = null;
   img.onload = async () => {
     ctx.drawImage(img, 0, 0, 1300, 731);
 
@@ -174,22 +175,30 @@ const detectGesture = async image => {
       0.5
     );
 
-    console.log(indexTensor);
-
     const indexes = indexTensor.dataSync();
     indexTensor.dispose();
 
     // restore previous backend
     tf.setBackend(prevBackend);
 
-    console.log(
-      buildDetectedObjects(width, height, boxes, maxScores, indexes, classes)
+    const objects = buildDetectedObjects(
+      width,
+      height,
+      boxes,
+      maxScores,
+      indexes,
+      classes
     );
+
+    console.log(objects[0]);
+    object = objects[0];
   };
   img.onerror = err => {
     throw err;
   };
   img.src = image;
+
+  return object;
 };
 
 ////
