@@ -71,51 +71,69 @@ const getTensor3dObject = async imageURL => {
 
 // ----- CLASSIFICATION FUNCTIONALITY ----- //
 
+let results = {
+  gender: '',
+  topless: '',
+  clothed: '',
+  text: []
+};
+
 const detectAgeGender = async image => {
   let img = await loadImage(image);
   let ageGenderResults = await faceapi.detectAllFaces(img).withAgeAndGender();
-
-  console.log(ageGenderResults);
-  return ageGenderResults[0].gender;
+  let gender;
+  if (ageGenderResults[0] !== undefined) {
+    gender = ageGenderResults[0].gender;
+  } else {
+    gender = 'N/A';
+  }
+  return gender;
 };
 
 const detectClothing = async image => {
   let gender = await detectAgeGender(image);
   let canvasImage = await loadImage(image);
 
-  let results = {
-    gender: '',
-    topless: '',
-    clothed: ''
-  };
-
   if (gender === 'male') {
     let classifcation = await maleClothingModel.predict(canvasImage);
     results.gender = 'male';
     results.topless = classifcation[0].probability;
     results.clothed = classifcation[1].probability;
-  }
-
-  if (gender === 'female') {
+  } else if (gender === 'female') {
     let classifcation = await femaleClothingModel.predict(canvasImage);
     results.gender = 'female';
     results.topless = classifcation[0].probability;
     results.clothed = classifcation[1].probability;
+  } else {
+    results.gender = 'N/A';
+    results.topless = 'N/A';
+    results.clothed = 'N/A';
   }
 
   return results;
 };
 
 const convertText = async image => {
-  // const { data } = await worker.detect(image);
-  // console.log(data);
+  // remove 'data:image/jpeg;base64,' from string
+  var base64result = image.split(',')[1];
 
-  const [result] = await client.textDetection(image);
+  const request = {
+    image: {
+      content: base64result
+    }
+  };
+
+  const [result] = await client.textDetection(request);
   const detections = result.textAnnotations;
-  console.log('Text:');
-  console.log(detections);
 
-  // return data;
+  if (detections.length !== 0) {
+    console.log('Text:');
+    detections.forEach(text => results.text.push(text.description));
+  } else {
+    console.log('No text detected');
+  }
+
+  return results;
 };
 
 /////

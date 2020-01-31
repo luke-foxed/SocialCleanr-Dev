@@ -1,3 +1,4 @@
 node_modules/
 config/default.json
 .vscode
+google_vision_key.json
