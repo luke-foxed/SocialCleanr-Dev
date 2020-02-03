@@ -110,16 +110,24 @@ const Upload = () => {
 
     setProgressVisible(false);
 
-    let objects = response.data.gestures;
     let boxes = [];
-    objects.forEach(obj => {
-      boxes.push({
-        coord: obj.bbox,
-        label: `Middle Finger: ${obj.score * 100}% `
-      });
-    });
+    if (response.data.gestures !== '') {
+      let objects = response.data.gestures;
 
-    setResults({ ...results, bbox: boxes });
+      objects.forEach(obj => {
+        boxes.push({
+          coord: obj.bbox,
+          label: `Middle Finger: ${Math.round(obj.score * 100)}% `
+        });
+      });
+    }
+
+    setResults({
+      bbox: boxes,
+      clothed: response.data.clothed,
+      topless: response.data.topless,
+      gender: response.data.gender
+    });
   };
 
   return (
