@@ -37,7 +37,9 @@ const loadModels = async () => {
       modelPaths.femaleClothedV2.metadata
     );
 
-    gestureModel = await tf.loadGraphModel('file://C:/WEB_MODEL/model.json');
+    gestureModel = await tf.loadGraphModel(
+      'file://C:/Users/lukef/Documents/git/Social-Cleaner/classification/gestureDetection/model.json'
+    );
 
     await faceapi.nets.ssdMobilenetv1.loadFromDisk('classification/faceAPI');
     await faceapi.nets.ageGenderNet.loadFromDisk('classification/faceAPI');

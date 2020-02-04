@@ -71,6 +71,21 @@ const buildDetectedObjects = (
   return objects;
 };
 
+const drawBoundingBox = (canvasContext, coordinates) => {
+  let context = canvasContext;
+  coordinates.forEach(coord => {
+    context.beginPath();
+    context.rect(coord[0], coord[1], coord[2], coord[3]);
+    context.fillStyle = 'transparent';
+    context.fill();
+    context.lineWidth = 2;
+    context.strokeStyle = 'black';
+    context.stroke();
+  });
+
+  return context;
+};
+
 module.exports = {
   getTensor3dObject,
   createCanvasImage,
