@@ -71,24 +71,31 @@ const buildDetectedObjects = (
   return objects;
 };
 
-const drawBoundingBox = (canvasContext, coordinates) => {
-  let context = canvasContext;
+const drawBoundingBox = (canvas, coordinates) => {
+  let bboxCanvas = canvas;
+  const ctx = bboxCanvas.getContext('2d');
+
   coordinates.forEach(coord => {
-    context.beginPath();
-    context.rect(coord[0], coord[1], coord[2], coord[3]);
-    context.fillStyle = 'transparent';
-    context.fill();
-    context.lineWidth = 2;
-    context.strokeStyle = 'black';
-    context.stroke();
+    ctx.beginPath();
+    ctx.rect(coord.bbox[0], coord.bbox[1], coord.bbox[2], coord.bbox[3]);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'black';
+    ctx.stroke();
+    ctx.font = '40px serif';
+    ctx.fillText(
+      Math.round(coord.score) * 100 + '% Middle Finger',
+      coord.bbox[0],
+      coord.bbox[1] - 10
+    );
   });
 
-  return context;
+  return bboxCanvas.toDataURL();
 };
 
 module.exports = {
   getTensor3dObject,
   createCanvasImage,
   calculateMaxScores,
-  buildDetectedObjects
+  buildDetectedObjects,
+  drawBoundingBox
 };

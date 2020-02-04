@@ -56,7 +56,8 @@ let results = {
   topless: '',
   clothed: '',
   gestures: '',
-  text: []
+  text: [],
+  image: ''
 };
 
 const detectAgeGender = async image => {
@@ -170,8 +171,8 @@ const detectGesture = async image => {
     classes
   );
 
-  console.log(objects);
   results.gestures = objects;
+  results.image = helpers.drawBoundingBox(canvasImage, objects);
   return results;
 };
 

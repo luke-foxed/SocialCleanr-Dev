@@ -76,7 +76,8 @@ const Upload = () => {
     topless: '',
     clothed: '',
     text: '',
-    bbox: []
+    bbox: [],
+    image: ''
   });
 
   const handleInput = event => {
@@ -126,7 +127,8 @@ const Upload = () => {
       bbox: boxes,
       clothed: response.data.clothed,
       topless: response.data.topless,
-      gender: response.data.gender
+      gender: response.data.gender,
+      image: response.data.image
     });
   };
 
@@ -230,14 +232,17 @@ const Upload = () => {
 
       <Typography variant='h4'>Results</Typography>
       <Paper elevation={2} className={classes.paper}>
-        <Typography>{JSON.stringify(results)}</Typography>
+        <Typography>
+          {JSON.stringify({
+            'Gender: ': results.gender,
+            'Gestures: ': results.bbox,
+            'Clothed: ': results.clothed,
+            'Topless: ': results.topless
+          })}
+        </Typography>
       </Paper>
 
-      <BoundingBox
-        image={image}
-        boxes={results.bbox}
-        scores={results.scores}
-        options={bboxParams.options}></BoundingBox>
+      <img src={results.image} />
     </div>
   );
 };
