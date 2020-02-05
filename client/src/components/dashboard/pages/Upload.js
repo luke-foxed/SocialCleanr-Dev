@@ -15,6 +15,21 @@ import ProcessImage from 'react-imgpro';
 import * as colors from '../../colors';
 import { CloudUpload, Send, GetApp, Face } from '@material-ui/icons';
 import axios from 'axios';
+import BoundingBox from 'react-bounding-box';
+
+const bboxParams = {
+  options: {
+    colors: {
+      normal: 'rgba(255,50,50,1)',
+      selected: 'rgba(50,255,50,1)',
+      unselected: 'rgba(100,100,100,1)'
+    },
+    style: {
+      maxWidth: '100%',
+      maxHeight: '90vh'
+    }
+  }
+};
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -59,16 +74,19 @@ const Upload = () => {
   const [results, setResults] = useState({
     gender: '',
     topless: '',
-    clothed: ''
+    clothed: '',
+    text: '',
+    bbox: [],
+    image: ''
   });
 
   const handleInput = event => {
     if (event.target.files && event.target.files[0]) {
       let reader = new FileReader();
-      reader.onload = e => {
-        setImage(e.target.result);
-      };
       reader.readAsDataURL(event.target.files[0]);
+      reader.onloadend = () => {
+        setImage(reader.result);
+      };
     }
   };
 
@@ -77,7 +95,7 @@ const Upload = () => {
   };
 
   const beginClassification = async () => {
-    setResults({ gender: '', topless: '', clothed: '' });
+    setResults({ gender: '', topless: '', clothed: '', text: '' });
     setProgressVisible(true);
 
     let response = await axios({
@@ -92,11 +110,25 @@ const Upload = () => {
     });
 
     setProgressVisible(false);
+
+    let boxes = [];
+    if (response.data.gestures !== '') {
+      let objects = response.data.gestures;
+
+      objects.forEach(obj => {
+        boxes.push({
+          coord: obj.bbox,
+          label: `Middle Finger: ${Math.round(obj.score * 100)}% `
+        });
+      });
+    }
+
     setResults({
-      ...results,
-      topless: response.data.topless,
+      bbox: boxes,
       clothed: response.data.clothed,
-      gender: response.data.gender
+      topless: response.data.topless,
+      gender: response.data.gender,
+      image: response.data.image
     });
   };
 
@@ -200,8 +232,17 @@ const Upload = () => {
 
       <Typography variant='h4'>Results</Typography>
       <Paper elevation={2} className={classes.paper}>
-        <Typography>{JSON.stringify(results)}</Typography>
+        <Typography>
+          {JSON.stringify({
+            'Gender: ': results.gender,
+            'Gestures: ': results.bbox,
+            'Clothed: ': results.clothed,
+            'Topless: ': results.topless
+          })}
+        </Typography>
       </Paper>
+
+      <img src={results.image} />
     </div>
   );
 };
