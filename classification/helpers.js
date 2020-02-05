@@ -79,9 +79,10 @@ const drawBoundingBox = (canvas, coordinates) => {
     ctx.beginPath();
     ctx.rect(coord.bbox[0], coord.bbox[1], coord.bbox[2], coord.bbox[3]);
     ctx.lineWidth = 2;
-    ctx.strokeStyle = 'black';
+    ctx.strokeStyle = 'red';
     ctx.stroke();
-    ctx.font = '40px serif';
+    ctx.font = '20px serif';
+    ctx.fillStyle = 'red';
     ctx.fillText(
       Math.round(coord.score) * 100 + '% Middle Finger',
       coord.bbox[0],
