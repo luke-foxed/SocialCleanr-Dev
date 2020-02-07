@@ -9,27 +9,17 @@ import {
   Box,
   Typography,
   TextField,
-  CircularProgress
+  CircularProgress,
+  TableRow,
+  TableBody,
+  TableHead,
+  Table,
+  TableCell
 } from '@material-ui/core';
 import ProcessImage from 'react-imgpro';
 import * as colors from '../../colors';
 import { CloudUpload, Send, GetApp, Face } from '@material-ui/icons';
-import axios from 'axios';
-import BoundingBox from 'react-bounding-box';
-
-const bboxParams = {
-  options: {
-    colors: {
-      normal: 'rgba(255,50,50,1)',
-      selected: 'rgba(50,255,50,1)',
-      unselected: 'rgba(100,100,100,1)'
-    },
-    style: {
-      maxWidth: '100%',
-      maxHeight: '90vh'
-    }
-  }
-};
+import { beginClassification } from '../../../actions/upload.js';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -80,6 +70,12 @@ const Upload = () => {
     image: ''
   });
 
+  const columns = [
+    { id: 'type', label: 'Type', minWidth: 150 },
+    { id: 'reason', label: 'Reason', minWidth: 150 },
+    { id: 'action', label: 'Action', minWidth: 150 }
+  ];
+
   const handleInput = event => {
     if (event.target.files && event.target.files[0]) {
       let reader = new FileReader();
@@ -94,42 +90,45 @@ const Upload = () => {
     setModels({ ...models, [name]: event.target.checked });
   };
 
-  const beginClassification = async () => {
+  const handleScanStart = async () => {
     setResults({ gender: '', topless: '', clothed: '', text: '' });
     setProgressVisible(true);
+    let results = await beginClassification(models, image);
 
-    let response = await axios({
-      method: 'post',
-      url: '/api/classifier/filter_models',
-      data: {
-        image: image,
-        models: {
-          ...models
-        }
-      }
-    });
+    // let response = await axios({
+    //   method: 'post',
+    //   url: '/api/classifier/filter_models',
+    //   data: {
+    //     image: image,
+    //     models: {
+    //       ...models
+    //     }
+    //   }
+    // });
 
-    setProgressVisible(false);
+    // console.log(response);
 
-    let boxes = [];
-    if (response.data.gestures !== '') {
-      let objects = response.data.gestures;
+    // setProgressVisible(false);
 
-      objects.forEach(obj => {
-        boxes.push({
-          coord: obj.bbox,
-          label: `Middle Finger: ${Math.round(obj.score * 100)}% `
-        });
-      });
-    }
+    // let boxes = [];
+    // if (response.data.gestures !== '') {
+    //   let objects = response.data.gestures;
 
-    setResults({
-      bbox: boxes,
-      clothed: response.data.clothed,
-      topless: response.data.topless,
-      gender: response.data.gender,
-      image: response.data.image
-    });
+    //   objects.forEach(obj => {
+    //     boxes.push({
+    //       coord: obj.bbox,
+    //       label: `Middle Finger: ${Math.round(obj.score * 100)}% `
+    //     });
+    //   });
+    // }
+
+    // setResults({
+    //   bbox: boxes,
+    //   clothed: response.data.clothed,
+    //   topless: response.data.topless,
+    //   gender: response.data.gender,
+    //   image: response.data.image
+    // });
   };
 
   return (
@@ -215,7 +214,7 @@ const Upload = () => {
           variant='contained'
           color='primary'
           className={classes.button}
-          onClick={beginClassification}
+          onClick={handleScanStart}
           endIcon={<Send />}>
           Submit
         </Button>
@@ -232,14 +231,16 @@ const Upload = () => {
 
       <Typography variant='h4'>Results</Typography>
       <Paper elevation={2} className={classes.paper}>
-        <Typography>
-          {JSON.stringify({
-            'Gender: ': results.gender,
-            'Gestures: ': results.bbox,
-            'Clothed: ': results.clothed,
-            'Topless: ': results.topless
-          })}
-        </Typography>
+        <Table stickyHeader aria-label='sticky table'>
+          <TableHead>
+            <TableRow>
+              <TableCell align='center'>Type</TableCell>
+              <TableCell align='center'>Reason</TableCell>
+              <TableCell align='center'>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody></TableBody>
+        </Table>
       </Paper>
 
       <img src={results.image} />

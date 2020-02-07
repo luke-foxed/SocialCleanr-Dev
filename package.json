@@ -47,6 +47,7 @@
     "face-api.js": "^0.22.0",
     "fbgraph": "^1.4.4",
     "gravatar": "^1.8.0",
+    "jimp": "^0.9.3",
     "jpeg-js": "^0.3.6",
     "jsdom": "^15.2.1",
     "jsonwebtoken": "^8.5.1",
@@ -65,6 +66,7 @@
     "react-router-dom": "^5.1.0",
     "request": "^2.88.0",
     "selenium-webdriver": "^4.0.0-alpha.5",
+    "sharp": "^0.24.0",
     "tesseract.js": "^2.0.2",
     "twitter": "^1.7.1"
   },

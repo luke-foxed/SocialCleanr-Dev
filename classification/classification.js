@@ -7,7 +7,10 @@ const tfImage = require('@teachablemachine/image');
 const faceapi = require('face-api.js');
 const vision = require('@google-cloud/vision');
 const helpers = require('./helpers');
+const cocoSSD = require('@tensorflow-models/coco-ssd');
 require('@tensorflow/tfjs-node');
+
+const fs = require('fs');
 
 // needed to overcome tensorflow dom requirements
 const dom = new JSDOM('<!DOCTYPE html>');
@@ -16,6 +19,7 @@ global.document = dom.window.document;
 faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
 
 // define models
+let personDetectionModel = '';
 let maleClothingModel = '';
 let femaleClothingModel = '';
 let gestureModel = '';
@@ -41,6 +45,8 @@ const loadModels = async () => {
       'file://C:/Users/lukef/Documents/git/Social-Cleaner/classification/gestureDetection/model.json'
     );
 
+    personDetectionModel = await cocoSSD.load();
+
     await faceapi.nets.ssdMobilenetv1.loadFromDisk('classification/faceAPI');
     await faceapi.nets.ageGenderNet.loadFromDisk('classification/faceAPI');
 
@@ -52,45 +58,84 @@ const loadModels = async () => {
 // ----- CLASSIFICATION FUNCTIONALITY ----- //
 
 let results = {
-  gender: '',
-  topless: '',
-  clothed: '',
+  people: [],
   gestures: '',
   text: [],
   image: ''
 };
 
+const detectPeople = async image => {
+  let boundingBoxes = [];
+  let canvasImage = await helpers.createCanvasImage(image);
+  let tensor = tf.browser.fromPixels(canvasImage);
+  let results = await personDetectionModel.detect(tensor);
+  results.forEach(element => {
+    positiveBox = element.bbox.map(box => Math.abs(Math.round(box)));
+    boundingBoxes.push(positiveBox);
+  });
+
+  let images = await helpers.boundingBoxesToImage(boundingBoxes, canvasImage);
+
+  // return array of images containing people
+  return images;
+};
+
 const detectAgeGender = async image => {
   let img = await loadImage(image);
   let ageGenderResults = await faceapi.detectAllFaces(img).withAgeAndGender();
-  let gender;
+  let detectedFaces = [];
   if (ageGenderResults[0] !== undefined) {
-    gender = ageGenderResults[0].gender;
-  } else {
-    gender = 'N/A';
+    Object.values(ageGenderResults).forEach(result => {
+      detectedFaces.push({
+        gender: result.gender,
+        age: result.age
+      });
+    });
   }
-  return gender;
+  return detectedFaces;
 };
 
 const detectClothing = async image => {
-  let gender = await detectAgeGender(image);
-  let canvasImage = await loadImage(image);
+  let people = await detectPeople(image);
+  let peopleAgeGender = [];
 
-  if (gender === 'male') {
-    let classifcation = await maleClothingModel.predict(canvasImage);
-    results.gender = 'male';
-    results.topless = classifcation[0].probability;
-    results.clothed = classifcation[1].probability;
-  } else if (gender === 'female') {
-    let classifcation = await femaleClothingModel.predict(canvasImage);
-    results.gender = 'female';
-    results.topless = classifcation[0].probability;
-    results.clothed = classifcation[1].probability;
-  } else {
-    results.gender = 'N/A';
-    results.topless = 'N/A';
-    results.clothed = 'N/A';
-  }
+  await helpers.asyncForEach(people, async person => {
+    let detection = await detectAgeGender(person.image);
+    peopleAgeGender.push({
+      ...person,
+      gender: detection[0].gender,
+      age: detection[0].age
+    });
+  });
+
+  await helpers.asyncForEach(peopleAgeGender, async person => {
+    results.people = [];
+    if (person.gender === 'male') {
+      console.log('MALE');
+      let classifcation = await maleClothingModel.predict(person);
+      console.log(classifcation);
+
+      results.people.push({
+        gender: person.gender,
+        topless_prediction: classifcation[0].probability,
+        age: Math.round(person.age),
+        bbox: person.bbox
+      });
+    } else if (person.gender === 'female') {
+      console.log('FEMALE');
+      let classifcation = await femaleClothingModel.predict(person);
+      console.log(classifcation);
+
+      results.people.push({
+        gender: person.gender,
+        topless_prediction: Math.round(100 * classifcation[0].probability),
+        age: Math.round(person.age),
+        bbox: person.bbox
+      });
+    }
+  });
+
+  console.log(results);
 
   return results;
 };
@@ -179,7 +224,6 @@ const detectGesture = async image => {
 module.exports = {
   loadModels,
   detectClothing,
-  detectAgeGender,
   detectGesture,
   convertText
 };

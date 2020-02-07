@@ -1,5 +1,7 @@
-const { loadImage, createCanvas } = require('canvas');
+const { loadImage, createCanvas, Image } = require('canvas');
 const axios = require('axios');
+const Jimp = require('jimp');
+const sharp = require('sharp');
 
 // for converting URLs into tensor objects
 const getTensor3dObject = async imageURL => {
@@ -93,10 +95,43 @@ const drawBoundingBox = (canvas, coordinates) => {
   return bboxCanvas.toDataURL();
 };
 
+// https://codeburst.io/javascript-async-await-with-foreach-b6ba62bbf404
+const asyncForEach = async (array, callback) => {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+};
+
+const boundingBoxesToImage = async (boxArray, image) => {
+  let images = [];
+  let base64 = image.toDataURL();
+  let base64Stripped = base64.split(',')[1];
+  let buff = Buffer.from(base64Stripped, 'base64');
+
+  await asyncForEach(boxArray, async boxes => {
+    let imageBuffer = await sharp(buff)
+      .extract({
+        // need to check width and height
+        left: boxes[0],
+        top: boxes[1],
+        width: boxes[2] - 20,
+        height: boxes[3] - 20
+      })
+      .toBuffer();
+    // append data header to base64 string
+    let image = 'data:image/png;base64,' + imageBuffer.toString('base64');
+    images.push({ image: image, bbox: boxes });
+  });
+
+  return images;
+};
+
 module.exports = {
   getTensor3dObject,
   createCanvasImage,
   calculateMaxScores,
   buildDetectedObjects,
-  drawBoundingBox
+  drawBoundingBox,
+  boundingBoxesToImage,
+  asyncForEach
 };
