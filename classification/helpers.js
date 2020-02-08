@@ -1,6 +1,5 @@
-const { loadImage, createCanvas, Image } = require('canvas');
+const { loadImage, createCanvas } = require('canvas');
 const axios = require('axios');
-const Jimp = require('jimp');
 const sharp = require('sharp');
 
 // for converting URLs into tensor objects

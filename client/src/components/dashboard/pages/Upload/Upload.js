@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Button,
@@ -17,9 +17,14 @@ import {
   TableCell
 } from '@material-ui/core';
 import ProcessImage from 'react-imgpro';
-import * as colors from '../../colors';
-import { CloudUpload, Send, GetApp, Face } from '@material-ui/icons';
-import { beginClassification } from '../../../actions/upload.js';
+import * as colors from '../../../colors';
+import { CloudUpload, Send } from '@material-ui/icons';
+import { beginClassification } from '../../../../actions/upload.js';
+import {
+  cleanResults,
+  drawBoundingBox
+} from '../../../../helpers/uploadPageHelper';
+import { ResultCell } from './ResultCell';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -53,6 +58,7 @@ const useStyles = makeStyles(theme => ({
 const Upload = () => {
   const classes = useStyles();
   const [image, setImage] = useState('');
+  const [boxImage, setBoxImage] = useState('');
   const [progressVisible, setProgressVisible] = useState(false);
   const [models, setModels] = useState({
     clothing: false,
@@ -62,19 +68,12 @@ const Upload = () => {
   });
 
   const [results, setResults] = useState({
-    gender: '',
-    topless: '',
-    clothed: '',
-    text: '',
-    bbox: [],
-    image: ''
+    people: [],
+    text: [],
+    gestures: []
   });
 
-  const columns = [
-    { id: 'type', label: 'Type', minWidth: 150 },
-    { id: 'reason', label: 'Reason', minWidth: 150 },
-    { id: 'action', label: 'Action', minWidth: 150 }
-  ];
+  const [flaggedContent, setFlaggedContent] = useState([]);
 
   const handleInput = event => {
     if (event.target.files && event.target.files[0]) {
@@ -94,41 +93,14 @@ const Upload = () => {
     setResults({ gender: '', topless: '', clothed: '', text: '' });
     setProgressVisible(true);
     let results = await beginClassification(models, image);
+    setFlaggedContent(cleanResults(results.data));
+    setProgressVisible(false);
+  };
 
-    // let response = await axios({
-    //   method: 'post',
-    //   url: '/api/classifier/filter_models',
-    //   data: {
-    //     image: image,
-    //     models: {
-    //       ...models
-    //     }
-    //   }
-    // });
-
-    // console.log(response);
-
-    // setProgressVisible(false);
-
-    // let boxes = [];
-    // if (response.data.gestures !== '') {
-    //   let objects = response.data.gestures;
-
-    //   objects.forEach(obj => {
-    //     boxes.push({
-    //       coord: obj.bbox,
-    //       label: `Middle Finger: ${Math.round(obj.score * 100)}% `
-    //     });
-    //   });
-    // }
-
-    // setResults({
-    //   bbox: boxes,
-    //   clothed: response.data.clothed,
-    //   topless: response.data.topless,
-    //   gender: response.data.gender,
-    //   image: response.data.image
-    // });
+  const handleViewBox = async (image, box) => {
+    setImage('');
+    let bboxImage = await drawBoundingBox(image, box);
+    setImage(bboxImage);
   };
 
   return (
@@ -169,12 +141,11 @@ const Upload = () => {
         />
 
         {image !== '' && (
-          <Box>
-            <ProcessImage
-              image={image}
-              className={classes.image}
-              scaleToFit={{ width: 500, height: 500 }}></ProcessImage>
-          </Box>
+          <ProcessImage
+            image={image}
+            className={classes.image}
+            scaleToFit={{ width: 500, height: 500 }}
+          />
         )}
         <FormGroup row className={classes.checkboxes}>
           <FormControlLabel
@@ -234,12 +205,22 @@ const Upload = () => {
         <Table stickyHeader aria-label='sticky table'>
           <TableHead>
             <TableRow>
-              <TableCell align='center'>Type</TableCell>
-              <TableCell align='center'>Reason</TableCell>
+              <TableCell align='center' />
+              <TableCell align='center'>Warning Type</TableCell>
+              <TableCell align='center'>Message</TableCell>
+              <TableCell align='center'>Probability</TableCell>
               <TableCell align='center'>Actions</TableCell>
             </TableRow>
           </TableHead>
-          <TableBody></TableBody>
+          <TableBody>
+            {flaggedContent.map((value, index) => (
+              <ResultCell
+                key={index}
+                props={value}
+                onViewClick={() => handleViewBox(image, value.box)}
+              />
+            ))}
+          </TableBody>
         </Table>
       </Paper>
 
