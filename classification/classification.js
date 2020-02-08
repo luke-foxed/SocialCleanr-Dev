@@ -93,6 +93,33 @@ const detectAgeGender = async image => {
   return detectedFaces;
 };
 
+///
+
+// const detectClothing = async image => {
+//   let gender = await detectAgeGender(image);
+//   let canvasImage = await loadImage(image);
+
+//   if (gender === 'male') {
+//     let classifcation = await maleClothingModel.predict(canvasImage);
+//     results.gender = 'male';
+//     results.topless = classifcation[0].probability;
+//     results.clothed = classifcation[1].probability;
+//   } else if (gender === 'female') {
+//     let classifcation = await femaleClothingModel.predict(canvasImage);
+//     results.gender = 'female';
+//     results.topless = classifcation[0].probability;
+//     results.clothed = classifcation[1].probability;
+//   } else {
+//     results.gender = 'N/A';
+//     results.topless = 'N/A';
+//     results.clothed = 'N/A';
+//   }
+
+//   return results;
+// };
+
+///
+
 const detectClothing = async image => {
   let people = await detectPeople(image);
   let peopleAgeGender = [];
@@ -112,10 +139,11 @@ const detectClothing = async image => {
   results.people = [];
 
   await helpers.asyncForEach(peopleAgeGender, async person => {
+    let image = await loadImage(person.image);
     if (person.gender === 'male') {
-      classifcation = await maleClothingModel.predict(person);
+      classifcation = await maleClothingModel.predict(image);
     } else if (person.gender === 'female') {
-      classifcation = await femaleClothingModel.predict(person);
+      classifcation = await femaleClothingModel.predict(image);
     }
 
     results.people.push({
