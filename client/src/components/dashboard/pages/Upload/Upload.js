@@ -98,9 +98,8 @@ const Upload = () => {
   };
 
   const handleViewBox = async (image, box) => {
-    setImage('');
-    let bboxImage = await drawBoundingBox(image, box);
-    setImage(bboxImage);
+    let boxImage = await drawBoundingBox(image, box);
+    setBoxImage(boxImage);
   };
 
   return (
@@ -142,7 +141,7 @@ const Upload = () => {
 
         {image !== '' && (
           <ProcessImage
-            image={image}
+            image={boxImage !== '' ? boxImage : image}
             className={classes.image}
             scaleToFit={{ width: 500, height: 500 }}
           />
