@@ -64,7 +64,19 @@ let results = {
   image: ''
 };
 
+// prevent previous scans from carrying over
+const resetResults = () => {
+  results = {
+    people: [],
+    gestures: [],
+    text: [],
+    image: ''
+  };
+};
+
 const detectPeople = async image => {
+  resetResults();
+
   let boundingBoxes = [];
   let canvasImage = await helpers.createCanvasImage(image);
   let tensor = tf.browser.fromPixels(canvasImage);
@@ -94,6 +106,7 @@ const detectAgeGender = async image => {
 };
 
 const detectClothing = async image => {
+  resetResults();
   let people = await detectPeople(image);
   let peopleAgeGender = [];
   let classifcation;
@@ -107,9 +120,6 @@ const detectClothing = async image => {
       age: detection.age
     });
   });
-
-  // clear array of previous results
-  results.people = [];
 
   await helpers.asyncForEach(peopleAgeGender, async person => {
     let image = await loadImage(person.image);
@@ -176,7 +186,7 @@ const detectGesture = async image => {
   tensor.dispose();
   tf.dispose(output);
 
-  // why 300? is it because of the shape of that particular output node?
+  // 300 represents required tensor shape
   const [maxScores, classes] = helpers.calculateMaxScores(scores, 300, 1);
 
   const prevBackend = tf.getBackend();
@@ -207,8 +217,14 @@ const detectGesture = async image => {
     classes
   );
 
-  results.gestures = objects;
-  results.image = helpers.drawBoundingBox(canvasImage, objects);
+  objects.forEach(gesture => {
+    results.gestures.push({
+      type: gesture.class,
+      score: Math.round(100 * gesture.score),
+      bbox: gesture.bbox
+    });
+  });
+
   return results;
 };
 

@@ -17,6 +17,17 @@ export const cleanResults = results => {
     });
   }
 
+  if (results['gestures'].length !== 0) {
+    results['gestures'].forEach(gesture => {
+      flaggedContent.push({
+        type: 'Offensive Gesture',
+        message: 'An offensive gesture has been detected in this image',
+        probability: gesture.score,
+        box: gesture.bbox
+      });
+    });
+  }
+
   return flaggedContent;
 };
 
