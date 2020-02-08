@@ -82,59 +82,51 @@ const detectPeople = async image => {
 
 const detectAgeGender = async image => {
   let img = await loadImage(image);
-  let ageGenderResults = await faceapi.detectAllFaces(img).withAgeAndGender();
-  let detectedFaces = [];
-  if (ageGenderResults[0] !== undefined) {
-    Object.values(ageGenderResults).forEach(result => {
-      detectedFaces.push({
-        gender: result.gender,
-        age: result.age
-      });
-    });
-  }
+  let ageGenderResults = await faceapi.detectSingleFace(img).withAgeAndGender();
+  let detectedFaces = {};
+
+  detectedFaces = {
+    gender: ageGenderResults.gender || '',
+    age: ageGenderResults.age || ''
+  };
+
   return detectedFaces;
 };
 
 const detectClothing = async image => {
   let people = await detectPeople(image);
   let peopleAgeGender = [];
+  let classifcation;
 
   await helpers.asyncForEach(people, async person => {
     let detection = await detectAgeGender(person.image);
+
     peopleAgeGender.push({
       ...person,
-      gender: detection[0].gender,
-      age: detection[0].age
+      gender: detection.gender,
+      age: detection.age
     });
   });
 
+  // clear array of previous results
+  results.people = [];
+
   await helpers.asyncForEach(peopleAgeGender, async person => {
-    results.people = [];
     if (person.gender === 'male') {
-      console.log('MALE');
-      let classifcation = await maleClothingModel.predict(person);
-      console.log(classifcation);
-
-      results.people.push({
-        gender: person.gender,
-        topless_prediction: classifcation[0].probability,
-        age: Math.round(person.age),
-        bbox: person.bbox
-      });
+      classifcation = await maleClothingModel.predict(person);
     } else if (person.gender === 'female') {
-      console.log('FEMALE');
-      let classifcation = await femaleClothingModel.predict(person);
-      console.log(classifcation);
-
-      results.people.push({
-        gender: person.gender,
-        topless_prediction: Math.round(100 * classifcation[0].probability),
-        age: Math.round(person.age),
-        bbox: person.bbox
-      });
+      classifcation = await femaleClothingModel.predict(person);
     }
+
+    results.people.push({
+      gender: person.gender,
+      topless_prediction: Math.round(100 * classifcation[0].probability),
+      age: Math.round(person.age),
+      bbox: person.bbox
+    });
   });
 
+  console.log('\nRESULTS\n');
   console.log(results);
 
   return results;

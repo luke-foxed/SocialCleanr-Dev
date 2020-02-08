@@ -109,18 +109,30 @@ const boundingBoxesToImage = async (boxArray, image) => {
   let buff = Buffer.from(base64Stripped, 'base64');
 
   await asyncForEach(boxArray, async boxes => {
+    // If left + width exceeds image width, adjust width
+    if (boxes[0] + boxes[2] > image.width) {
+      let adjustedWidth = boxes[0] + boxes[2] - image.width;
+      boxes[2] = boxes[2] - adjustedWidth;
+    }
+
+    if (boxes[1] + boxes[3] > image.height) {
+      let adjustedHeight = boxes[1] + boxes[3] - image.height;
+      boxes[3] = boxes[3] - adjustedHeight;
+    }
+
     let imageBuffer = await sharp(buff)
       .extract({
         // need to check width and height
         left: boxes[0],
         top: boxes[1],
-        width: boxes[2] - 20,
-        height: boxes[3] - 20
+        width: boxes[2],
+        height: boxes[3]
       })
       .toBuffer();
     // append data header to base64 string
-    let image = 'data:image/png;base64,' + imageBuffer.toString('base64');
-    images.push({ image: image, bbox: boxes });
+    let encodedImage =
+      'data:image/jpeg;base64,' + imageBuffer.toString('base64');
+    images.push({ image: encodedImage, bbox: boxes });
   });
 
   return images;
