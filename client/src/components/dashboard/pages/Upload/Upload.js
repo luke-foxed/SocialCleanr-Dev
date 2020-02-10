@@ -6,7 +6,6 @@ import {
   Switch,
   FormGroup,
   FormControlLabel,
-  Box,
   Typography,
   TextField,
   CircularProgress,
@@ -14,11 +13,13 @@ import {
   TableBody,
   TableHead,
   Table,
-  TableCell
+  TableCell,
+  IconButton,
+  InputAdornment
 } from '@material-ui/core';
 import ProcessImage from 'react-imgpro';
 import * as colors from '../../../colors';
-import { CloudUpload, Send } from '@material-ui/icons';
+import { CloudUpload, Send, Search, Link } from '@material-ui/icons';
 import { beginClassification } from '../../../../actions/upload.js';
 import {
   cleanResults,
@@ -35,13 +36,14 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     alignItems: 'center'
   },
+  imageBox: {
+    margin: theme.spacing(2),
+    border: '4px solid' + colors.colorPurple
+  },
   image: {
-    marginTop: theme.spacing(2),
-    color: 'red',
-    border: 5,
-    borderRadius: 20,
-    borderStyle: 'solid',
-    borderColor: colors.colorPurple,
+    padding: '4px',
+    height: 600,
+    width: '100%',
     objectFit: 'cover'
   },
   divider: {
@@ -58,6 +60,7 @@ const useStyles = makeStyles(theme => ({
 const Upload = () => {
   const classes = useStyles();
   const [image, setImage] = useState('');
+  const [URL, setURL] = useState('');
   const [boxImage, setBoxImage] = useState('');
   const [progressVisible, setProgressVisible] = useState(false);
   const [models, setModels] = useState({
@@ -132,19 +135,33 @@ const Upload = () => {
 
         <TextField
           id='url'
-          label='URL'
+          label='Enter a URL'
           style={{ width: '25%' }}
           onBlur={e => {
-            setImage(e.target.value);
+            setURL(e.target.value);
+          }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position='end'>
+                <IconButton
+                  onClick={e => {
+                    setImage(URL);
+                  }}>
+                  <Link />
+                </IconButton>
+              </InputAdornment>
+            )
           }}
         />
 
         {image !== '' && (
-          <ProcessImage
-            image={boxImage !== '' ? boxImage : image}
-            className={classes.image}
-            scaleToFit={{ width: 500, height: 500 }}
-          />
+          <div className={classes.imageBox}>
+            <img
+              src={boxImage !== '' ? boxImage : image}
+              className={classes.image}
+              // scaleToFit={{ width: 500, height: 500 }}
+            />
+          </div>
         )}
         <FormGroup row className={classes.checkboxes}>
           <FormControlLabel
