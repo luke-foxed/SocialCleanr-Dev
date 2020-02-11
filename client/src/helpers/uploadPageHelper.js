@@ -28,6 +28,12 @@ export const cleanResults = results => {
     });
   }
 
+  // need to add condition for text
+
+  // if no flagged content has been added, scan is clean
+  if (flaggedContent.length === 0) {
+  }
+
   return flaggedContent;
 };
 

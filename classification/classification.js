@@ -95,14 +95,22 @@ const detectPeople = async image => {
 const detectAgeGender = async image => {
   let img = await loadImage(image);
   let ageGenderResults = await faceapi.detectSingleFace(img).withAgeAndGender();
-  let detectedFaces = {};
+  let detectedFace = {};
 
-  detectedFaces = {
-    gender: ageGenderResults.gender || '',
-    age: ageGenderResults.age || ''
-  };
+  if (ageGenderResults !== undefined)
+    detectedFace = {
+      gender: ageGenderResults.gender,
+      age: ageGenderResults.age
+    };
+  else {
+    console.log('No faces detected');
+    detectedFaces = {
+      gender: 'unknown',
+      age: 'unknown'
+    };
+  }
 
-  return detectedFaces;
+  return detectedFace;
 };
 
 const detectClothing = async image => {

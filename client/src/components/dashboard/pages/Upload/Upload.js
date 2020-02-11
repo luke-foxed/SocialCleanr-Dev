@@ -79,6 +79,7 @@ const Upload = () => {
   const [flaggedContent, setFlaggedContent] = useState([]);
 
   const handleInput = event => {
+    setImage('');
     if (event.target.files && event.target.files[0]) {
       let reader = new FileReader();
       reader.readAsDataURL(event.target.files[0]);
@@ -96,7 +97,7 @@ const Upload = () => {
     setResults({ gender: '', topless: '', clothed: '', text: '' });
     setProgressVisible(true);
     let results = await beginClassification(models, image);
-    setFlaggedContent(cleanResults(results.data));
+    await setFlaggedContent(cleanResults(results.data));
     setProgressVisible(false);
   };
 
@@ -143,10 +144,7 @@ const Upload = () => {
           InputProps={{
             endAdornment: (
               <InputAdornment position='end'>
-                <IconButton
-                  onClick={e => {
-                    setImage(URL);
-                  }}>
+                <IconButton onClick={() => setImage(URL)}>
                   <Link />
                 </IconButton>
               </InputAdornment>
@@ -159,7 +157,6 @@ const Upload = () => {
             <img
               src={boxImage !== '' ? boxImage : image}
               className={classes.image}
-              // scaleToFit={{ width: 500, height: 500 }}
             />
           </div>
         )}
@@ -207,37 +204,32 @@ const Upload = () => {
         </Button>
       </Paper>
 
-      {results.gender == '' && (
-        <CircularProgress
-          style={{ display: progressVisible ? 'block' : 'none' }}
-          value={0}
-          color='secondary'
-          className={classes.progress}
-        />
-      )}
-
       <Typography variant='h4'>Results</Typography>
       <Paper elevation={2} className={classes.paper}>
-        <Table stickyHeader aria-label='sticky table'>
-          <TableHead>
-            <TableRow>
-              <TableCell align='center' />
-              <TableCell align='center'>Warning Type</TableCell>
-              <TableCell align='center'>Message</TableCell>
-              <TableCell align='center'>Probability</TableCell>
-              <TableCell align='center'>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {flaggedContent.map((value, index) => (
-              <ResultCell
-                key={index}
-                props={value}
-                onViewClick={() => handleViewBox(image, value.box)}
-              />
-            ))}
-          </TableBody>
-        </Table>
+        {progressVisible ? (
+          <CircularProgress value={0} />
+        ) : (
+          <Table stickyHeader aria-label='sticky table'>
+            <TableHead>
+              <TableRow>
+                <TableCell align='center' />
+                <TableCell align='center'>Warning Type</TableCell>
+                <TableCell align='center'>Message</TableCell>
+                <TableCell align='center'>Probability</TableCell>
+                <TableCell align='center'>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {flaggedContent.map((value, index) => (
+                <ResultCell
+                  key={index}
+                  props={value}
+                  onViewClick={() => handleViewBox(image, value.box)}
+                />
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </Paper>
 
       <img src={results.image} />
