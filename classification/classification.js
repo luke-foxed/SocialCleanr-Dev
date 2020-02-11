@@ -36,19 +36,30 @@ const loadModels = async () => {
       modelPaths.maleClothedV3.metadata
     );
 
+    console.log('\nLoaded Male Model...\n');
+
     femaleClothingModel = await tfImage.load(
       modelPaths.femaleClothedV2.model,
       modelPaths.femaleClothedV2.metadata
     );
 
+    console.log('\nLoaded Female Model...\n');
+
+    // taking the longest
     gestureModel = await tf.loadGraphModel(
       'file://C:/Users/lukef/Documents/git/Social-Cleaner/classification/gestureDetection/model.json'
     );
 
+    console.log('\nLoaded Gesture Model...\n');
+
     personDetectionModel = await cocoSSD.load();
+
+    console.log('\nLoaded CocoSSD Model...\n');
 
     await faceapi.nets.ssdMobilenetv1.loadFromDisk('classification/faceAPI');
     await faceapi.nets.ageGenderNet.loadFromDisk('classification/faceAPI');
+
+    console.log('\nLoaded FaceAPI Model...\n');
 
     modelsLoaded = true;
     console.log('\nMODELS LOADED \n');

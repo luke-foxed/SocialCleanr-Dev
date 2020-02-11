@@ -9,15 +9,9 @@ import {
   Typography,
   TextField,
   CircularProgress,
-  TableRow,
-  TableBody,
-  TableHead,
-  Table,
-  TableCell,
   IconButton,
   InputAdornment
 } from '@material-ui/core';
-import ProcessImage from 'react-imgpro';
 import * as colors from '../../../colors';
 import { CloudUpload, Send, Search, Link } from '@material-ui/icons';
 import { beginClassification } from '../../../../actions/upload.js';
@@ -25,7 +19,7 @@ import {
   cleanResults,
   drawBoundingBox
 } from '../../../../helpers/uploadPageHelper';
-import { ResultCell } from './ResultCell';
+import { ResultsTable } from './ResultsTable';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -36,18 +30,22 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     alignItems: 'center'
   },
+  paperHeader: {
+    paddingBottom: theme.spacing(4)
+  },
   imageBox: {
     margin: theme.spacing(2),
     border: '4px solid' + colors.colorPurple
   },
   image: {
-    padding: '4px',
+    padding: theme.spacing(1),
     height: 600,
     width: '100%',
     objectFit: 'cover'
   },
   divider: {
-    padding: theme.spacing(2)
+    padding: theme.spacing(2),
+    color: 'rgb(180, 180,180)'
   },
   checkboxes: {
     padding: theme.spacing(2)
@@ -62,12 +60,11 @@ const Upload = () => {
   const [image, setImage] = useState('');
   const [URL, setURL] = useState('');
   const [boxImage, setBoxImage] = useState('');
-  const [progressVisible, setProgressVisible] = useState(false);
+  const [spinnerVisible, setSpinnerVisible] = useState(false);
   const [models, setModels] = useState({
     clothing: false,
     gestures: false,
-    text: false,
-    age: false
+    text: false
   });
 
   const [results, setResults] = useState({
@@ -94,26 +91,24 @@ const Upload = () => {
   };
 
   const handleScanStart = async () => {
+    setSpinnerVisible(true);
     setResults({ gender: '', topless: '', clothed: '', text: '' });
-    setProgressVisible(true);
     let results = await beginClassification(models, image);
-    await setFlaggedContent(cleanResults(results.data));
-    setProgressVisible(false);
+    setFlaggedContent(cleanResults(results.data));
+    setSpinnerVisible(false);
   };
 
-  const handleViewBox = async (image, box) => {
+  const showBox = async box => {
     let boxImage = await drawBoundingBox(image, box);
     setBoxImage(boxImage);
   };
 
   return (
     <div>
-      <Typography variant='h4'>Upload An Image</Typography>
-      <Typography variant='subtitle1'>
-        Want to check an image BEFORE you upload it to your profile? Give it a
-        try below!
-      </Typography>
       <Paper elevation={2} className={classes.paper}>
+        <Typography variant='h4' className={classes.paperHeader}>
+          Upload An Image
+        </Typography>
         <input
           accept='image/*'
           style={{ display: 'none' }}
@@ -132,7 +127,7 @@ const Upload = () => {
           </Button>
         </label>
 
-        <Typography className={classes.divider}>Or</Typography>
+        <div className={classes.divider}>OR</div>
 
         <TextField
           id='url'
@@ -204,31 +199,17 @@ const Upload = () => {
         </Button>
       </Paper>
 
-      <Typography variant='h4'>Results</Typography>
       <Paper elevation={2} className={classes.paper}>
-        {progressVisible ? (
+        <Typography variant='h4' className={classes.paperHeader}>
+          Results
+        </Typography>
+        {spinnerVisible ? (
           <CircularProgress value={0} />
         ) : (
-          <Table stickyHeader aria-label='sticky table'>
-            <TableHead>
-              <TableRow>
-                <TableCell align='center' />
-                <TableCell align='center'>Warning Type</TableCell>
-                <TableCell align='center'>Message</TableCell>
-                <TableCell align='center'>Probability</TableCell>
-                <TableCell align='center'>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {flaggedContent.map((value, index) => (
-                <ResultCell
-                  key={index}
-                  props={value}
-                  onViewClick={() => handleViewBox(image, value.box)}
-                />
-              ))}
-            </TableBody>
-          </Table>
+          <ResultsTable
+            flaggedContent={flaggedContent}
+            onViewClick={bbox => showBox(bbox)}
+          />
         )}
       </Paper>
 
