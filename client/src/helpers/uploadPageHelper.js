@@ -58,3 +58,15 @@ const createCanvasImage = async base64Image => {
   ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
   return canvas;
 };
+
+export const validationCheck = (models, image) => {
+  let alertProps = { type: 'error', message: '' };
+
+  if (models['clothing'] && models['gestures'] && models['text'] === false) {
+    console.log('ERROR');
+    alertProps.type = 'Please Select A Model';
+  } else if (image === '') {
+    alertProps.message = 'Please Upload An Image';
+  }
+  return alertProps;
+};
