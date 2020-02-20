@@ -28,7 +28,16 @@ export const cleanResults = results => {
     });
   }
 
-  // need to add condition for text
+  if (results['text'].length !== 0) {
+    results['text'].forEach(item => {
+      flaggedContent.push({
+        type: 'Offensive Word',
+        message: `The word ${item.text} has been flagged as ${item.reason}`,
+        probability: '>80',
+        box: item.bbox
+      });
+    });
+  }
 
   // if no flagged content has been added, scan is clean
   if (flaggedContent.length === 0) {

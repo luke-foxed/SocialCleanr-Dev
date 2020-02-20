@@ -5,9 +5,9 @@ const tf = require('@tensorflow/tfjs-node');
 const modelPaths = require('./paths');
 const tfImage = require('@teachablemachine/image');
 const faceapi = require('face-api.js');
-const vision = require('@google-cloud/vision');
 const helpers = require('./helpers');
 const cocoSSD = require('@tensorflow-models/coco-ssd');
+const toxicity = require('@tensorflow-models/toxicity');
 require('@tensorflow/tfjs-node');
 
 const fs = require('fs');
@@ -23,9 +23,8 @@ let personDetectionModel = '';
 let maleClothingModel = '';
 let femaleClothingModel = '';
 let gestureModel = '';
+let toxicityModel = '';
 let modelsLoaded = false;
-
-const client = new vision.ImageAnnotatorClient();
 
 const loadModels = async () => {
   if (modelsLoaded) {
@@ -47,10 +46,15 @@ const loadModels = async () => {
 
     // taking the longest
     gestureModel = await tf.loadGraphModel(
-      'file://C:/Users/lukef/Documents/git/Social-Cleaner/classification/gestureDetection/model.json'
+      'file://C:/Users/Luke/Documents/GitHub/Social-Cleaner/classification/gestureDetection/model.json'
     );
 
     console.log('\nLoaded Gesture Model...\n');
+
+    // load with threshold of 0.8
+    toxicityModel = await toxicity.load(0.8);
+
+    console.log('\nLoaded Toxicity Model...\n');
 
     personDetectionModel = await cocoSSD.load();
 
@@ -160,24 +164,22 @@ const detectClothing = async image => {
   return results;
 };
 
-const convertText = async image => {
-  // remove 'data:image/jpeg;base64,' from string
-  var base64result = image.split(',')[1];
+const detectText = async image => {
+  let text = await helpers.convertToText(image);
 
-  const request = {
-    image: {
-      content: base64result
-    }
-  };
-
-  const [result] = await client.textDetection(request);
-  const detections = result.textAnnotations;
-
-  if (detections.length !== 0) {
-    console.log('Text:');
-    detections.forEach(text => results.text.push(text.description));
-  } else {
-    console.log('No text detected');
+  if (text.length > 0) {
+    await helpers.asyncForEach(text, async item => {
+      let predictions = await toxicityModel.classify(item.word);
+      predictions.forEach(prediction => {
+        if (prediction.results[0].match === true) {
+          results.text.push({
+            text: item.word,
+            reason: prediction.label,
+            bbox: item.bbox
+          });
+        }
+      });
+    });
   }
 
   return results;
@@ -251,5 +253,5 @@ module.exports = {
   loadModels,
   detectClothing,
   detectGesture,
-  convertText
+  detectText
 };

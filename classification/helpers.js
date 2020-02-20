@@ -1,6 +1,8 @@
+const vision = require('@google-cloud/vision');
 const { loadImage, createCanvas } = require('canvas');
 const axios = require('axios');
 const sharp = require('sharp');
+const client = new vision.ImageAnnotatorClient();
 
 // for converting URLs into tensor objects
 const getTensor3dObject = async imageURL => {
@@ -137,6 +139,42 @@ const boundingBoxesToImage = async (boxArray, image) => {
   return images;
 };
 
+const convertToText = async image => {
+  let text = [];
+
+  // remove 'data:image/jpeg;base64,' from string
+  const base64result = image.split(',')[1];
+
+  const request = {
+    image: {
+      content: base64result
+    }
+  };
+
+  const [result] = await client.textDetection(request);
+  const detections = result.textAnnotations;
+
+  if (detections.length !== 0) {
+    // skip first item in array, this is the full text
+    for (let i = 1; i < detections.length; i++) {
+      let vertices = detections[i].boundingPoly.vertices;
+      // convert 8 vertices into bbox format
+      let bbox = [
+        vertices[0].x,
+        vertices[0].y,
+        vertices[2].x - vertices[0].x,
+        vertices[2].y - vertices[0].y
+      ];
+
+      text.push({ word: detections[i].description, bbox: bbox });
+    }
+  } else {
+    console.log('No text detected');
+  }
+
+  return text;
+};
+
 module.exports = {
   getTensor3dObject,
   createCanvasImage,
@@ -144,5 +182,6 @@ module.exports = {
   buildDetectedObjects,
   drawBoundingBox,
   boundingBoxesToImage,
-  asyncForEach
+  asyncForEach,
+  convertToText
 };
