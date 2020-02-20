@@ -1,4 +1,5 @@
 const { loadImage, createCanvas } = require('canvas');
+const gm = require('gm');
 
 export const cleanResults = results => {
   let flaggedContent = [];
@@ -48,7 +49,6 @@ export const cleanResults = results => {
 
 export const drawBoundingBox = async (image, box) => {
   let canvasImage = await createCanvasImage(image);
-
   const ctx = canvasImage.getContext('2d');
 
   ctx.beginPath();
@@ -58,6 +58,21 @@ export const drawBoundingBox = async (image, box) => {
   ctx.stroke();
 
   return canvasImage.toDataURL();
+};
+
+// this wont work as GM needs to first be installed locally
+export const drawBlurringBox = async (image, box) => {
+  const gmImage = gm(image);
+  let blurred = '';
+  gmImage
+    .region(box[0], box[1], box[2], box[3])
+    .blur(25, 45)
+    .toBuffer('PNG', function(err, buffer) {
+      if (err) console.log(err);
+      console.log('done!');
+      blurred = buffer;
+    });
+  return blurred;
 };
 
 const createCanvasImage = async base64Image => {

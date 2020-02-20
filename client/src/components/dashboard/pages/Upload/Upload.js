@@ -17,7 +17,8 @@ import { CloudUpload, Send, Search, Link } from '@material-ui/icons';
 import { beginClassification } from '../../../../actions/upload.js';
 import {
   cleanResults,
-  drawBoundingBox
+  drawBoundingBox,
+  drawBlurringBox
 } from '../../../../helpers/uploadPageHelper';
 import { ResultsTable } from './ResultsTable';
 
@@ -101,6 +102,11 @@ const Upload = () => {
   const showBox = async box => {
     let boxImage = await drawBoundingBox(image, box);
     setBoxImage(boxImage);
+  };
+
+  const cleanImage = async box => {
+    let cleanImage = await drawBlurringBox(image, box);
+    setBoxImage(cleanImage);
   };
 
   return (
@@ -209,6 +215,7 @@ const Upload = () => {
           <ResultsTable
             flaggedContent={flaggedContent}
             onViewClick={bbox => showBox(bbox)}
+            onCleanClick={bbox => cleanImage(bbox)}
           />
         )}
       </Paper>

@@ -48,6 +48,7 @@
     "express-validator": "^6.1.1",
     "face-api.js": "^0.22.0",
     "fbgraph": "^1.4.4",
+    "gm": "^1.23.1",
     "gravatar": "^1.8.0",
     "jimp": "^0.9.3",
     "jpeg-js": "^0.3.6",
