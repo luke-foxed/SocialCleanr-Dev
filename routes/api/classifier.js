@@ -68,7 +68,7 @@ router.post('/filter_models', async (req, res) => {
   switch (true) {
     case selection.text:
       console.log('/n SELECTED TEXT');
-      results = await classification.convertText(req.body.image);
+      results = await classification.detectText(req.body.image);
       res.send(results);
       break;
     case selection.clothing:

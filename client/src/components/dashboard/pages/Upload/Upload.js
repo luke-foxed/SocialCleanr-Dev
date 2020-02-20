@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Button,
@@ -6,30 +6,20 @@ import {
   Switch,
   FormGroup,
   FormControlLabel,
-  Box,
   Typography,
   TextField,
-  CircularProgress
+  CircularProgress,
+  IconButton,
+  InputAdornment
 } from '@material-ui/core';
-import ProcessImage from 'react-imgpro';
-import * as colors from '../../colors';
-import { CloudUpload, Send, GetApp, Face } from '@material-ui/icons';
-import axios from 'axios';
-import BoundingBox from 'react-bounding-box';
-
-const bboxParams = {
-  options: {
-    colors: {
-      normal: 'rgba(255,50,50,1)',
-      selected: 'rgba(50,255,50,1)',
-      unselected: 'rgba(100,100,100,1)'
-    },
-    style: {
-      maxWidth: '100%',
-      maxHeight: '90vh'
-    }
-  }
-};
+import * as colors from '../../../colors';
+import { CloudUpload, Send, Search, Link } from '@material-ui/icons';
+import { beginClassification } from '../../../../actions/upload.js';
+import {
+  cleanResults,
+  drawBoundingBox
+} from '../../../../helpers/uploadPageHelper';
+import { ResultsTable } from './ResultsTable';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -40,17 +30,22 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     alignItems: 'center'
   },
+  paperHeader: {
+    paddingBottom: theme.spacing(4)
+  },
+  imageBox: {
+    margin: theme.spacing(2),
+    border: '4px solid' + colors.colorPurple
+  },
   image: {
-    marginTop: theme.spacing(2),
-    color: 'red',
-    border: 5,
-    borderRadius: 20,
-    borderStyle: 'solid',
-    borderColor: colors.colorPurple,
+    padding: theme.spacing(1),
+    height: 600,
+    width: '100%',
     objectFit: 'cover'
   },
   divider: {
-    padding: theme.spacing(2)
+    padding: theme.spacing(2),
+    color: 'rgb(180, 180,180)'
   },
   checkboxes: {
     padding: theme.spacing(2)
@@ -63,24 +58,25 @@ const useStyles = makeStyles(theme => ({
 const Upload = () => {
   const classes = useStyles();
   const [image, setImage] = useState('');
-  const [progressVisible, setProgressVisible] = useState(false);
+  const [URL, setURL] = useState('');
+  const [boxImage, setBoxImage] = useState('');
+  const [spinnerVisible, setSpinnerVisible] = useState(false);
   const [models, setModels] = useState({
     clothing: false,
     gestures: false,
-    text: false,
-    age: false
+    text: false
   });
 
   const [results, setResults] = useState({
-    gender: '',
-    topless: '',
-    clothed: '',
-    text: '',
-    bbox: [],
-    image: ''
+    people: [],
+    text: [],
+    gestures: []
   });
 
+  const [flaggedContent, setFlaggedContent] = useState([]);
+
   const handleInput = event => {
+    setImage('');
     if (event.target.files && event.target.files[0]) {
       let reader = new FileReader();
       reader.readAsDataURL(event.target.files[0]);
@@ -94,52 +90,25 @@ const Upload = () => {
     setModels({ ...models, [name]: event.target.checked });
   };
 
-  const beginClassification = async () => {
+  const handleScanStart = async () => {
+    setSpinnerVisible(true);
     setResults({ gender: '', topless: '', clothed: '', text: '' });
-    setProgressVisible(true);
+    let results = await beginClassification(models, image);
+    setFlaggedContent(cleanResults(results.data));
+    setSpinnerVisible(false);
+  };
 
-    let response = await axios({
-      method: 'post',
-      url: '/api/classifier/filter_models',
-      data: {
-        image: image,
-        models: {
-          ...models
-        }
-      }
-    });
-
-    setProgressVisible(false);
-
-    let boxes = [];
-    if (response.data.gestures !== '') {
-      let objects = response.data.gestures;
-
-      objects.forEach(obj => {
-        boxes.push({
-          coord: obj.bbox,
-          label: `Middle Finger: ${Math.round(obj.score * 100)}% `
-        });
-      });
-    }
-
-    setResults({
-      bbox: boxes,
-      clothed: response.data.clothed,
-      topless: response.data.topless,
-      gender: response.data.gender,
-      image: response.data.image
-    });
+  const showBox = async box => {
+    let boxImage = await drawBoundingBox(image, box);
+    setBoxImage(boxImage);
   };
 
   return (
     <div>
-      <Typography variant='h4'>Upload An Image</Typography>
-      <Typography variant='subtitle1'>
-        Want to check an image BEFORE you upload it to your profile? Give it a
-        try below!
-      </Typography>
       <Paper elevation={2} className={classes.paper}>
+        <Typography variant='h4' className={classes.paperHeader}>
+          Upload An Image
+        </Typography>
         <input
           accept='image/*'
           style={{ display: 'none' }}
@@ -158,24 +127,33 @@ const Upload = () => {
           </Button>
         </label>
 
-        <Typography className={classes.divider}>Or</Typography>
+        <div className={classes.divider}>OR</div>
 
         <TextField
           id='url'
-          label='URL'
+          label='Enter a URL'
           style={{ width: '25%' }}
           onBlur={e => {
-            setImage(e.target.value);
+            setURL(e.target.value);
+          }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position='end'>
+                <IconButton onClick={() => setImage(URL)}>
+                  <Link />
+                </IconButton>
+              </InputAdornment>
+            )
           }}
         />
 
         {image !== '' && (
-          <Box>
-            <ProcessImage
-              image={image}
+          <div className={classes.imageBox}>
+            <img
+              src={boxImage !== '' ? boxImage : image}
               className={classes.image}
-              scaleToFit={{ width: 500, height: 500 }}></ProcessImage>
-          </Box>
+            />
+          </div>
         )}
         <FormGroup row className={classes.checkboxes}>
           <FormControlLabel
@@ -215,31 +193,24 @@ const Upload = () => {
           variant='contained'
           color='primary'
           className={classes.button}
-          onClick={beginClassification}
+          onClick={handleScanStart}
           endIcon={<Send />}>
           Submit
         </Button>
       </Paper>
 
-      {results.gender == '' && (
-        <CircularProgress
-          style={{ display: progressVisible ? 'block' : 'none' }}
-          value={0}
-          color='secondary'
-          className={classes.progress}
-        />
-      )}
-
-      <Typography variant='h4'>Results</Typography>
       <Paper elevation={2} className={classes.paper}>
-        <Typography>
-          {JSON.stringify({
-            'Gender: ': results.gender,
-            'Gestures: ': results.bbox,
-            'Clothed: ': results.clothed,
-            'Topless: ': results.topless
-          })}
+        <Typography variant='h4' className={classes.paperHeader}>
+          Results
         </Typography>
+        {spinnerVisible ? (
+          <CircularProgress value={0} />
+        ) : (
+          <ResultsTable
+            flaggedContent={flaggedContent}
+            onViewClick={bbox => showBox(bbox)}
+          />
+        )}
       </Paper>
 
       <img src={results.image} />

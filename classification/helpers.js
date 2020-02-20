@@ -1,5 +1,8 @@
+const vision = require('@google-cloud/vision');
 const { loadImage, createCanvas } = require('canvas');
 const axios = require('axios');
+const sharp = require('sharp');
+const client = new vision.ImageAnnotatorClient();
 
 // for converting URLs into tensor objects
 const getTensor3dObject = async imageURL => {
@@ -93,10 +96,92 @@ const drawBoundingBox = (canvas, coordinates) => {
   return bboxCanvas.toDataURL();
 };
 
+// https://codeburst.io/javascript-async-await-with-foreach-b6ba62bbf404
+const asyncForEach = async (array, callback) => {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+};
+
+const boundingBoxesToImage = async (boxArray, image) => {
+  let images = [];
+  let base64 = image.toDataURL();
+  let base64Stripped = base64.split(',')[1];
+  let buff = Buffer.from(base64Stripped, 'base64');
+
+  await asyncForEach(boxArray, async boxes => {
+    // If left + width exceeds image width, adjust width
+    if (boxes[0] + boxes[2] > image.width) {
+      let adjustedWidth = boxes[0] + boxes[2] - image.width;
+      boxes[2] = boxes[2] - adjustedWidth;
+    }
+
+    if (boxes[1] + boxes[3] > image.height) {
+      let adjustedHeight = boxes[1] + boxes[3] - image.height;
+      boxes[3] = boxes[3] - adjustedHeight;
+    }
+
+    let imageBuffer = await sharp(buff)
+      .extract({
+        // need to check width and height
+        left: boxes[0],
+        top: boxes[1],
+        width: boxes[2],
+        height: boxes[3]
+      })
+      .toBuffer();
+    // append data header to base64 string
+    let encodedImage =
+      'data:image/jpeg;base64,' + imageBuffer.toString('base64');
+    images.push({ image: encodedImage, bbox: boxes });
+  });
+
+  return images;
+};
+
+const convertToText = async image => {
+  let text = [];
+
+  // remove 'data:image/jpeg;base64,' from string
+  const base64result = image.split(',')[1];
+
+  const request = {
+    image: {
+      content: base64result
+    }
+  };
+
+  const [result] = await client.textDetection(request);
+  const detections = result.textAnnotations;
+
+  if (detections.length !== 0) {
+    // skip first item in array, this is the full text
+    for (let i = 1; i < detections.length; i++) {
+      let vertices = detections[i].boundingPoly.vertices;
+      // convert 8 vertices into bbox format
+      let bbox = [
+        vertices[0].x,
+        vertices[0].y,
+        vertices[2].x - vertices[0].x,
+        vertices[2].y - vertices[0].y
+      ];
+
+      text.push({ word: detections[i].description, bbox: bbox });
+    }
+  } else {
+    console.log('No text detected');
+  }
+
+  return text;
+};
+
 module.exports = {
   getTensor3dObject,
   createCanvasImage,
   calculateMaxScores,
   buildDetectedObjects,
-  drawBoundingBox
+  drawBoundingBox,
+  boundingBoxesToImage,
+  asyncForEach,
+  convertToText
 };
