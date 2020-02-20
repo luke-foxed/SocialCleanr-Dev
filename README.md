@@ -17,6 +17,6 @@ Made with (so far):
 - MongoDB
 
 Planned: 
-- Redux (React state management
+- Redux (React state management)
 - Docker
 - WebdriverIO & Mocha/Chai (for testing)
