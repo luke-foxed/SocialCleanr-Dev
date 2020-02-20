@@ -1,6 +1,6 @@
 # Social-Cleanr
 
-![Logo](https://raw.githubusercontent.com/Foxyf76/Social-Cleanr/master/logo.png)
+<img src="https://raw.githubusercontent.com/Foxyf76/Social-Cleanr/master/logo.png" width="400">
 
 My Final Year Project which utilises social media APIs and machine learning to provide a social media profile cleaner.
 
