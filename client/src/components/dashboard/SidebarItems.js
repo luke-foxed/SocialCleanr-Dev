@@ -7,7 +7,8 @@ import {
   Info,
   MenuBook,
   ExitToApp,
-  Publish
+  Publish,
+  Palette
 } from '@material-ui/icons';
 import {
   Divider,
@@ -57,9 +58,9 @@ const SidebarItems = () => {
         component={Link}
         to='/upload'>
         <ListItemIcon>
-          <Publish />
+          <Palette />
         </ListItemIcon>
-        <ListItemText primary='Upload & Scan' />
+        <ListItemText primary='Custom Scan' />
       </ListItem>
 
       <ListItem

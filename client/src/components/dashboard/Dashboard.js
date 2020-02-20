@@ -20,7 +20,7 @@ import SidebarItems from './SidebarItems';
 import Profile from './pages/Profile';
 import Home from './pages/Home';
 import Scan from './pages/Scan';
-import Upload from './pages/Upload';
+import Upload from './pages/Upload/Upload';
 
 const drawerWidth = 240;
 

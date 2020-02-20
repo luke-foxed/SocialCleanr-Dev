@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Landing from './components/landing/Landing';
-import Login from './components/Auth/Login';
-import Dashboard from './components/Dashboard/Dashboard';
+import Login from './components/auth/Login';
+import Dashboard from './components/dashboard/Dashboard';
 
 const App = () => (
   <Router>
