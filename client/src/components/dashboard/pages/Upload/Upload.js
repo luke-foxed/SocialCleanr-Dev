@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import {
+  makeStyles,
+  MuiThemeProvider,
+  createMuiTheme,
+  withStyles
+} from '@material-ui/core/styles';
 import {
   Button,
   Paper,
@@ -10,7 +15,7 @@ import {
   CircularProgress
 } from '@material-ui/core';
 import * as colors from '../../../colors';
-import { CloudUpload, Send } from '@material-ui/icons';
+import { CloudUpload, Send, Image, Assessment } from '@material-ui/icons';
 import { beginClassification } from '../../../../actions/upload.js';
 import {
   cleanResults,
@@ -18,6 +23,20 @@ import {
   drawBlurringBox
 } from '../../../../helpers/uploadPageHelper';
 import { ResultsTable } from './ResultsTable';
+
+const PurpleSwitch = withStyles({
+  switchBase: {
+    color: colors.colorPurple,
+    '&$checked': {
+      color: colors.colorPurple
+    },
+    '&$checked + $track': {
+      backgroundColor: colors.colorPurple
+    }
+  },
+  checked: {},
+  track: {}
+})(Switch);
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -28,8 +47,15 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     alignItems: 'center'
   },
+
+  divider: {
+    paddingBottom: theme.spacing(2),
+    width: '40px',
+    border: 0
+  },
   paperHeader: {
-    paddingBottom: theme.spacing(4)
+    fontFamily: 'Raleway',
+    textTransform: 'uppercase'
   },
   imageBox: {
     margin: theme.spacing(2),
@@ -41,15 +67,30 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     objectFit: 'cover'
   },
-  divider: {
-    padding: theme.spacing(2),
-    color: 'rgb(180, 180,180)'
-  },
-  checkboxes: {
+
+  switches: {
     padding: theme.spacing(2)
+  },
+
+  switch: {
+    color: colors.colorPurple,
+    '&$checked': {
+      color: colors.colorPurple
+    },
+    '&$checked + $track': {
+      backgroundColor: colors.colorPurple
+    },
+    checked: {},
+    track: {}
   },
   progress: {
     margin: '0 auto'
+  },
+  subtext: {
+    color: '#4a4a4a',
+    paddingBottom: theme.spacing(2),
+    width: '50%',
+    textAlign: 'center'
   }
 }));
 
@@ -108,9 +149,36 @@ const Upload = () => {
   return (
     <div>
       <Paper elevation={2} className={classes.paper}>
-        <Typography variant='h4' className={classes.paperHeader}>
+        <Typography
+          variant='h4'
+          className={classes.paperHeader}
+          style={{ display: 'flex' }}>
+          <Image
+            fontSize='large'
+            style={{
+              color: colors.colorPurple,
+              paddingRight: '10px'
+            }}
+          />
           Upload An Image
         </Typography>
+
+        <hr
+          className={classes.divider}
+          style={{ borderTop: '2px solid' + colors.colorPurple }}
+        />
+
+        <Typography className={classes.subtext}>
+          Want to scan an image before you upload it to your profile? Simple!
+          Just upload an image, set the content you wish to scan and then
+          submit!
+        </Typography>
+
+        <hr
+          className={classes.divider}
+          style={{ borderTop: '2px solid #4a4a4a' }}
+        />
+
         <input
           accept='image/*'
           style={{ display: 'none' }}
@@ -121,10 +189,10 @@ const Upload = () => {
         <label htmlFor='contained-button-file'>
           <Button
             variant='contained'
+            style={{ backgroundColor: colors.colorDarkPink }}
             color='primary'
             startIcon={<CloudUpload />}
-            component='span'
-            size='large'>
+            component='span'>
             Upload
           </Button>
         </label>
@@ -137,10 +205,12 @@ const Upload = () => {
             />
           </div>
         )}
-        <FormGroup row className={classes.checkboxes}>
+
+        <FormGroup row className={classes.switches}>
           <FormControlLabel
             control={
-              <Switch
+              <PurpleSwitch
+                color='default'
                 checked={models.clothing}
                 onChange={handleSwitch('clothing')}
                 value='clothing'
@@ -150,7 +220,8 @@ const Upload = () => {
           />
           <FormControlLabel
             control={
-              <Switch
+              <PurpleSwitch
+                color='default'
                 checked={models.gestures}
                 onChange={handleSwitch('gestures')}
                 value='gestures'
@@ -161,7 +232,8 @@ const Upload = () => {
 
           <FormControlLabel
             control={
-              <Switch
+              <PurpleSwitch
+                color='default'
                 checked={models.text}
                 onChange={handleSwitch('text')}
                 value='text'
@@ -174,6 +246,7 @@ const Upload = () => {
         <Button
           variant='contained'
           color='primary'
+          style={{ backgroundColor: colors.colorDarkPink }}
           className={classes.button}
           onClick={handleScanStart}
           endIcon={<Send />}>
@@ -182,9 +255,23 @@ const Upload = () => {
       </Paper>
 
       <Paper elevation={2} className={classes.paper}>
-        <Typography variant='h4' className={classes.paperHeader}>
+        <Typography
+          variant='h4'
+          className={classes.paperHeader}
+          style={{ display: 'flex' }}>
+          <Assessment
+            fontSize='large'
+            style={{
+              color: colors.colorPurple,
+              paddingRight: '10px'
+            }}
+          />
           Results
         </Typography>
+        <hr
+          className={classes.divider}
+          style={{ borderTop: '2px solid #4a4a4a' }}
+        />
         {spinnerVisible ? (
           <CircularProgress value={0} />
         ) : (
