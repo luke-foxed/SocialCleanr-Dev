@@ -1,21 +1,17 @@
 import React, { useState } from 'react';
-import {
-  makeStyles,
-  MuiThemeProvider,
-  createMuiTheme,
-  withStyles
-} from '@material-ui/core/styles';
-import {
-  Button,
-  Paper,
-  Switch,
-  FormGroup,
-  FormControlLabel,
-  Typography,
-  CircularProgress
-} from '@material-ui/core';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { Button, Paper, Typography, CircularProgress } from '@material-ui/core';
 import * as colors from '../../../colors';
-import { CloudUpload, Send, Image, Assessment } from '@material-ui/icons';
+import {
+  CloudUpload,
+  Send,
+  Image,
+  Assessment,
+  CheckCircle,
+  EmojiPeople,
+  Spellcheck,
+  ThumbsUpDown
+} from '@material-ui/icons';
 import { beginClassification } from '../../../../actions/upload.js';
 import {
   cleanResults,
@@ -23,20 +19,28 @@ import {
   drawBlurringBox
 } from '../../../../helpers/uploadPageHelper';
 import { ResultsTable } from './ResultsTable';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
-const PurpleSwitch = withStyles({
-  switchBase: {
-    color: colors.colorPurple,
-    '&$checked': {
-      color: colors.colorPurple
-    },
-    '&$checked + $track': {
-      backgroundColor: colors.colorPurple
+const StyledToggleButtonGroup = withStyles(theme => ({
+  grouped: {
+    margin: theme.spacing(0.5),
+    border: 'none',
+    padding: theme.spacing(0, 1)
+  }
+}))(ToggleButtonGroup);
+
+const StyledToggleButton = withStyles({
+  root: {
+    '&$selected': {
+      backgroundColor: colors.colorPurple,
+      color: 'white'
     }
   },
-  checked: {},
-  track: {}
-})(Switch);
+  selected: {
+    color: 'white'
+  }
+})(ToggleButton);
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -67,28 +71,18 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     objectFit: 'cover'
   },
-
-  switches: {
-    padding: theme.spacing(2)
+  toggleButtons: {
+    '& button': {
+      width: '140px',
+      transition: 'all .5s ease-in-out'
+    }
   },
 
-  switch: {
-    color: colors.colorPurple,
-    '&$checked': {
-      color: colors.colorPurple
-    },
-    '&$checked + $track': {
-      backgroundColor: colors.colorPurple
-    },
-    checked: {},
-    track: {}
-  },
   progress: {
     margin: '0 auto'
   },
   subtext: {
     color: '#4a4a4a',
-    paddingBottom: theme.spacing(2),
     width: '50%',
     textAlign: 'center'
   }
@@ -99,19 +93,15 @@ const Upload = () => {
   const [image, setImage] = useState('');
   const [boxImage, setBoxImage] = useState('');
   const [spinnerVisible, setSpinnerVisible] = useState(false);
-  const [models, setModels] = useState({
-    clothing: false,
-    gestures: false,
-    text: false
-  });
+  const [resultsVisible, setResultsVisible] = useState(false);
+  const [flaggedContent, setFlaggedContent] = useState([]);
+  const [models, setModels] = useState(() => []);
 
   const [results, setResults] = useState({
     people: [],
     text: [],
     gestures: []
   });
-
-  const [flaggedContent, setFlaggedContent] = useState([]);
 
   const handleInput = event => {
     setImage('');
@@ -120,12 +110,13 @@ const Upload = () => {
       reader.readAsDataURL(event.target.files[0]);
       reader.onloadend = () => {
         setImage(reader.result);
+        setResultsVisible(false);
       };
     }
   };
 
-  const handleSwitch = name => event => {
-    setModels({ ...models, [name]: event.target.checked });
+  const handleModelSelect = (event, value) => {
+    setModels(value);
   };
 
   const handleScanStart = async () => {
@@ -134,6 +125,7 @@ const Upload = () => {
     let results = await beginClassification(models, image);
     setFlaggedContent(cleanResults(results.data));
     setSpinnerVisible(false);
+    setResultsVisible(true);
   };
 
   const showBox = async box => {
@@ -206,84 +198,103 @@ const Upload = () => {
           </div>
         )}
 
-        <FormGroup row className={classes.switches}>
-          <FormControlLabel
-            control={
-              <PurpleSwitch
-                color='default'
-                checked={models.clothing}
-                onChange={handleSwitch('clothing')}
-                value='clothing'
-              />
-            }
-            label='Check Clothing'
-          />
-          <FormControlLabel
-            control={
-              <PurpleSwitch
-                color='default'
-                checked={models.gestures}
-                onChange={handleSwitch('gestures')}
-                value='gestures'
-              />
-            }
-            label='Check Gestures'
-          />
+        <Typography className={classes.subtext} style={{ padding: '20px' }}>
+          Select which models you wish to use:
+        </Typography>
 
-          <FormControlLabel
-            control={
-              <PurpleSwitch
-                color='default'
-                checked={models.text}
-                onChange={handleSwitch('text')}
-                value='text'
-              />
-            }
-            label='Check Text'
-          />
-        </FormGroup>
+        <StyledToggleButtonGroup
+          size='small'
+          className={classes.toggleButtons}
+          value={models}
+          onChange={handleModelSelect}>
+          <StyledToggleButton
+            value='clothing'
+            classes={{ selected: classes.toggleSelected }}>
+            Clothing
+            <EmojiPeople fontSize='large' style={{ paddingLeft: '5px' }} />
+          </StyledToggleButton>
+
+          <StyledToggleButton value='text'>
+            Text
+            <Spellcheck fontSize='large' style={{ paddingLeft: '5px' }} />
+          </StyledToggleButton>
+
+          <StyledToggleButton value='gestures'>
+            Gestures
+            <ThumbsUpDown fontSize='large' style={{ paddingLeft: '5px' }} />
+          </StyledToggleButton>
+        </StyledToggleButtonGroup>
+
+        <hr
+          className={classes.divider}
+          style={{ borderTop: '2px solid #4a4a4a' }}
+        />
 
         <Button
           variant='contained'
           color='primary'
+          size='large'
           style={{ backgroundColor: colors.colorDarkPink }}
           className={classes.button}
           onClick={handleScanStart}
           endIcon={<Send />}>
           Submit
         </Button>
-      </Paper>
 
-      <Paper elevation={2} className={classes.paper}>
-        <Typography
-          variant='h4'
-          className={classes.paperHeader}
-          style={{ display: 'flex' }}>
-          <Assessment
-            fontSize='large'
-            style={{
-              color: colors.colorPurple,
-              paddingRight: '10px'
-            }}
-          />
-          Results
-        </Typography>
-        <hr
-          className={classes.divider}
-          style={{ borderTop: '2px solid #4a4a4a' }}
+        <CircularProgress
+          value={0}
+          style={
+            spinnerVisible
+              ? {
+                  display: 'block',
+                  color: colors.colorLightPink,
+                  margin: '20px'
+                }
+              : { display: 'none' }
+          }
         />
-        {spinnerVisible ? (
-          <CircularProgress value={0} />
-        ) : (
-          <ResultsTable
-            flaggedContent={flaggedContent}
-            onViewClick={bbox => showBox(bbox)}
-            onCleanClick={bbox => cleanImage(bbox)}
-          />
-        )}
       </Paper>
 
-      <img src={results.image} />
+      {resultsVisible && (
+        <Paper elevation={2} className={classes.paper}>
+          <Typography
+            variant='h4'
+            className={classes.paperHeader}
+            style={{ display: 'flex' }}>
+            <Assessment
+              fontSize='large'
+              style={{
+                color: colors.colorPurple,
+                paddingRight: '10px'
+              }}
+            />
+            Results
+          </Typography>
+          <hr
+            className={classes.divider}
+            style={{ borderTop: '2px solid #4a4a4a' }}
+          />
+
+          {flaggedContent.length > 0 ? (
+            <ResultsTable
+              flaggedContent={flaggedContent}
+              onViewClick={bbox => showBox(bbox)}
+              onCleanClick={bbox => cleanImage(bbox)}
+            />
+          ) : (
+            <div style={{ textAlign: 'center' }}>
+              <CheckCircle
+                style={{ height: '100px', width: '100px', color: 'green' }}
+              />
+              <Typography variant='h6'>Looks Good!</Typography>
+              <Typography variant='subtitle1'>
+                We couldn't find any innapropriate content based off your
+                filters.
+              </Typography>
+            </div>
+          )}
+        </Paper>
+      )}
     </div>
   );
 };

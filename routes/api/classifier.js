@@ -31,18 +31,19 @@ router.post('/filter_models', async (req, res) => {
   let results = {};
   let gestureResults = (clothingResults = textResults = []);
   let selection = req.body.models;
+
   switch (true) {
     case selection.text && !selection.gestures && !selection.clothing:
       console.log('/n SELECTED TEXT');
-      results = await classification.detectText(req.body.image);
+      textResults = await classification.detectText(req.body.image);
       break;
     case selection.clothing && !selection.gestures && !selection.text:
       console.log('/n SELECTED CLOTHING');
-      results = await classification.detectClothing(req.body.image);
+      clothingResults = await classification.detectClothing(req.body.image);
       break;
     case selection.gestures && !selection.text && !selection.clothing:
       console.log('/n SELECTED GESTURES');
-      results = await classification.detectGesture(req.body.image);
+      gestureResults = await classification.detectGesture(req.body.image);
       break;
 
     // multiple options
@@ -69,11 +70,11 @@ router.post('/filter_models', async (req, res) => {
       textResults = await classification.detectText(req.body.image);
       break;
   }
-
   results.people = clothingResults.people || [];
   results.gestures = gestureResults.gestures || [];
   results.text = textResults.text || [];
 
+  console.log(results);
   res.send(results);
 });
 
