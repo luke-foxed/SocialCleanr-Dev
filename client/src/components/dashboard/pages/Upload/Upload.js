@@ -7,13 +7,10 @@ import {
   FormGroup,
   FormControlLabel,
   Typography,
-  TextField,
-  CircularProgress,
-  IconButton,
-  InputAdornment
+  CircularProgress
 } from '@material-ui/core';
 import * as colors from '../../../colors';
-import { CloudUpload, Send, Search, Link } from '@material-ui/icons';
+import { CloudUpload, Send } from '@material-ui/icons';
 import { beginClassification } from '../../../../actions/upload.js';
 import {
   cleanResults,
@@ -59,7 +56,6 @@ const useStyles = makeStyles(theme => ({
 const Upload = () => {
   const classes = useStyles();
   const [image, setImage] = useState('');
-  const [URL, setURL] = useState('');
   const [boxImage, setBoxImage] = useState('');
   const [spinnerVisible, setSpinnerVisible] = useState(false);
   const [models, setModels] = useState({
@@ -132,26 +128,6 @@ const Upload = () => {
             Upload
           </Button>
         </label>
-
-        <div className={classes.divider}>OR</div>
-
-        <TextField
-          id='url'
-          label='Enter a URL'
-          style={{ width: '25%' }}
-          onBlur={e => {
-            setURL(e.target.value);
-          }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position='end'>
-                <IconButton onClick={() => setImage(URL)}>
-                  <Link />
-                </IconButton>
-              </InputAdornment>
-            )
-          }}
-        />
 
         {image !== '' && (
           <div className={classes.imageBox}>

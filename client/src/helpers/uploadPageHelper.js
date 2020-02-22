@@ -48,7 +48,7 @@ export const cleanResults = results => {
 };
 
 export const drawBoundingBox = async (image, box) => {
-  let canvasImage = await createCanvasImage(image);
+  const canvasImage = await createCanvasImage(image);
   const ctx = canvasImage.getContext('2d');
 
   ctx.beginPath();
@@ -60,23 +60,24 @@ export const drawBoundingBox = async (image, box) => {
   return canvasImage.toDataURL();
 };
 
-// this wont work as GM needs to first be installed locally
 export const drawBlurringBox = async (image, box) => {
-  const gmImage = gm(image);
-  let blurred = '';
-  gmImage
-    .region(box[0], box[1], box[2], box[3])
-    .blur(25, 45)
-    .toBuffer('PNG', function(err, buffer) {
-      if (err) console.log(err);
-      console.log('done!');
-      blurred = buffer;
-    });
-  return blurred;
+  const loadedImage = await loadImage(image);
+  loadedImage.crossOrigin = 'anonymous';
+  const canvas = await createCanvasImage(image);
+  const ctx = canvas.getContext('2d');
+  ctx.filter = 'blur(50px)';
+  ctx.drawImage(loadedImage, 0, 0);
+  const imgData = ctx.getImageData(box[0], box[1], box[2], box[3]);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.filter = 'none';
+  ctx.drawImage(loadedImage, 0, 0);
+  ctx.putImageData(imgData, box[0], box[1]);
+
+  return canvas.toDataURL();
 };
 
 const createCanvasImage = async base64Image => {
-  let image = await loadImage(base64Image);
+  const image = await loadImage(base64Image);
   const canvas = createCanvas(image.width, image.height);
   const ctx = canvas.getContext('2d');
   ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
