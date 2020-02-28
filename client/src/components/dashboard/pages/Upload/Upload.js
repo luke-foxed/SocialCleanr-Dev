@@ -1,37 +1,74 @@
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import {
   Button,
   Paper,
-  Switch,
-  FormGroup,
-  FormControlLabel,
   Typography,
-  TextField,
   CircularProgress,
-  IconButton,
-  InputAdornment
+  Box
 } from '@material-ui/core';
 import * as colors from '../../../colors';
-import { CloudUpload, Send, Search, Link } from '@material-ui/icons';
+import {
+  CloudUpload,
+  Send,
+  Image,
+  Assessment,
+  CheckCircle,
+  EmojiPeople,
+  Spellcheck,
+  ThumbsUpDown,
+  Brush,
+  GetApp
+} from '@material-ui/icons';
 import { beginClassification } from '../../../../actions/upload.js';
 import {
   cleanResults,
-  drawBoundingBox
+  drawBoundingBox,
+  drawBlurringBox,
+  blurAllContent,
+  createDownloadImage
 } from '../../../../helpers/uploadPageHelper';
 import { ResultsTable } from './ResultsTable';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+
+const StyledToggleButtonGroup = withStyles(theme => ({
+  grouped: {
+    margin: theme.spacing(0.5),
+    border: 'none',
+    padding: theme.spacing(0, 1)
+  }
+}))(ToggleButtonGroup);
+
+const StyledToggleButton = withStyles({
+  root: {
+    '&$selected': {
+      backgroundColor: colors.colorPurple,
+      color: 'white'
+    }
+  },
+  selected: {
+    color: 'white'
+  }
+})(ToggleButton);
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    marginTop: theme.spacing(4),
-    marginBottom: theme.spacing(4),
+    margin: theme.spacing(2),
     padding: theme.spacing(4),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'
   },
+
+  divider: {
+    paddingBottom: theme.spacing(2),
+    width: '40px',
+    border: 0
+  },
   paperHeader: {
-    paddingBottom: theme.spacing(4)
+    fontFamily: 'Raleway',
+    textTransform: 'uppercase'
   },
   imageBox: {
     margin: theme.spacing(2),
@@ -43,29 +80,31 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     objectFit: 'cover'
   },
-  divider: {
-    padding: theme.spacing(2),
-    color: 'rgb(180, 180,180)'
+  toggleButtons: {
+    '& button': {
+      width: '140px',
+      transition: 'all .5s ease-in-out'
+    }
   },
-  checkboxes: {
-    padding: theme.spacing(2)
-  },
+
   progress: {
     margin: '0 auto'
+  },
+  subtext: {
+    color: '#4a4a4a',
+    width: '50%',
+    textAlign: 'center'
   }
 }));
 
 const Upload = () => {
   const classes = useStyles();
   const [image, setImage] = useState('');
-  const [URL, setURL] = useState('');
   const [boxImage, setBoxImage] = useState('');
   const [spinnerVisible, setSpinnerVisible] = useState(false);
-  const [models, setModels] = useState({
-    clothing: false,
-    gestures: false,
-    text: false
-  });
+  const [resultsVisible, setResultsVisible] = useState(false);
+  const [flaggedContent, setFlaggedContent] = useState([]);
+  const [models, setModels] = useState(() => []);
 
   const [results, setResults] = useState({
     people: [],
@@ -73,21 +112,21 @@ const Upload = () => {
     gestures: []
   });
 
-  const [flaggedContent, setFlaggedContent] = useState([]);
-
   const handleInput = event => {
     setImage('');
+    setBoxImage('');
     if (event.target.files && event.target.files[0]) {
       let reader = new FileReader();
       reader.readAsDataURL(event.target.files[0]);
       reader.onloadend = () => {
         setImage(reader.result);
+        setResultsVisible(false);
       };
     }
   };
 
-  const handleSwitch = name => event => {
-    setModels({ ...models, [name]: event.target.checked });
+  const handleModelSelect = (event, value) => {
+    setModels(value);
   };
 
   const handleScanStart = async () => {
@@ -96,6 +135,7 @@ const Upload = () => {
     let results = await beginClassification(models, image);
     setFlaggedContent(cleanResults(results.data));
     setSpinnerVisible(false);
+    setResultsVisible(true);
   };
 
   const showBox = async box => {
@@ -103,12 +143,57 @@ const Upload = () => {
     setBoxImage(boxImage);
   };
 
+  const cleanImage = async box => {
+    let cleanImage = await drawBlurringBox(image, box);
+    setBoxImage(cleanImage);
+  };
+
+  const handleCleanEntireImage = async () => {
+    let boxes = [];
+    flaggedContent.forEach(content => {
+      boxes.push(content.box);
+    });
+    let cleanImage = await blurAllContent(image, boxes);
+    setBoxImage(cleanImage);
+  };
+
+  const handleDownloadImage = () => {
+    createDownloadImage(boxImage);
+  };
+
   return (
     <div>
       <Paper elevation={2} className={classes.paper}>
-        <Typography variant='h4' className={classes.paperHeader}>
+        <Typography
+          variant='h4'
+          className={classes.paperHeader}
+          style={{ display: 'flex' }}>
+          <Image
+            fontSize='large'
+            style={{
+              color: colors.colorPurple,
+              paddingRight: '10px'
+            }}
+          />
           Upload An Image
         </Typography>
+
+        <hr
+          className={classes.divider}
+          style={{ borderTop: '2px solid' + colors.colorPurple }}
+        />
+
+        <Typography className={classes.subtext}>
+          Want to scan an image before you upload it to your profile? Simple!
+          Just upload an image, set the content you wish to scan and then
+          submit!
+        </Typography>
+
+        <hr
+          className={classes.divider}
+          style={{ borderTop: '2px solid #4a4a4a' }}
+        />
+
         <input
           accept='image/*'
           style={{ display: 'none' }}
@@ -119,33 +204,13 @@ const Upload = () => {
         <label htmlFor='contained-button-file'>
           <Button
             variant='contained'
+            style={{ backgroundColor: colors.colorDarkPink }}
             color='primary'
             startIcon={<CloudUpload />}
-            component='span'
-            size='large'>
+            component='span'>
             Upload
           </Button>
         </label>
-
-        <div className={classes.divider}>OR</div>
-
-        <TextField
-          id='url'
-          label='Enter a URL'
-          style={{ width: '25%' }}
-          onBlur={e => {
-            setURL(e.target.value);
-          }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position='end'>
-                <IconButton onClick={() => setImage(URL)}>
-                  <Link />
-                </IconButton>
-              </InputAdornment>
-            )
-          }}
-        />
 
         {image !== '' && (
           <div className={classes.imageBox}>
@@ -155,65 +220,141 @@ const Upload = () => {
             />
           </div>
         )}
-        <FormGroup row className={classes.checkboxes}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={models.clothing}
-                onChange={handleSwitch('clothing')}
-                value='clothing'
-              />
-            }
-            label='Check Clothing'
-          />
-          <FormControlLabel
-            control={
-              <Switch
-                checked={models.gestures}
-                onChange={handleSwitch('gestures')}
-                value='gestures'
-              />
-            }
-            label='Check Gestures'
-          />
 
-          <FormControlLabel
-            control={
-              <Switch
-                checked={models.text}
-                onChange={handleSwitch('text')}
-                value='text'
-              />
-            }
-            label='Check Text'
-          />
-        </FormGroup>
+        <Typography className={classes.subtext} style={{ padding: '20px' }}>
+          Select which models you wish to use:
+        </Typography>
+
+        <StyledToggleButtonGroup
+          size='small'
+          className={classes.toggleButtons}
+          value={models}
+          onChange={handleModelSelect}>
+          <StyledToggleButton
+            value='clothing'
+            classes={{ selected: classes.toggleSelected }}>
+            Clothing
+            <EmojiPeople fontSize='large' style={{ paddingLeft: '5px' }} />
+          </StyledToggleButton>
+
+          <StyledToggleButton value='text'>
+            Text
+            <Spellcheck fontSize='large' style={{ paddingLeft: '5px' }} />
+          </StyledToggleButton>
+
+          <StyledToggleButton value='gestures'>
+            Gestures
+            <ThumbsUpDown fontSize='large' style={{ paddingLeft: '5px' }} />
+          </StyledToggleButton>
+        </StyledToggleButtonGroup>
+
+        <hr
+          className={classes.divider}
+          style={{ borderTop: '2px solid #4a4a4a' }}
+        />
 
         <Button
           variant='contained'
           color='primary'
+          size='large'
+          style={{ backgroundColor: colors.colorDarkPink }}
           className={classes.button}
           onClick={handleScanStart}
           endIcon={<Send />}>
           Submit
         </Button>
+
+        <CircularProgress
+          value={0}
+          style={
+            spinnerVisible
+              ? {
+                  display: 'block',
+                  color: colors.colorLightPink,
+                  margin: '20px'
+                }
+              : { display: 'none' }
+          }
+        />
       </Paper>
 
-      <Paper elevation={2} className={classes.paper}>
-        <Typography variant='h4' className={classes.paperHeader}>
-          Results
-        </Typography>
-        {spinnerVisible ? (
-          <CircularProgress value={0} />
-        ) : (
-          <ResultsTable
-            flaggedContent={flaggedContent}
-            onViewClick={bbox => showBox(bbox)}
+      {resultsVisible && (
+        <Paper elevation={2} className={classes.paper}>
+          <Typography
+            variant='h4'
+            className={classes.paperHeader}
+            style={{ display: 'flex' }}>
+            <Assessment
+              fontSize='large'
+              style={{
+                color: colors.colorPurple,
+                paddingRight: '10px'
+              }}
+            />
+            Results
+          </Typography>
+          <hr
+            className={classes.divider}
+            style={{ borderTop: '2px solid ' + colors.colorPurple }}
           />
-        )}
-      </Paper>
 
-      <img src={results.image} />
+          {flaggedContent.length > 0 ? (
+            <div>
+              <ResultsTable
+                flaggedContent={flaggedContent}
+                onViewClick={bbox => showBox(bbox)}
+                onCleanClick={bbox => cleanImage(bbox)}
+              />
+
+              <hr
+                className={classes.divider}
+                style={{ borderTop: '2px solid #4a4a4a' }}
+              />
+
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <Button
+                  variant='contained'
+                  color='primary'
+                  size='medium'
+                  style={{
+                    backgroundColor: colors.colorDarkPink,
+                    margin: '5px',
+                    width: '200px'
+                  }}
+                  onClick={handleCleanEntireImage}
+                  endIcon={<Brush />}>
+                  Clean All
+                </Button>
+
+                <Button
+                  variant='contained'
+                  color='primary'
+                  size='medium'
+                  style={{
+                    backgroundColor: colors.colorLightOrange,
+                    margin: '5px',
+                    width: '200px'
+                  }}
+                  onClick={handleDownloadImage}
+                  endIcon={<GetApp />}>
+                  Download Image
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center' }}>
+              <CheckCircle
+                style={{ height: '100px', width: '100px', color: 'green' }}
+              />
+              <Typography variant='h6'>Looks Good!</Typography>
+              <Typography variant='subtitle1'>
+                We couldn't find any innapropriate content based off your
+                filters.
+              </Typography>
+            </div>
+          )}
+        </Paper>
+      )}
     </div>
   );
 };

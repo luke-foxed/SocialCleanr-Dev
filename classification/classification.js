@@ -46,7 +46,7 @@ const loadModels = async () => {
 
     // taking the longest
     gestureModel = await tf.loadGraphModel(
-      'file://C:/Users/Luke/Documents/GitHub/Social-Cleaner/classification/gestureDetection/model.json'
+      'file://C:/Users/lukef/Documents/git/Social-Cleaner/classification/gestureDetection/model.json'
     );
 
     console.log('\nLoaded Gesture Model...\n');
@@ -132,7 +132,7 @@ const detectClothing = async image => {
   resetResults();
   let people = await detectPeople(image);
   let peopleAgeGender = [];
-  let classifcation;
+  let classifcation = [];
 
   await helpers.asyncForEach(people, async person => {
     let detection = await detectAgeGender(person.image);
@@ -152,13 +152,15 @@ const detectClothing = async image => {
       classifcation = await femaleClothingModel.predict(image);
     }
 
-    results.people.push({
-      gender: person.gender,
-      topless_prediction: Math.round(100 * classifcation[0].probability),
-      age: Math.round(person.age),
-      bbox: person.bbox,
-      image: image
-    });
+    if (classifcation.length > 0) {
+      results.people.push({
+        gender: person.gender,
+        topless_prediction: Math.round(100 * classifcation[0].probability),
+        age: Math.round(person.age),
+        bbox: person.bbox,
+        image: image
+      });
+    }
   });
 
   return results;
@@ -237,14 +239,17 @@ const detectGesture = async image => {
     indexes,
     classes
   );
-
-  objects.forEach(gesture => {
-    results.gestures.push({
-      type: gesture.class,
-      score: Math.round(100 * gesture.score),
-      bbox: gesture.bbox
+  if (objects.length > 0) {
+    objects.forEach(gesture => {
+      results.gestures.push({
+        type: gesture.class,
+        score: Math.round(100 * gesture.score),
+        bbox: gesture.bbox
+      });
     });
-  });
+  } else {
+    console.log('No gestures detected');
+  }
 
   return results;
 };

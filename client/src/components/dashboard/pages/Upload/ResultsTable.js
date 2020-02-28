@@ -8,11 +8,15 @@ import {
   TableHead
 } from '@material-ui/core';
 import React from 'react';
-import { Warning, Visibility, DeleteForever } from '@material-ui/icons';
+import { Warning, Visibility, DeleteForever, Brush } from '@material-ui/icons';
 
-export const ResultsTable = ({ flaggedContent, onViewClick }) => {
+export const ResultsTable = ({ flaggedContent, onViewClick, onCleanClick }) => {
   const handleBoxView = bbox => {
     onViewClick(bbox);
+  };
+
+  const handleCleanImage = bbox => {
+    onCleanClick(bbox);
   };
 
   return (
@@ -46,6 +50,11 @@ export const ResultsTable = ({ flaggedContent, onViewClick }) => {
               <IconButton onClick={() => handleBoxView(value.box)}>
                 <Visibility />
               </IconButton>
+
+              <IconButton onClick={() => handleCleanImage(value.box)}>
+                <Brush />
+              </IconButton>
+
               <IconButton>
                 <DeleteForever />
               </IconButton>

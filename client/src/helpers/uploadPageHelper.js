@@ -47,8 +47,7 @@ export const cleanResults = results => {
 };
 
 export const drawBoundingBox = async (image, box) => {
-  let canvasImage = await createCanvasImage(image);
-
+  const canvasImage = await createCanvasImage(image);
   const ctx = canvasImage.getContext('2d');
 
   ctx.beginPath();
@@ -60,12 +59,42 @@ export const drawBoundingBox = async (image, box) => {
   return canvasImage.toDataURL();
 };
 
+export const drawBlurringBox = async (image, box) => {
+  const loadedImage = await loadImage(image);
+  const canvas = await createCanvasImage(image);
+  const ctx = canvas.getContext('2d');
+  ctx.filter = 'blur(50px)';
+  ctx.drawImage(loadedImage, 0, 0);
+  const imgData = ctx.getImageData(box[0], box[1], box[2], box[3]);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.filter = 'none';
+  ctx.drawImage(loadedImage, 0, 0);
+  ctx.putImageData(imgData, box[0], box[1]);
+
+  return canvas.toDataURL();
+};
+
 const createCanvasImage = async base64Image => {
-  let image = await loadImage(base64Image);
+  const image = await loadImage(base64Image);
   const canvas = createCanvas(image.width, image.height);
   const ctx = canvas.getContext('2d');
   ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
   return canvas;
+};
+
+export const blurAllContent = async (image, boxes) => {
+  let cleanedImage = image;
+
+  // boxes.forEach(async box => {
+  //   console.log('CLEANING');
+  //   cleanedImage = await drawBlurringBox(cleanedImage, box);
+  // });
+
+  await asyncForEach(boxes, async box => {
+    cleanedImage = await drawBlurringBox(cleanedImage, box);
+  });
+
+  return cleanedImage;
 };
 
 export const validationCheck = (models, image) => {
@@ -78,4 +107,20 @@ export const validationCheck = (models, image) => {
     alertProps.message = 'Please Upload An Image';
   }
   return alertProps;
+};
+
+// https://codeburst.io/javascript-async-await-with-foreach-b6ba62bbf404
+const asyncForEach = async (array, callback) => {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+};
+
+export const createDownloadImage = image => {
+  const a = document.createElement('a');
+  a.href = image;
+  a.download = 'cleaned_image.png';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 };

@@ -152,7 +152,7 @@ const convertToText = async image => {
   };
 
   const [result] = await client.textDetection(request);
-  const detections = result.textAnnotations;
+  const detections = await result.textAnnotations;
 
   if (detections.length !== 0) {
     // skip first item in array, this is the full text
