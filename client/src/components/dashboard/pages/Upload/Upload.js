@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { Button, Paper, Typography, CircularProgress } from '@material-ui/core';
+import {
+  Button,
+  Paper,
+  Typography,
+  CircularProgress,
+  Box
+} from '@material-ui/core';
 import * as colors from '../../../colors';
 import {
   CloudUpload,
@@ -48,6 +54,7 @@ const StyledToggleButton = withStyles({
 
 const useStyles = makeStyles(theme => ({
   paper: {
+    margin: theme.spacing(2),
     padding: theme.spacing(4),
     display: 'flex',
     flexDirection: 'column',
@@ -107,6 +114,7 @@ const Upload = () => {
 
   const handleInput = event => {
     setImage('');
+    setBoxImage('');
     if (event.target.files && event.target.files[0]) {
       let reader = new FileReader();
       reader.readAsDataURL(event.target.files[0]);
@@ -149,8 +157,8 @@ const Upload = () => {
     setBoxImage(cleanImage);
   };
 
-  const handleDownloadImage = image => {
-    // createDownloadImage(image);
+  const handleDownloadImage = () => {
+    createDownloadImage(boxImage);
   };
 
   return (
@@ -287,13 +295,11 @@ const Upload = () => {
           </Typography>
           <hr
             className={classes.divider}
-            style={{ borderTop: '2px solid #4a4a4a' }}
+            style={{ borderTop: '2px solid ' + colors.colorPurple }}
           />
 
           {flaggedContent.length > 0 ? (
-            <div
-              className={classes.paper}
-              style={{ width: '100%', marginBottom: '20px' }}>
+            <div>
               <ResultsTable
                 flaggedContent={flaggedContent}
                 onViewClick={bbox => showBox(bbox)}
@@ -305,33 +311,35 @@ const Upload = () => {
                 style={{ borderTop: '2px solid #4a4a4a' }}
               />
 
-              <Button
-                variant='contained'
-                color='primary'
-                size='large'
-                style={{
-                  backgroundColor: colors.colorDarkPink,
-                  padding: '5px'
-                }}
-                className={classes.button}
-                onClick={handleCleanEntireImage}
-                endIcon={<Brush />}>
-                Clean Entire Image
-              </Button>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <Button
+                  variant='contained'
+                  color='primary'
+                  size='medium'
+                  style={{
+                    backgroundColor: colors.colorDarkPink,
+                    margin: '5px',
+                    width: '200px'
+                  }}
+                  onClick={handleCleanEntireImage}
+                  endIcon={<Brush />}>
+                  Clean All
+                </Button>
 
-              <Button
-                variant='contained'
-                color='primary'
-                size='large'
-                style={{
-                  backgroundColor: colors.colorLightOrange,
-                  padding: '5px'
-                }}
-                className={classes.button}
-                onClick={handleDownloadImage}
-                endIcon={<GetApp />}>
-                Download Image
-              </Button>
+                <Button
+                  variant='contained'
+                  color='primary'
+                  size='medium'
+                  style={{
+                    backgroundColor: colors.colorLightOrange,
+                    margin: '5px',
+                    width: '200px'
+                  }}
+                  onClick={handleDownloadImage}
+                  endIcon={<GetApp />}>
+                  Download Image
+                </Button>
+              </div>
             </div>
           ) : (
             <div style={{ textAlign: 'center' }}>

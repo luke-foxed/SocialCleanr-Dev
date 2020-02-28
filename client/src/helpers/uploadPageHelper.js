@@ -117,10 +117,10 @@ const asyncForEach = async (array, callback) => {
 };
 
 export const createDownloadImage = image => {
-  // var a = document.createElement('a');
-  // a.href = image;
-  // a.download = 'cleaned_image.png';
-  // document.body.appendChild(a);
-  // a.click();
-  // document.body.removeChild(a);
+  const a = document.createElement('a');
+  a.href = image;
+  a.download = 'cleaned_image.png';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 };
