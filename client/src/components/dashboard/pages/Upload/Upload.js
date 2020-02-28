@@ -10,13 +10,17 @@ import {
   CheckCircle,
   EmojiPeople,
   Spellcheck,
-  ThumbsUpDown
+  ThumbsUpDown,
+  Brush,
+  GetApp
 } from '@material-ui/icons';
 import { beginClassification } from '../../../../actions/upload.js';
 import {
   cleanResults,
   drawBoundingBox,
-  drawBlurringBox
+  drawBlurringBox,
+  blurAllContent,
+  createDownloadImage
 } from '../../../../helpers/uploadPageHelper';
 import { ResultsTable } from './ResultsTable';
 import ToggleButton from '@material-ui/lab/ToggleButton';
@@ -44,8 +48,6 @@ const StyledToggleButton = withStyles({
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    marginTop: theme.spacing(4),
-    marginBottom: theme.spacing(4),
     padding: theme.spacing(4),
     display: 'flex',
     flexDirection: 'column',
@@ -136,6 +138,19 @@ const Upload = () => {
   const cleanImage = async box => {
     let cleanImage = await drawBlurringBox(image, box);
     setBoxImage(cleanImage);
+  };
+
+  const handleCleanEntireImage = async () => {
+    let boxes = [];
+    flaggedContent.forEach(content => {
+      boxes.push(content.box);
+    });
+    let cleanImage = await blurAllContent(image, boxes);
+    setBoxImage(cleanImage);
+  };
+
+  const handleDownloadImage = image => {
+    // createDownloadImage(image);
   };
 
   return (
@@ -276,11 +291,48 @@ const Upload = () => {
           />
 
           {flaggedContent.length > 0 ? (
-            <ResultsTable
-              flaggedContent={flaggedContent}
-              onViewClick={bbox => showBox(bbox)}
-              onCleanClick={bbox => cleanImage(bbox)}
-            />
+            <div
+              className={classes.paper}
+              style={{ width: '100%', marginBottom: '20px' }}>
+              <ResultsTable
+                flaggedContent={flaggedContent}
+                onViewClick={bbox => showBox(bbox)}
+                onCleanClick={bbox => cleanImage(bbox)}
+              />
+
+              <hr
+                className={classes.divider}
+                style={{ borderTop: '2px solid #4a4a4a' }}
+              />
+
+              <Button
+                variant='contained'
+                color='primary'
+                size='large'
+                style={{
+                  backgroundColor: colors.colorDarkPink,
+                  padding: '5px'
+                }}
+                className={classes.button}
+                onClick={handleCleanEntireImage}
+                endIcon={<Brush />}>
+                Clean Entire Image
+              </Button>
+
+              <Button
+                variant='contained'
+                color='primary'
+                size='large'
+                style={{
+                  backgroundColor: colors.colorLightOrange,
+                  padding: '5px'
+                }}
+                className={classes.button}
+                onClick={handleDownloadImage}
+                endIcon={<GetApp />}>
+                Download Image
+              </Button>
+            </div>
           ) : (
             <div style={{ textAlign: 'center' }}>
               <CheckCircle

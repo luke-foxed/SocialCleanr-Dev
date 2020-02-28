@@ -1,5 +1,4 @@
 const { loadImage, createCanvas } = require('canvas');
-const gm = require('gm');
 
 export const cleanResults = results => {
   let flaggedContent = [];
@@ -62,7 +61,6 @@ export const drawBoundingBox = async (image, box) => {
 
 export const drawBlurringBox = async (image, box) => {
   const loadedImage = await loadImage(image);
-  loadedImage.crossOrigin = 'anonymous';
   const canvas = await createCanvasImage(image);
   const ctx = canvas.getContext('2d');
   ctx.filter = 'blur(50px)';
@@ -84,6 +82,21 @@ const createCanvasImage = async base64Image => {
   return canvas;
 };
 
+export const blurAllContent = async (image, boxes) => {
+  let cleanedImage = image;
+
+  // boxes.forEach(async box => {
+  //   console.log('CLEANING');
+  //   cleanedImage = await drawBlurringBox(cleanedImage, box);
+  // });
+
+  await asyncForEach(boxes, async box => {
+    cleanedImage = await drawBlurringBox(cleanedImage, box);
+  });
+
+  return cleanedImage;
+};
+
 export const validationCheck = (models, image) => {
   let alertProps = { type: 'error', message: '' };
 
@@ -94,4 +107,20 @@ export const validationCheck = (models, image) => {
     alertProps.message = 'Please Upload An Image';
   }
   return alertProps;
+};
+
+// https://codeburst.io/javascript-async-await-with-foreach-b6ba62bbf404
+const asyncForEach = async (array, callback) => {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+};
+
+export const createDownloadImage = image => {
+  // var a = document.createElement('a');
+  // a.href = image;
+  // a.download = 'cleaned_image.png';
+  // document.body.appendChild(a);
+  // a.click();
+  // document.body.removeChild(a);
 };

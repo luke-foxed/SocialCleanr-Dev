@@ -74,7 +74,6 @@ router.post('/filter_models', async (req, res) => {
   results.gestures = gestureResults.gestures || [];
   results.text = textResults.text || [];
 
-  console.log(results);
   res.send(results);
 });
 
