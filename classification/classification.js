@@ -5,12 +5,10 @@ const tf = require('@tensorflow/tfjs-node');
 const modelPaths = require('./paths');
 const tfImage = require('@teachablemachine/image');
 const faceapi = require('face-api.js');
-const helpers = require('./helpers');
+const helpers = require('../helpers/classificationHelpers');
 const cocoSSD = require('@tensorflow-models/coco-ssd');
 const toxicity = require('@tensorflow-models/toxicity');
 require('@tensorflow/tfjs-node');
-
-const fs = require('fs');
 
 // needed to overcome tensorflow dom requirements
 const dom = new JSDOM('<!DOCTYPE html>');
@@ -26,7 +24,18 @@ let gestureModel = '';
 let toxicityModel = '';
 let modelsLoaded = false;
 
+// type of results
+let results = {
+  people: [],
+  gestures: [],
+  text: [],
+  age: []
+};
+
 const loadModels = async () => {
+  // clear results from previous scans
+  results.people = results.gestures = results.text = results.age = [];
+
   if (modelsLoaded) {
     console.log('\nMODELS ALREADY LOADED\n');
   } else {
@@ -72,26 +81,7 @@ const loadModels = async () => {
 
 // ----- CLASSIFICATION FUNCTIONALITY ----- //
 
-let results = {
-  people: [],
-  gestures: [],
-  text: [],
-  image: ''
-};
-
-// prevent previous scans from carrying over
-const resetResults = () => {
-  results = {
-    people: [],
-    gestures: [],
-    text: [],
-    image: ''
-  };
-};
-
 const detectPeople = async image => {
-  resetResults();
-
   let boundingBoxes = [];
   let canvasImage = await helpers.createCanvasImage(image);
   let tensor = tf.browser.fromPixels(canvasImage);
@@ -101,10 +91,25 @@ const detectPeople = async image => {
     boundingBoxes.push(positiveBox);
   });
 
-  let images = await helpers.boundingBoxesToImage(boundingBoxes, canvasImage);
-
   // return array of images containing people
+  let images = await helpers.boundingBoxesToImage(boundingBoxes, canvasImage);
   return images;
+};
+
+const detectMultipleAgeGender = async image => {
+  let img = await loadImage(image);
+  let ageGenderResults = await faceapi.detectAllFaces(img).withAgeAndGender();
+  ageGenderResults.forEach(person => {
+    let box = person.detection.box;
+    results.age.push({
+      gender: person.gender,
+      age: Math.round(person.age),
+      probability: Math.round(100 * person.detection.classScore),
+      bbox: [box._x, box._y, box._width, box._height]
+    });
+  });
+
+  return results;
 };
 
 const detectAgeGender = async image => {
@@ -129,7 +134,6 @@ const detectAgeGender = async image => {
 };
 
 const detectClothing = async image => {
-  resetResults();
   let people = await detectPeople(image);
   let peopleAgeGender = [];
   let classifcation = [];
@@ -258,5 +262,6 @@ module.exports = {
   loadModels,
   detectClothing,
   detectGesture,
-  detectText
+  detectText,
+  detectMultipleAgeGender
 };

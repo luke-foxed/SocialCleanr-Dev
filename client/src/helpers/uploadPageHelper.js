@@ -1,4 +1,5 @@
 const { loadImage, createCanvas } = require('canvas');
+const helpers = require('./generalHelpers');
 
 export const cleanResults = results => {
   let flaggedContent = [];
@@ -39,8 +40,17 @@ export const cleanResults = results => {
     });
   }
 
-  // if no flagged content has been added, scan is clean
-  if (flaggedContent.length === 0) {
+  if (results['age'].length !== 0) {
+    results['age'].forEach(item => {
+      if (item.age < 5) {
+        flaggedContent.push({
+          type: 'Child Detected',
+          message: `A child below the age of 5 (aged ${item.age}) has been detected`,
+          probability: item.probability,
+          box: item.bbox
+        });
+      }
+    });
   }
 
   return flaggedContent;
@@ -85,12 +95,7 @@ const createCanvasImage = async base64Image => {
 export const blurAllContent = async (image, boxes) => {
   let cleanedImage = image;
 
-  // boxes.forEach(async box => {
-  //   console.log('CLEANING');
-  //   cleanedImage = await drawBlurringBox(cleanedImage, box);
-  // });
-
-  await asyncForEach(boxes, async box => {
+  await helpers.asyncForEach(boxes, async box => {
     cleanedImage = await drawBlurringBox(cleanedImage, box);
   });
 
@@ -107,13 +112,6 @@ export const validationCheck = (models, image) => {
     alertProps.message = 'Please Upload An Image';
   }
   return alertProps;
-};
-
-// https://codeburst.io/javascript-async-await-with-foreach-b6ba62bbf404
-const asyncForEach = async (array, callback) => {
-  for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array);
-  }
 };
 
 export const createDownloadImage = image => {

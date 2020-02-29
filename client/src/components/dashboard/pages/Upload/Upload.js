@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import {
-  Button,
-  Paper,
-  Typography,
-  CircularProgress,
-  Box
-} from '@material-ui/core';
+import { Button, Paper, Typography, CircularProgress } from '@material-ui/core';
 import * as colors from '../../../colors';
 import {
   CloudUpload,
@@ -18,7 +12,8 @@ import {
   Spellcheck,
   ThumbsUpDown,
   Brush,
-  GetApp
+  GetApp,
+  ChildCare
 } from '@material-ui/icons';
 import { beginClassification } from '../../../../actions/upload.js';
 import {
@@ -60,7 +55,6 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     alignItems: 'center'
   },
-
   divider: {
     paddingBottom: theme.spacing(2),
     width: '40px',
@@ -86,7 +80,6 @@ const useStyles = makeStyles(theme => ({
       transition: 'all .5s ease-in-out'
     }
   },
-
   progress: {
     margin: '0 auto'
   },
@@ -131,9 +124,8 @@ const Upload = () => {
 
   const handleScanStart = async () => {
     setSpinnerVisible(true);
-    setResults({ gender: '', topless: '', clothed: '', text: '' });
-    let results = await beginClassification(models, image);
-    setFlaggedContent(cleanResults(results.data));
+    let response = await beginClassification(models, image);
+    setFlaggedContent(cleanResults(response.data));
     setSpinnerVisible(false);
     setResultsVisible(true);
   };
@@ -246,6 +238,11 @@ const Upload = () => {
             Gestures
             <ThumbsUpDown fontSize='large' style={{ paddingLeft: '5px' }} />
           </StyledToggleButton>
+
+          <StyledToggleButton value='age'>
+            Age
+            <ChildCare fontSize='large' style={{ paddingLeft: '5px' }} />
+          </StyledToggleButton>
         </StyledToggleButtonGroup>
 
         <hr
@@ -293,6 +290,7 @@ const Upload = () => {
             />
             Results
           </Typography>
+
           <hr
             className={classes.divider}
             style={{ borderTop: '2px solid ' + colors.colorPurple }}
