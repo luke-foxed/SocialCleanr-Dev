@@ -3,6 +3,7 @@ const { loadImage, createCanvas } = require('canvas');
 const axios = require('axios');
 const sharp = require('sharp');
 const client = new vision.ImageAnnotatorClient();
+const helpers = require('./generalHelpers');
 
 // for converting URLs into tensor objects
 const getTensor3dObject = async imageURL => {
@@ -96,20 +97,13 @@ const drawBoundingBox = (canvas, coordinates) => {
   return bboxCanvas.toDataURL();
 };
 
-// https://codeburst.io/javascript-async-await-with-foreach-b6ba62bbf404
-const asyncForEach = async (array, callback) => {
-  for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array);
-  }
-};
-
 const boundingBoxesToImage = async (boxArray, image) => {
   let images = [];
   let base64 = image.toDataURL();
   let base64Stripped = base64.split(',')[1];
   let buff = Buffer.from(base64Stripped, 'base64');
 
-  await asyncForEach(boxArray, async boxes => {
+  await helpers.asyncForEach(boxArray, async boxes => {
     // If left + width exceeds image width, adjust width
     if (boxes[0] + boxes[2] > image.width) {
       let adjustedWidth = boxes[0] + boxes[2] - image.width;
@@ -182,6 +176,5 @@ module.exports = {
   buildDetectedObjects,
   drawBoundingBox,
   boundingBoxesToImage,
-  asyncForEach,
   convertToText
 };

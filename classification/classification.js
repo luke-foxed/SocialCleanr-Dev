@@ -5,12 +5,10 @@ const tf = require('@tensorflow/tfjs-node');
 const modelPaths = require('./paths');
 const tfImage = require('@teachablemachine/image');
 const faceapi = require('face-api.js');
-const helpers = require('./helpers');
+const helpers = require('../helpers/classificationHelpers');
 const cocoSSD = require('@tensorflow-models/coco-ssd');
 const toxicity = require('@tensorflow-models/toxicity');
 require('@tensorflow/tfjs-node');
-
-const fs = require('fs');
 
 // needed to overcome tensorflow dom requirements
 const dom = new JSDOM('<!DOCTYPE html>');
@@ -26,7 +24,18 @@ let gestureModel = '';
 let toxicityModel = '';
 let modelsLoaded = false;
 
+// type of results
+let results = {
+  people: [],
+  gestures: [],
+  text: [],
+  age: []
+};
+
 const loadModels = async () => {
+  // clear results from previous scans
+  results.people = results.gestures = results.text = results.age = [];
+
   if (modelsLoaded) {
     console.log('\nMODELS ALREADY LOADED\n');
   } else {
@@ -71,13 +80,6 @@ const loadModels = async () => {
 };
 
 // ----- CLASSIFICATION FUNCTIONALITY ----- //
-
-let results = {
-  people: [],
-  gestures: [],
-  text: [],
-  age: []
-};
 
 const detectPeople = async image => {
   let boundingBoxes = [];

@@ -124,10 +124,8 @@ const Upload = () => {
 
   const handleScanStart = async () => {
     setSpinnerVisible(true);
-    setResults({ gender: '', topless: '', clothed: '', text: '' });
-    setFlaggedContent([]);
-    let results = await beginClassification(models, image);
-    setFlaggedContent(cleanResults(results.data));
+    let response = await beginClassification(models, image);
+    setFlaggedContent(cleanResults(response.data));
     setSpinnerVisible(false);
     setResultsVisible(true);
   };
