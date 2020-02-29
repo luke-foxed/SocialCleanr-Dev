@@ -76,7 +76,7 @@ let results = {
   people: [],
   gestures: [],
   text: [],
-  image: ''
+  age: []
 };
 
 // prevent previous scans from carrying over
@@ -85,7 +85,7 @@ const resetResults = () => {
     people: [],
     gestures: [],
     text: [],
-    image: ''
+    age: []
   };
 };
 
@@ -105,6 +105,22 @@ const detectPeople = async image => {
 
   // return array of images containing people
   return images;
+};
+
+const detectMultipleAgeGender = async image => {
+  let img = await loadImage(image);
+  let ageGenderResults = await faceapi.detectAllFaces(img).withAgeAndGender();
+  ageGenderResults.forEach(person => {
+    let box = person.detection.box;
+    results.age.push({
+      gender: person.gender,
+      age: Math.round(person.age),
+      probability: Math.round(100 * person.detection.classScore),
+      bbox: [box._x, box._y, box._width, box._height]
+    });
+  });
+
+  return results;
 };
 
 const detectAgeGender = async image => {
@@ -258,5 +274,6 @@ module.exports = {
   loadModels,
   detectClothing,
   detectGesture,
-  detectText
+  detectText,
+  detectMultipleAgeGender
 };

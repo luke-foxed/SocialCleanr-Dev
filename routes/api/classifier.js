@@ -29,21 +29,37 @@ const getTensor3dObject = async imageURL => {
 router.post('/filter_models', async (req, res) => {
   await classification.loadModels();
   let results = {};
-  let gestureResults = (clothingResults = textResults = []);
+  let gestureResults = (ageResults = clothingResults = textResults = []);
   let selection = req.body.models;
 
   switch (true) {
-    case selection.text && !selection.gestures && !selection.clothing:
+    case selection.text &&
+      !selection.gestures &&
+      !selection.clothing &&
+      !selection.age:
       console.log('/n SELECTED TEXT');
       textResults = await classification.detectText(req.body.image);
       break;
-    case selection.clothing && !selection.gestures && !selection.text:
+    case selection.clothing &&
+      !selection.gestures &&
+      !selection.text &&
+      !selection.age:
       console.log('/n SELECTED CLOTHING');
       clothingResults = await classification.detectClothing(req.body.image);
       break;
-    case selection.gestures && !selection.text && !selection.clothing:
+    case selection.gestures &&
+      !selection.text &&
+      !selection.clothing &&
+      !selection.age:
       console.log('/n SELECTED GESTURES');
       gestureResults = await classification.detectGesture(req.body.image);
+      break;
+    case selection.age &&
+      !selection.gestures &&
+      !selection.text &&
+      !selection.clothing:
+      console.log('/n SELECTED AGE');
+      ageResults = await classification.detectMultipleAgeGender(req.body.image);
       break;
 
     // multiple options
@@ -73,6 +89,7 @@ router.post('/filter_models', async (req, res) => {
   results.people = clothingResults.people || [];
   results.gestures = gestureResults.gestures || [];
   results.text = textResults.text || [];
+  results.age = ageResults.age || [];
 
   res.send(results);
 });

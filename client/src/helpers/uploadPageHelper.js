@@ -1,6 +1,8 @@
 const { loadImage, createCanvas } = require('canvas');
 
 export const cleanResults = results => {
+  console.log(results);
+
   let flaggedContent = [];
 
   if (results['people'].length !== 0) {
@@ -39,6 +41,22 @@ export const cleanResults = results => {
     });
   }
 
+  if (results['age'].length !== 0) {
+    console.log('AGES');
+
+    results['age'].forEach(item => {
+      console.log(item);
+      if (item.age < 5) {
+        flaggedContent.push({
+          type: 'Child Detected',
+          message: `A child below the age of 5 (aged ${item.age}) has been detected`,
+          probability: item.probability,
+          box: item.bbox
+        });
+      }
+    });
+  }
+
   // if no flagged content has been added, scan is clean
   if (flaggedContent.length === 0) {
   }
@@ -50,6 +68,7 @@ export const drawBoundingBox = async (image, box) => {
   const canvasImage = await createCanvasImage(image);
   const ctx = canvasImage.getContext('2d');
 
+  console.log(box[0]);
   ctx.beginPath();
   ctx.rect(box[0], box[1], box[2], box[3]);
   ctx.lineWidth = 2;
@@ -84,11 +103,6 @@ const createCanvasImage = async base64Image => {
 
 export const blurAllContent = async (image, boxes) => {
   let cleanedImage = image;
-
-  // boxes.forEach(async box => {
-  //   console.log('CLEANING');
-  //   cleanedImage = await drawBlurringBox(cleanedImage, box);
-  // });
 
   await asyncForEach(boxes, async box => {
     cleanedImage = await drawBlurringBox(cleanedImage, box);
