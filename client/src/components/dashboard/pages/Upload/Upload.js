@@ -55,7 +55,6 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     alignItems: 'center'
   },
-
   divider: {
     paddingBottom: theme.spacing(2),
     width: '40px',
@@ -81,7 +80,6 @@ const useStyles = makeStyles(theme => ({
       transition: 'all .5s ease-in-out'
     }
   },
-
   progress: {
     margin: '0 auto'
   },
@@ -127,6 +125,7 @@ const Upload = () => {
   const handleScanStart = async () => {
     setSpinnerVisible(true);
     setResults({ gender: '', topless: '', clothed: '', text: '' });
+    setFlaggedContent([]);
     let results = await beginClassification(models, image);
     setFlaggedContent(cleanResults(results.data));
     setSpinnerVisible(false);

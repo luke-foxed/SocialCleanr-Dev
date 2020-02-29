@@ -79,19 +79,7 @@ let results = {
   age: []
 };
 
-// prevent previous scans from carrying over
-const resetResults = () => {
-  results = {
-    people: [],
-    gestures: [],
-    text: [],
-    age: []
-  };
-};
-
 const detectPeople = async image => {
-  resetResults();
-
   let boundingBoxes = [];
   let canvasImage = await helpers.createCanvasImage(image);
   let tensor = tf.browser.fromPixels(canvasImage);
@@ -101,9 +89,8 @@ const detectPeople = async image => {
     boundingBoxes.push(positiveBox);
   });
 
-  let images = await helpers.boundingBoxesToImage(boundingBoxes, canvasImage);
-
   // return array of images containing people
+  let images = await helpers.boundingBoxesToImage(boundingBoxes, canvasImage);
   return images;
 };
 
@@ -145,7 +132,6 @@ const detectAgeGender = async image => {
 };
 
 const detectClothing = async image => {
-  resetResults();
   let people = await detectPeople(image);
   let peopleAgeGender = [];
   let classifcation = [];
