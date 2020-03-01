@@ -22,6 +22,10 @@ import {
   FormGroup
 } from '@material-ui/core';
 
+import { connect } from 'react-redux';
+import { setAlert } from '../../actions/alert';
+import PropTypes from 'prop-types';
+
 const useStyles = makeStyles(theme => ({
   paper: {
     marginTop: theme.spacing(8),
@@ -55,7 +59,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Login = () => {
+const Login = ({ setAlert }) => {
   const classes = useStyles();
   const [website, setWebsite] = useState('');
   const [checkbox, setCheckbox] = useState(false);
@@ -75,7 +79,7 @@ const Login = () => {
 
   const submit = () => {
     if (website === '') {
-      return 'Please Select A Website';
+      setAlert('Please Select A Website', 'error');
     } else {
       axios({
         method: 'post',
@@ -91,7 +95,7 @@ const Login = () => {
 
   const passportAuthentication = async () => {
     if (website === '') {
-      console.log('Please select a website');
+      setAlert('Please Select A Website', 'error');
     } else {
       window.open(
         `http://localhost:5000/api/passport-auth/login-${website}`,
@@ -217,4 +221,8 @@ const Login = () => {
   );
 };
 
-export default Login;
+Login.propTypes = {
+  setAlert: PropTypes.func.isRequired
+};
+
+export default connect(null, { setAlert })(Login);

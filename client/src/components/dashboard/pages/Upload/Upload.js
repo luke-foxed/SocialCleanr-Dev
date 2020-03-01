@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { Button, Paper, Typography, CircularProgress } from '@material-ui/core';
+import {
+  Button,
+  Paper,
+  Typography,
+  CircularProgress,
+  Container
+} from '@material-ui/core';
 import * as colors from '../../../colors';
 import {
   CloudUpload,
@@ -26,6 +32,10 @@ import {
 import { ResultsTable } from './ResultsTable';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+
+import { connect } from 'react-redux';
+import { setAlert } from '../../../../actions/alert';
+import PropTypes from 'prop-types';
 
 const StyledToggleButtonGroup = withStyles(theme => ({
   grouped: {
@@ -90,7 +100,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Upload = () => {
+const Upload = ({ setAlert }) => {
   const classes = useStyles();
   const [image, setImage] = useState('');
   const [boxImage, setBoxImage] = useState('');
@@ -123,11 +133,16 @@ const Upload = () => {
   };
 
   const handleScanStart = async () => {
-    setSpinnerVisible(true);
-    let response = await beginClassification(models, image);
-    setFlaggedContent(cleanResults(response.data));
-    setSpinnerVisible(false);
-    setResultsVisible(true);
+    if (models.length === 0) {
+      setAlert('No Model Selected', 'error');
+      console.log('ERROR');
+    } else {
+      setSpinnerVisible(true);
+      let response = await beginClassification(models, image);
+      setFlaggedContent(cleanResults(response.data));
+      setSpinnerVisible(false);
+      setResultsVisible(true);
+    }
   };
 
   const showBox = async box => {
@@ -154,7 +169,7 @@ const Upload = () => {
   };
 
   return (
-    <div>
+    <Container component='main' maxWidth='md'>
       <Paper elevation={2} className={classes.paper}>
         <Typography
           variant='h4'
@@ -353,8 +368,12 @@ const Upload = () => {
           )}
         </Paper>
       )}
-    </div>
+    </Container>
   );
 };
 
-export default Upload;
+Upload.propTypes = {
+  setAlert: PropTypes.func.isRequired
+};
+
+export default connect(null, { setAlert })(Upload);
