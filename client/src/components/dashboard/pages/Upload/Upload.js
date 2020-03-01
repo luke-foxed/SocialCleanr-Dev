@@ -135,7 +135,8 @@ const Upload = ({ setAlert }) => {
   const handleScanStart = async () => {
     if (models.length === 0) {
       setAlert('No Model Selected', 'error');
-      console.log('ERROR');
+    } else if (image === '') {
+      setAlert('No Image Uploaded', 'error');
     } else {
       setSpinnerVisible(true);
       let response = await beginClassification(models, image);
