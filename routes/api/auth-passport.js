@@ -8,7 +8,7 @@ const { ensureAuthenticated } = require('../../middleware/auth');
 
 const SUCCESS_REDIRECT_FACEBOOK = 'http://localhost:3000/dashboard?facebook';
 const SUCCESS_REDIRECT_TWITTER = 'http://localhost:3000/dashboard?twitter';
-const FAILURE_REDIRECT = 'http://localhost:3000/';
+const FAILURE_REDIRECT = 'http://localhost:3000/login';
 
 var client = {
   consumer_key: config.twitterAPIKey,

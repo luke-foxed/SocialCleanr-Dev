@@ -7,7 +7,7 @@ import {
   CircularProgress,
   Container
 } from '@material-ui/core';
-import * as colors from '../../../colors';
+import * as colors from '../../../../helpers/colors';
 import {
   CloudUpload,
   Send,
@@ -32,7 +32,6 @@ import {
 import { ResultsTable } from './ResultsTable';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-
 import { connect } from 'react-redux';
 import { setAlert } from '../../../../actions/alert';
 import PropTypes from 'prop-types';

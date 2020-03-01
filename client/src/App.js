@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Landing from './components/landing/Landing';
 import Login from './components/auth/Login';
 import Dashboard from './components/dashboard/Dashboard';
-import Alerter from './components/Layout/Alert';
+import Alerter from './components/layout/Alert';
 
 // Redux
 import { Provider } from 'react-redux';

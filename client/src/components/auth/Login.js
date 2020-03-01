@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { makeStyles } from '@material-ui/core/styles';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import TwitterIcon from '@material-ui/icons/Twitter';
-import * as colors from '../colors';
-import axios from 'axios';
+import * as colors from '../../helpers/colors';
 import {
   ButtonGroup,
   Tooltip,
@@ -21,6 +20,7 @@ import {
   Collapse,
   FormGroup
 } from '@material-ui/core';
+import { loginSocialMedia, loginScraper } from '../../actions/login';
 
 import { connect } from 'react-redux';
 import { setAlert } from '../../actions/alert';
@@ -81,15 +81,7 @@ const Login = ({ setAlert }) => {
     if (website === '') {
       setAlert('Please Select A Website', 'error');
     } else {
-      axios({
-        method: 'post',
-        url: '/api/scrape/login',
-        data: {
-          email: userData.email,
-          password: userData.password,
-          authcode: userData.authcode
-        }
-      });
+      loginScraper(userData);
     }
   };
 
@@ -97,10 +89,7 @@ const Login = ({ setAlert }) => {
     if (website === '') {
       setAlert('Please Select A Website', 'error');
     } else {
-      window.open(
-        `http://localhost:5000/api/passport-auth/login-${website}`,
-        '_self'
-      );
+      loginSocialMedia(website);
     }
   };
 
