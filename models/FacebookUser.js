@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
-  facebook_id: {
+  social_media_id: {
     type: String,
     required: true
   },

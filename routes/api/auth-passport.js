@@ -4,11 +4,11 @@ const passport = require('passport');
 const graph = require('fbgraph');
 const twitter = require('twitter');
 const config = require('config');
-const { ensureAuthenticated } = require('../../middleware/auth');
+const auth = require('../../middleware/auth');
 
 const SUCCESS_REDIRECT_FACEBOOK = 'http://localhost:3000/dashboard?facebook';
 const SUCCESS_REDIRECT_TWITTER = 'http://localhost:3000/dashboard?twitter';
-const FAILURE_REDIRECT = 'http://localhost:3000/';
+const FAILURE_REDIRECT = 'http://localhost:3000/login';
 
 var client = {
   consumer_key: config.twitterAPIKey,
@@ -18,15 +18,34 @@ var client = {
 
 // AUTHENTICATION //
 
+// router.get('/login-facebook', passport.authenticate('facebook'));
+
 router.get('/login-facebook', passport.authenticate('facebook'));
 
 router.get(
   '/auth/facebook/callback',
   passport.authenticate('facebook', {
-    successRedirect: SUCCESS_REDIRECT_FACEBOOK,
-    failureRedirect: FAILURE_REDIRECT
-  })
+    session: false
+  }),
+  (req, res) => {
+    res.cookie('jwt', req.user);
+    res.redirect('http://localhost:3000/dashboard'); // OR whatever page you want to redirect to with that cookie
+  }
 );
+
+router.get('/login-facebook', function(req, res, next) {
+  passport.authenticate('facebook', {
+    callbackURL: '/auth/facebook/login_callback/' + req.params.id
+  })(req, res, next);
+});
+
+// needs middleware to check user exists
+router.get('/get-token', (req, res) => {
+  let token = req.user.jwt;
+  res.json({ token });
+});
+
+////////
 
 router.get('/login-twitter', passport.authenticate('twitter'));
 
@@ -45,9 +64,9 @@ router.get('/login/failed', (req, res) => {
   });
 });
 
-// USER
+// USERS
 
-router.get('/my-facebook', ensureAuthenticated, (req, res) => {
+router.get('/my-facebook', auth, (req, res) => {
   graph.get(
     '/me?fields=id,name,email,posts{picture}',
     { access_token: req.user.token },
@@ -57,15 +76,15 @@ router.get('/my-facebook', ensureAuthenticated, (req, res) => {
   );
 });
 
-router.get('/my-twitter', ensureAuthenticated, (req, res) => {
-  client.bearer_token = req.user.token;
-  const twitterClient = new twitter(client);
-  const options = {
-    user_id: req.user.id
-  };
-  twitterClient.get('users/lookup', options, (err, res) => {
-    console.log(res);
-  });
-});
+// router.get('/my-twitter', ensureAuthenticated, (req, res) => {
+//   client.bearer_token = req.user.token;
+//   const twitterClient = new twitter(client);
+//   const options = {
+//     user_id: req.user.id
+//   };
+//   twitterClient.get('users/lookup', options, (err, res) => {
+//     console.log(res);
+//   });
+// });
 
 module.exports = router;
