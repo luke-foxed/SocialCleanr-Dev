@@ -93,10 +93,12 @@ const Login = () => {
     if (website === '') {
       console.log('Please select a website');
     } else {
-      let stuff = await axios.get(
-        `http://localhost:5000/api/passport-auth/login-facebook`
+      window.open(
+        `http://localhost:5000/api/passport-auth/login-facebook`,
+        '_self'
       );
-      console.log(stuff);
+
+      console.log('AFTER');
     }
   };
 
