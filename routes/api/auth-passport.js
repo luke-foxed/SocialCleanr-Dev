@@ -33,8 +33,7 @@ router.get(
 
 // needs middleware to check user exists
 router.get('/get-token', (req, res) => {
-  console.log(req.body);
-  console.log(req.user);
+  res.send(req.user.authToken);
 });
 
 ////////

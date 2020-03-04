@@ -15,12 +15,14 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import { Route, HashRouter, Redirect } from 'react-router-dom';
-import { createHashHistory } from 'history';
 import SidebarItems from './SidebarItems';
 import Profile from './pages/Profile';
 import Home from './pages/Home';
 import Scan from './pages/Scan';
 import Upload from './pages/Upload/Upload';
+
+import { useEffect } from 'react';
+import { getUser } from '../../actions/user';
 
 const drawerWidth = 240;
 
@@ -112,6 +114,14 @@ const Dashboard = () => {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  useEffect(() => {
+    async function fetchAuthToken() {
+      await getUser();
+    }
+
+    fetchAuthToken();
+  }, []);
 
   return (
     <div className={classes.root}>

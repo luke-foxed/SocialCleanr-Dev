@@ -11,26 +11,13 @@ const mongoose = require('mongoose');
 // Connect to DB
 connectDB();
 
-// init mongo session
+// Init mongo session
 app.use(
   session({
     secret: 'test',
-    store: new MongoStore({ mongooseConnection: mongoose.connection })
-  })
-);
-
-// Init middleware
-app.use(bodyParser({ limit: '50mb' }));
-app.use(bodyParser.json()); // support json encoded bodies
-app.use(bodyParser.urlencoded({ extended: false })); // support encoded bodies
-app.use(express.json({ extended: false }));
-
-// Fix Cors error
-app.use(
-  cors({
-    origin: 'http://localhost:3000', // allow to server to accept request from different origin
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true // allow session cookie from browser to pass through
+    store: new MongoStore({ mongooseConnection: mongoose.connection }),
+    resave: true,
+    saveUninitialized: true
   })
 );
 
@@ -39,7 +26,22 @@ require('./config/passport')(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Init session
+// Init middleware
+app.use(bodyParser({ limit: '50mb' }));
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: false })); // support encoded bodies
+app.use(express.json({ extended: false }));
+
+// Fix cors error
+app.use(
+  cors({
+    origin: 'http://localhost:3000', // allow to server to accept request from different origin
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true // allow session cookie from browser to pass through
+  })
+);
+
+// Default route
 app.get('/', (req, res) => {
   res.send('welcome');
 });

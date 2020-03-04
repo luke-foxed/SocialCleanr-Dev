@@ -1,6 +1,6 @@
 const config = require('config');
-const jwt = require('jsonwebtoken');
 const tokenHelper = require('../utils/tokenHelper');
+const jwt = require('jsonwebtoken');
 const FacebookUser = require('../models/FacebookUser');
 const TwitterUser = require('../models/TwitterUser');
 const FacebookStrategy = require('passport-facebook').Strategy;
@@ -13,7 +13,6 @@ const twitterKey = config.twitterAPIKey;
 const twitterSecret = config.twitterSecret;
 
 let authMethod = '';
-let user = '';
 
 module.exports = function(passport) {
   passport.use(
@@ -25,23 +24,27 @@ module.exports = function(passport) {
       },
       async (accessToken, refreshToken, profile, done) => {
         authMethod = 'facebook';
-
-        user = await FacebookUser.findOne({
-          social_media_id: profile.id
+        const currentUser = await FacebookUser.findOne({
+          facebook_id: profile.id
         });
 
-        if (!user) {
+        if (!currentUser) {
           tokenHelper.extendToken(accessToken);
-          user = await new FacebookUser({
-            social_media_id: profile.id,
+          const newUser = await new FacebookUser({
+            facebook_id: profile.id,
             name: profile.displayName,
             token: accessToken,
             scans: 0,
             imagesCleaned: 0,
             textCleaned: 0
           }).save();
+
+          if (newUser) {
+            done(null, newUser);
+          }
+        } else {
+          done(null, currentUser);
         }
-        done(null, user);
       }
     )
   );
@@ -55,7 +58,6 @@ module.exports = function(passport) {
       },
       async (accessToken, refreshToken, profile, done) => {
         authMethod = 'twitter';
-        console.log(profile);
         const currentUser = await TwitterUser.findOne({
           twitter_id: profile.id
         });
@@ -94,7 +96,7 @@ module.exports = function(passport) {
           } else {
             const payload = {
               user: {
-                social_media_id: id
+                facebook_id: id
               }
             };
 
@@ -119,16 +121,3 @@ module.exports = function(passport) {
     }
   });
 };
-
-// const payload = {
-//   user: {
-//     social_media_id: profile.id
-//   }
-// };
-
-// let authToken = jwt.sign(payload, 'test', { expiresIn: 36000 });
-
-// let user = {
-//   jwt: authToken,
-//   api: accessToken
-// };
