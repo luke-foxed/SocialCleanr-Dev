@@ -22,7 +22,6 @@ import Scan from './pages/Scan';
 import Upload from './pages/Upload/Upload';
 
 import { useEffect } from 'react';
-import { getUser } from '../../actions/user';
 
 const drawerWidth = 240;
 
@@ -115,13 +114,13 @@ const Dashboard = () => {
     setOpen(false);
   };
 
-  useEffect(() => {
-    async function fetchAuthToken() {
-      await getUser();
-    }
+  // useEffect(() => {
+  //   async function fetchAuthToken() {
+  //     await getUser();
+  //   }
 
-    fetchAuthToken();
-  }, []);
+  //   fetchAuthToken();
+  // }, []);
 
   return (
     <div className={classes.root}>

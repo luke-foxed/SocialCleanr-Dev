@@ -4,6 +4,7 @@ import Landing from './components/landing/Landing';
 import Login from './components/auth/Login';
 import Dashboard from './components/dashboard/Dashboard';
 import Alerter from './components/layout/Alert';
+import Auth from './components/auth/Auth';
 
 // Redux
 import { Provider } from 'react-redux';
@@ -18,6 +19,7 @@ const App = () => (
           <Alerter />
           <Switch>
             <Route exact path='/login' component={Login}></Route>
+            <Route exact path='/auth' component={Auth}></Route>
             <Route exact path='/dashboard' component={Dashboard}></Route>
           </Switch>
         </section>

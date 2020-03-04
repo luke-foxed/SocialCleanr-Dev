@@ -6,7 +6,7 @@ const twitter = require('twitter');
 const config = require('config');
 const auth = require('../../middleware/auth');
 
-const SUCCESS_REDIRECT_FACEBOOK = 'http://localhost:3000/dashboard?facebook';
+const SUCCESS_REDIRECT_FACEBOOK = 'http://localhost:3000/auth';
 const SUCCESS_REDIRECT_TWITTER = 'http://localhost:3000/dashboard?twitter';
 const FAILURE_REDIRECT = 'http://localhost:3000/login';
 
