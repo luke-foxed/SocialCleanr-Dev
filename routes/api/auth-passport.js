@@ -18,31 +18,23 @@ var client = {
 
 // AUTHENTICATION //
 
-// router.get('/login-facebook', passport.authenticate('facebook'));
-
 router.get('/login-facebook', passport.authenticate('facebook'));
 
 router.get(
   '/auth/facebook/callback',
   passport.authenticate('facebook', {
-    session: false
-  }),
-  (req, res) => {
-    res.cookie('jwt', req.user);
-    res.redirect('http://localhost:3000/dashboard'); // OR whatever page you want to redirect to with that cookie
-  }
+    successRedirect: SUCCESS_REDIRECT_FACEBOOK,
+    failureRedirect: FAILURE_REDIRECT
+  })
+  // (req, res) => {
+  //   res.cookie('jwt', req.user);
+  //   res.redirect('http://localhost:3000/dashboard'); // OR whatever page you want to redirect to with that cookie
 );
-
-router.get('/login-facebook', function(req, res, next) {
-  passport.authenticate('facebook', {
-    callbackURL: '/auth/facebook/login_callback/' + req.params.id
-  })(req, res, next);
-});
 
 // needs middleware to check user exists
 router.get('/get-token', (req, res) => {
-  let token = req.user.jwt;
-  res.json({ token });
+  console.log(req.body);
+  console.log(req.user);
 });
 
 ////////
@@ -66,7 +58,7 @@ router.get('/login/failed', (req, res) => {
 
 // USERS
 
-router.get('/my-facebook', auth, (req, res) => {
+router.get('/my-facebook', (req, res) => {
   graph.get(
     '/me?fields=id,name,email,posts{picture}',
     { access_token: req.user.token },

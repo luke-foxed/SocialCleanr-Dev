@@ -11,6 +11,7 @@ const mongoose = require('mongoose');
 // Connect to DB
 connectDB();
 
+// init mongo session
 app.use(
   session({
     secret: 'test',

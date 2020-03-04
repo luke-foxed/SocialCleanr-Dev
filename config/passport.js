@@ -1,11 +1,10 @@
 const config = require('config');
+const jwt = require('jsonwebtoken');
 const tokenHelper = require('../utils/tokenHelper');
 const FacebookUser = require('../models/FacebookUser');
 const TwitterUser = require('../models/TwitterUser');
 const FacebookStrategy = require('passport-facebook').Strategy;
 const TwitterStrategy = require('passport-twitter').Strategy;
-const JWTStrategy = require('passport-jwt').Strategy;
-const jwt = require('jsonwebtoken');
 
 const facebookID = config.facebookTESTAppID;
 const facebookSecret = config.facebookTESTSecret;
@@ -14,6 +13,7 @@ const twitterKey = config.twitterAPIKey;
 const twitterSecret = config.twitterSecret;
 
 let authMethod = '';
+let user = '';
 
 module.exports = function(passport) {
   passport.use(
@@ -25,26 +25,14 @@ module.exports = function(passport) {
       },
       async (accessToken, refreshToken, profile, done) => {
         authMethod = 'facebook';
-        const currentUser = await FacebookUser.findOne({
+
+        user = await FacebookUser.findOne({
           social_media_id: profile.id
         });
 
-        const payload = {
-          user: {
-            social_media_id: profile.id
-          }
-        };
-
-        let authToken = jwt.sign(payload, 'test', { expiresIn: 36000 });
-
-        let user = {
-          jwt: authToken,
-          api: accessToken
-        };
-
-        if (!currentUser) {
+        if (!user) {
           tokenHelper.extendToken(accessToken);
-          const facebookUser = await new FacebookUser({
+          user = await new FacebookUser({
             social_media_id: profile.id,
             name: profile.displayName,
             token: accessToken,
@@ -53,7 +41,6 @@ module.exports = function(passport) {
             textCleaned: 0
           }).save();
         }
-
         done(null, user);
       }
     )
@@ -75,7 +62,7 @@ module.exports = function(passport) {
 
         if (!currentUser) {
           const newUser = await new TwitterUser({
-            social_media_id: profile.id,
+            twitter_id: profile.id,
             name: profile.displayName,
             token: accessToken,
             scans: 0,
@@ -93,22 +80,6 @@ module.exports = function(passport) {
     )
   );
 
-  passport.use(
-    new JWTStrategy(
-      {
-        jwtFromRequest: req => req.cookies.jwt,
-        secretOrKey: 'test'
-      },
-      (jwtPayload, done) => {
-        if (Date.now() > jwtPayload.expires) {
-          return done('jwt expired');
-        }
-
-        return done(null, jwtPayload);
-      }
-    )
-  );
-
   passport.serializeUser((profile, done) => {
     done(null, profile.id);
   });
@@ -121,7 +92,15 @@ module.exports = function(passport) {
           if (!tokenHelper.validateToken(user)) {
             done(new Error('Token no longer valid'));
           } else {
-            done(null, user);
+            const payload = {
+              user: {
+                social_media_id: id
+              }
+            };
+
+            let authToken = jwt.sign(payload, 'test', { expiresIn: 36000 });
+
+            done(null, { user, authToken });
           }
         })
         .catch(e => {
@@ -140,3 +119,16 @@ module.exports = function(passport) {
     }
   });
 };
+
+// const payload = {
+//   user: {
+//     social_media_id: profile.id
+//   }
+// };
+
+// let authToken = jwt.sign(payload, 'test', { expiresIn: 36000 });
+
+// let user = {
+//   jwt: authToken,
+//   api: accessToken
+// };

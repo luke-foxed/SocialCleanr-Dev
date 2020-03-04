@@ -12,9 +12,17 @@ export const loginScraper = userData => {
   });
 };
 
-export const loginSocialMedia = website => {
+export const loginSocialMedia = async website => {
   window.open(
     `http://localhost:5000/api/passport-auth/login-${website}`,
     '_self'
   );
+
+  // const config = {
+  //   withCredentials: true,
+  //   headers: {
+  //     'Content-Type': 'application/json'
+  //   }
+  // };
+  // await axios.get('/api/passport-auth/get-token', config);
 };
