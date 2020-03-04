@@ -1,4 +1,5 @@
-const { loadImage, createCanvas } = require('canvas');
+import { loadImage, createCanvas } from 'canvas';
+
 const helpers = require('./generalHelpers');
 
 export const cleanResults = results => {

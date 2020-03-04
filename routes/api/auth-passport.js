@@ -33,10 +33,16 @@ router.get(
 
 // needs middleware to check user exists
 router.get('/get-token', (req, res) => {
-  res.send(req.user.authToken);
+  try {
+    let token = req.user.authToken;
+    res.send(token);
+  } catch (err) {
+    console.error(err.message);
+    res
+      .status(401)
+      .json({ errors: [{ msg: 'No authentication token found' }] });
+  }
 });
-
-////////
 
 router.get('/login-twitter', passport.authenticate('twitter'));
 
