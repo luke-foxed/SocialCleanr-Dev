@@ -6,7 +6,7 @@ module.exports = {
       return next();
     }
     console.log('NOT AUTH');
-    res.send('authentication error');
+    res.redirect('http://localhost:3000/');
   },
   forwardAuthenticated: function(req, res, next) {
     if (!req.isAuthenticated()) {
