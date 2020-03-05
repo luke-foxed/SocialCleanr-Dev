@@ -107,7 +107,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Dashboard = ({ isAuthenticated }) => {
+const Dashboard = ({}) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   const handleDrawerOpen = () => {
@@ -124,12 +124,6 @@ const Dashboard = ({ isAuthenticated }) => {
 
   //   fetchAuthToken();
   // }, []);
-
-  // not working, redirecting even if authenticated
-  if (!isAuthenticated) {
-    console.log('NOT AUTH');
-    return <Redirect to='/login' />;
-  }
 
   return (
     <div className={classes.root}>
@@ -202,8 +196,6 @@ Dashboard.propTypes = {
   isAuthenticated: PropTypes.bool
 };
 
-const mapStateToProps = state => ({
-  isAuthenticated: state.auth.isAuthenticated
-});
+const mapStateToProps = state => ({});
 
-export default connect(mapStateToProps, {})(Dashboard);
+export default connect(mapStateToProps)(Dashboard);

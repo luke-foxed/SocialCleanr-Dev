@@ -7,6 +7,7 @@ import { getToken } from '../../actions/auth';
 import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
 import { useState } from 'react';
+import { useRef } from 'react';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -18,12 +19,10 @@ const useStyles = makeStyles(theme => ({
 
 const Auth = ({ getToken, isAuthenticated }) => {
   const classes = useStyles();
-  const [callFinished, setCallFinished] = useState(false);
 
   useEffect(() => {
     async function fetchAuthToken() {
       await getToken();
-      setCallFinished(true);
     }
     fetchAuthToken();
   }, []);
