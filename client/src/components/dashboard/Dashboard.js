@@ -1,26 +1,28 @@
 import React from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Drawer from '@material-ui/core/Drawer';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
-import Container from '@material-ui/core/Container';
-import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import NotificationsIcon from '@material-ui/icons/Notifications';
+
+import {
+  Drawer,
+  AppBar,
+  Toolbar,
+  List,
+  Typography,
+  Divider,
+  IconButton,
+  Badge,
+  CssBaseline,
+  Container
+} from '@material-ui/core';
+import { Menu, ChevronLeft, Notifications } from '@material-ui/icons';
 import { Route, HashRouter, Redirect } from 'react-router-dom';
 import SidebarItems from './SidebarItems';
 import Profile from './pages/Profile';
 import Home from './pages/Home';
 import Scan from './pages/Scan';
 import Upload from './pages/Upload/Upload';
-
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 
 const drawerWidth = 240;
@@ -104,7 +106,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Dashboard = () => {
+const Dashboard = ({ isAuthenticated }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   const handleDrawerOpen = () => {
@@ -122,6 +124,10 @@ const Dashboard = () => {
   //   fetchAuthToken();
   // }, []);
 
+  if (!isAuthenticated) {
+    return <Redirect to='/login' />;
+  }
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -138,7 +144,7 @@ const Dashboard = () => {
               classes.menuButton,
               open && classes.menuButtonHidden
             )}>
-            <MenuIcon />
+            <Menu />
           </IconButton>
           <Typography
             component='h1'
@@ -150,7 +156,7 @@ const Dashboard = () => {
           </Typography>
           <IconButton color='inherit'>
             <Badge badgeContent={4} color='secondary'>
-              <NotificationsIcon />
+              <Notifications />
             </Badge>
           </IconButton>
         </Toolbar>
@@ -164,7 +170,7 @@ const Dashboard = () => {
           open={open}>
           <div className={classes.toolbarIcon}>
             <IconButton onClick={handleDrawerClose}>
-              <ChevronLeftIcon />
+              <ChevronLeft />
             </IconButton>
           </div>
           <Divider />
@@ -189,4 +195,12 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+Dashboard.propTypes = {
+  isAuthenticated: PropTypes.bool
+};
+
+const mapStateToProps = state => ({
+  isAuthenticated: state.auth.isAuthenticated
+});
+
+export default connect(mapStateToProps, {})(Dashboard);
