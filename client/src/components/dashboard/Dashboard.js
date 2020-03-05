@@ -1,7 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
-
 import {
   Drawer,
   AppBar,
@@ -63,7 +62,9 @@ const useStyles = makeStyles(theme => ({
     display: 'none'
   },
   title: {
-    flexGrow: 1
+    flexGrow: 1,
+    fontFamily: 'Raleway',
+    textTransform: 'uppercase'
   },
   drawerPaper: {
     position: 'relative',
@@ -124,7 +125,9 @@ const Dashboard = ({ isAuthenticated }) => {
   //   fetchAuthToken();
   // }, []);
 
+  // not working, redirecting even if authenticated
   if (!isAuthenticated) {
+    console.log('NOT AUTH');
     return <Redirect to='/login' />;
   }
 
