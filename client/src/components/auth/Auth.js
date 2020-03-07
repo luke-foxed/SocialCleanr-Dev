@@ -20,7 +20,7 @@ import { register, login } from '../../actions/auth';
 import { connect } from 'react-redux';
 import { setAlert } from '../../actions/alert';
 import PropTypes from 'prop-types';
-import { LockOpen, PersonAdd } from '@material-ui/icons';
+import { LockOpen, PersonAdd, VerifiedUser } from '@material-ui/icons';
 import { Redirect } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
@@ -46,7 +46,10 @@ const useStyles = makeStyles(theme => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
-    backgroundColor: colors.colorPurple
+    backgroundColor: colors.colorPurple,
+    '&:hover': {
+      background: 'rgb(110,72,167)'
+    }
   },
 
   authenticateButton: {
@@ -111,8 +114,8 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
     <Container component='main' maxWidth='md'>
       <Paper elevation={2} className={classes.paper}>
         <CssBaseline />
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon fontSize='large' />
+        <Avatar className={classes.avatar} style={{ marginTop: '20px' }}>
+          <VerifiedUser fontSize='large' />
         </Avatar>
         <Typography
           component='h1'
@@ -126,6 +129,10 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
           style={{ borderTop: '2px solid' + colors.colorPurple }}
         />
 
+        <Typography style={{ color: 'rgb(180,180,180)' }}>
+          Would you like to:{' '}
+        </Typography>
+
         <ButtonGroup size='large' className={classes.authAction}>
           <Button
             onClick={toggleAuthAction}
@@ -134,7 +141,7 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
             style={
               authAction === 'login'
                 ? {
-                    backgroundColor: colors.colorDarkOrange,
+                    backgroundColor: colors.colorBlue,
                     color: 'white',
                     width: '250px'
                   }
@@ -146,6 +153,7 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
           <Button
             onClick={toggleAuthAction}
             variant='outlined'
+            size='large'
             style={
               authAction === 'register'
                 ? {
@@ -195,6 +203,7 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
 
             <Button
               type='submit'
+              size='large'
               onClick={submitLogin}
               fullWidth
               variant='contained'

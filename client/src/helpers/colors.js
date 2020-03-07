@@ -1,4 +1,5 @@
 const colorPurple = '#845EC2';
+const colorBlue = '#4885ff';
 const colorDarkPink = '#D65DB1';
 const colorLightPink = '#FF6F91';
 const colorDarkOrange = '#FF9671';
@@ -11,5 +12,6 @@ module.exports = {
   colorLightPink,
   colorDarkOrange,
   colorLightOrange,
+  colorBlue,
   colorYellow
 };

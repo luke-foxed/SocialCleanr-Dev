@@ -78,8 +78,12 @@ router.post(
     check('email', 'Please include a valid email').isEmail(),
     check(
       'password',
-      'Please enter a password with 6 or more characters'
-    ).isLength({ min: 6 })
+      'Please enter a password between 8 to 24 characters'
+    ).isLength({ min: 8, max: 24 }),
+    check(
+      'password',
+      'Password must contain at least one letter, special character and number'
+    ).matches(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{0,}$/)
   ],
   async (req, res) => {
     const errors = validationResult(req);
