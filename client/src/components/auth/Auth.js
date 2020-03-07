@@ -19,10 +19,11 @@ const useStyles = makeStyles(theme => ({
 
 const Auth = ({ getToken, isAuthenticated }) => {
   const classes = useStyles();
+  const site = window.location.href.split('?')[1];
 
   useEffect(() => {
     async function fetchAuthToken() {
-      await getToken();
+      await getToken(site);
     }
     fetchAuthToken();
   }, []);
@@ -30,10 +31,6 @@ const Auth = ({ getToken, isAuthenticated }) => {
   if (isAuthenticated) {
     return <Redirect to='/dashboard' />;
   }
-
-  // if (!isAuthenticated && callFinished) {
-  //   return <Redirect to='/login' />;
-  // }
 
   return (
     <Grid justify='center' alignItems='center' className={classes.root}>

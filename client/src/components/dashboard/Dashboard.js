@@ -23,6 +23,7 @@ import Upload from './pages/Upload/Upload';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
+import { getUser } from '../../actions/user';
 
 const drawerWidth = 240;
 
@@ -107,7 +108,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Dashboard = ({}) => {
+const Dashboard = ({ getUser, auth, profile }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   const handleDrawerOpen = () => {
@@ -117,13 +118,9 @@ const Dashboard = ({}) => {
     setOpen(false);
   };
 
-  // useEffect(() => {
-  //   async function fetchAuthToken() {
-  //     await getUser();
-  //   }
-
-  //   fetchAuthToken();
-  // }, []);
+  useEffect(() => {
+    getUser();
+  }, []);
 
   return (
     <div className={classes.root}>
@@ -193,9 +190,11 @@ const Dashboard = ({}) => {
 };
 
 Dashboard.propTypes = {
-  isAuthenticated: PropTypes.bool
+  auth: PropTypes.object.isRequired,
+  getUser: PropTypes.func.isRequired,
+  profile: PropTypes.object.isRequired
 };
 
-const mapStateToProps = state => ({});
+const mapStateToProps = state => ({ auth: state.auth, profile: state.profile });
 
-export default connect(mapStateToProps)(Dashboard);
+export default connect(mapStateToProps, { getUser })(Dashboard);

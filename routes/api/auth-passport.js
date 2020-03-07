@@ -5,9 +5,11 @@ const graph = require('fbgraph');
 const twitter = require('twitter');
 const config = require('config');
 const auth = require('../../middleware/auth');
+const FacebookUser = require('../../models/FacebookUser');
+const TwitterUser = require('../../models/TwitterUser');
 
-const SUCCESS_REDIRECT_FACEBOOK = 'http://localhost:3000/auth';
-const SUCCESS_REDIRECT_TWITTER = 'http://localhost:3000/dashboard?twitter';
+const SUCCESS_REDIRECT_FACEBOOK = 'http://localhost:3000/auth?facebook';
+const SUCCESS_REDIRECT_TWITTER = 'http://localhost:3000/auth?twitter';
 const FAILURE_REDIRECT = 'http://localhost:3000/login';
 
 var client = {
@@ -34,7 +36,7 @@ router.get(
 // needs middleware to check user exists
 router.get('/get-token', (req, res) => {
   try {
-    let token = req.user.authToken;
+    let token = req.user;
     res.send(token);
   } catch (err) {
     console.error(err.message);
@@ -63,25 +65,42 @@ router.get('/login/failed', (req, res) => {
 
 // USERS
 
-router.get('/my-facebook', (req, res) => {
+router.post('/get-user', auth, async (req, res) => {
+  try {
+    let user = '';
+    if (req.body.website === 'facebook#_=_') {
+      user = await FacebookUser.findById(req.authUser.id).select('-token');
+    } else {
+      user = await TwitterUser.findById(req.authUser.id).select('-token');
+    }
+    res.json(user);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+router.get('/my-facebook', auth, (req, res) => {
+  console.log(req.user.token);
   graph.get(
-    '/me?fields=id,name,email,posts{picture}',
+    '/me?fields=posts{picture}',
     { access_token: req.user.token },
     function(err, data) {
+      console.log(data);
       res.send(data);
     }
   );
 });
 
-// router.get('/my-twitter', ensureAuthenticated, (req, res) => {
-//   client.bearer_token = req.user.token;
-//   const twitterClient = new twitter(client);
-//   const options = {
-//     user_id: req.user.id
-//   };
-//   twitterClient.get('users/lookup', options, (err, res) => {
-//     console.log(res);
-//   });
-// });
+router.get('/my-twitter', auth, (req, res) => {
+  client.bearer_token = req.authUser.token;
+  const twitterClient = new twitter(client);
+  const options = {
+    user_id: req.authUser.twitter_id
+  };
+  twitterClient.get('users/lookup', options, (err, res) => {
+    res.send(res);
+  });
+});
 
 module.exports = router;

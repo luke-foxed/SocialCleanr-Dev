@@ -83,41 +83,49 @@ module.exports = function(passport) {
   );
 
   passport.serializeUser((profile, done) => {
-    done(null, profile.id);
+    done(null, profile);
   });
 
   // deserialize the cookieUserId to user in the database
-  passport.deserializeUser((id, done) => {
+  passport.deserializeUser(async (profile, done) => {
     if (authMethod === 'facebook') {
-      FacebookUser.findById(id)
-        .then(user => {
-          if (!tokenHelper.validateToken(user)) {
-            done(new Error('Token no longer valid'));
-          } else {
-            const payload = {
-              user: {
-                facebook_id: id
-              }
-            };
+      try {
+        let facebookUser = await FacebookUser.findById(profile);
 
-            let authToken = jwt.sign(payload, 'test', { expiresIn: 36000 });
-
-            done(null, { user, authToken });
+        const payload = {
+          user: {
+            id: facebookUser._id,
+            social_id: facebookUser.facebook_id,
+            token: facebookUser.token
           }
-        })
-        .catch(e => {
-          console.log('ERROR: ' + e);
-          done(new Error('Failed to deserialize an user'));
-        });
+        };
+
+        let authToken = jwt.sign(payload, 'test', { expiresIn: 36000 });
+
+        done(null, authToken);
+      } catch (err) {
+        console.log('ERROR: ' + err);
+        done(new Error('Failed to deserialize an user'));
+      }
     } else {
-      TwitterUser.findById(id)
-        .then(user => {
-          done(null, user);
-        })
-        .catch(e => {
-          console.log('ERROR: ' + e);
-          done(new Error('Failed to deserialize an user'));
-        });
+      try {
+        let twitterUser = await TwitterUser.findById(profile);
+
+        const payload = {
+          user: {
+            id: twitterUser._id,
+            social_id: twitterUser.twitter_id,
+            token: twitterUser.token
+          }
+        };
+
+        let authToken = jwt.sign(payload, 'test', { expiresIn: 36000 });
+
+        done(null, authToken);
+      } catch (err) {
+        console.log('ERROR: ' + err);
+        done(new Error('Failed to deserialize an user'));
+      }
     }
   });
 };

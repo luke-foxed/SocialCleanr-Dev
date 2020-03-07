@@ -5,30 +5,32 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
 import rootReducer from './reducers';
 
-// const initialState = {};
-// const middleWare = [thunk];
-// const store = createStore(
-//   rootReducer,
-//   initialState,
-//   composeWithDevTools(applyMiddleware(...middleWare), autoRehydrate())
-// );
-
 const initialState = {};
-const middleware = [thunk];
-
-const persistConfig = {
-  key: 'root',
-  storage: storage,
-  blacklist: ['alert']
-};
-
-const pReducer = persistReducer(persistConfig, rootReducer);
+const middleWare = [thunk];
 const store = createStore(
-  pReducer,
+  rootReducer,
   initialState,
-  applyMiddleware(...middleware)
+  composeWithDevTools(applyMiddleware(...middleWare))
 );
 
-const persistor = persistStore(store);
+export default store;
 
-export { persistor, store };
+// const initialState = {};
+// const middleware = [thunk];
+
+// const persistConfig = {
+//   key: 'root',
+//   storage: storage,
+//   blacklist: ['alert']
+// };
+
+// const pReducer = persistReducer(persistConfig, rootReducer);
+// const store = createStore(
+//   pReducer,
+//   initialState,
+//   applyMiddleware(...middleware)
+// );
+
+// const persistor = persistStore(store);
+
+// export { persistor, store };
