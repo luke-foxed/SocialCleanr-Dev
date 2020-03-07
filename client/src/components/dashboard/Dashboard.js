@@ -16,9 +16,9 @@ import {
 import { Menu, ChevronLeft, Notifications } from '@material-ui/icons';
 import { Route, HashRouter, Redirect } from 'react-router-dom';
 import SidebarItems from './SidebarItems';
-import Profile from './pages/Profile';
-import Home from './pages/Home';
-import Scan from './pages/Scan';
+import Profile from './pages/Profile/Profile';
+import Home from './pages/Home/Home';
+import Scan from './pages/Scan/Scan';
 import Upload from './pages/Upload/Upload';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
