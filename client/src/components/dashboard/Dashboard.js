@@ -64,7 +64,6 @@ const useStyles = makeStyles(theme => ({
   },
   title: {
     flexGrow: 1,
-    fontFamily: 'Raleway',
     textTransform: 'uppercase'
   },
   drawerPaper: {
@@ -118,9 +117,9 @@ const Dashboard = ({ getUser, auth, profile }) => {
     setOpen(false);
   };
 
-  useEffect(() => {
-    getUser();
-  }, []);
+  // useEffect(() => {
+  //   getUser();
+  // }, []);
 
   return (
     <div className={classes.root}>

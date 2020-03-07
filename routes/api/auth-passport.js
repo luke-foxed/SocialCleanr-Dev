@@ -28,12 +28,8 @@ router.get(
     successRedirect: SUCCESS_REDIRECT_FACEBOOK,
     failureRedirect: FAILURE_REDIRECT
   })
-  // (req, res) => {
-  //   res.cookie('jwt', req.user);
-  //   res.redirect('http://localhost:3000/dashboard'); // OR whatever page you want to redirect to with that cookie
 );
 
-// needs middleware to check user exists
 router.get('/get-token', (req, res) => {
   try {
     let token = req.user;

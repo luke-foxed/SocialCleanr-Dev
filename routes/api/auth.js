@@ -1,78 +1,130 @@
 const express = require('express');
-const graph = require('fbgraph');
 const router = express.Router();
+const bcrypt = require('bcryptjs');
+const auth = require('../../middleware/auth');
+const jwt = require('jsonwebtoken');
 const config = require('config');
+const { check, validationResult } = require('express-validator');
+const User = require('../../models/User');
 
-const facebookID = config.get('facebookTESTAppID');
-const facebookSecret = config.get('facebookTESTSecret');
+// authenticate
+router.get('/', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    res.json(user);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
 
-var options = {
-  timeout: 3000,
-  pool: { maxSockets: Infinity },
-  headers: { connection: 'keep-alive' }
-};
+// login
+router.post(
+  '/login',
+  [
+    check('email', 'Please include a valid email').isEmail(),
+    check('password', 'Password is required').exists()
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-var scope = 'email, user_posts';
+    const { email, password } = req.body;
 
-var token = '';
+    try {
+      let user = await User.findOne({ email });
 
-/**
-@route   GET api/auth
-@desc    Test to authenticate using Facebook
-@access  Public
-*/
+      if (!user) {
+        console.log('NO USER FOUND');
+        return res
+          .status(400)
+          .json({ errors: [{ msg: 'Invalid Credentials' }] });
+      }
 
-router.get('/', async (req, res) => {
-  if (!req.query.code) {
-    console.log('Performing oauth for some user right now.');
+      const isMatch = await bcrypt.compare(password, user.password);
 
-    var authUrl = graph.getOauthUrl({
-      client_id: facebookID,
-      redirect_uri: 'http://localhost:5000/facebook-auth',
-      scope: 'email, user_posts'
-    });
+      if (!isMatch) {
+        console.log('PASSWORD NOT MATCH');
+        return res
+          .status(400)
+          .json({ errors: [{ msg: 'Invalid Credentials' }] });
+      }
 
-    if (!req.query.error) {
-      console.log('getting oauth url');
-      res.redirect(authUrl);
-    } else {
-      console.log('Access denied');
-      //req.query.error == 'access_denied'
-      res.send('access denied');
+      const payload = {
+        user: {
+          id: user._id
+        }
+      };
+
+      jwt.sign(payload, 'test', { expiresIn: 360000 }, (err, token) => {
+        if (err) throw err;
+        res.json(token);
+      });
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server error');
     }
   }
-  // If this branch executes user is already being redirected back with
-  // code (whatever that is)
-  else {
-    console.log('Oauth successful, the code is: ', req.query.code + '\n');
+);
 
-    // code is set
-    // we'll send that and get the access token
-    graph.authorize(
-      {
-        client_id: facebookID,
-        redirect_uri: 'http://localhost:5000/facebook-auth',
-        client_secret: facebookSecret,
-        code: req.query.code
-      },
-      function(err, facebookRes) {
-        token = facebookRes.access_token;
-        res.redirect('/');
+router.post(
+  '/register',
+  [
+    check('name', 'Please provide a name')
+      .not()
+      .isEmpty(),
+    check('email', 'Please include a valid email').isEmail(),
+    check(
+      'password',
+      'Please enter a password with 6 or more characters'
+    ).isLength({ min: 6 })
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { name, email, password } = req.body;
+
+    try {
+      let user = await User.findOne({ email });
+
+      if (user) {
+        return res.status(400).json({
+          errors: [{ msg: 'This User already exists, try logging in' }]
+        });
       }
-    );
-  }
 
-  router.get('/get', async (req, res) => {
-    graph
-      .setOptions(options)
-      .get(
-        '/me?fields=id,name,email,birthday,posts.limit(5)',
-        { access_token: token },
-        function(err, data) {
-          res.send(data); // { id: '4', name: 'Mark Zuckerberg'... }
+      user = new User({
+        name,
+        email,
+        password
+      });
+
+      const salt = await bcrypt.genSalt(10);
+
+      user.password = await bcrypt.hash(password, salt);
+
+      await user.save();
+
+      const payload = {
+        user: {
+          id: user.id
         }
-      );
-  });
-});
+      };
+
+      jwt.sign(payload, 'test', { expiresIn: 360000 }, (err, token) => {
+        if (err) throw err;
+        res.json({ token });
+      });
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server error');
+    }
+  }
+);
 
 module.exports = router;

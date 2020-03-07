@@ -3,7 +3,6 @@ import { Link, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import { Grid, Button, Container } from '@material-ui/core';
 
-
 const Landing = () => {
   const [isModalVisible, setModalVisible] = useState(false);
   const toggleModal = () => setModalVisible(!isModalVisible);
@@ -15,7 +14,7 @@ const Landing = () => {
       alignItems='center'
       justify='center'
       style={{ minHeight: '100vh' }}>
-      <Link to='/login' style={{ textDecoration: 'none' }}>
+      <Link to='/auth' style={{ textDecoration: 'none' }}>
         <Button color='primary'>Get Started</Button>
       </Link>
     </Grid>
