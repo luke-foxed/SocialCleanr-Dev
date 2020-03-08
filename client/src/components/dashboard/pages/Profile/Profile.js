@@ -43,6 +43,11 @@ const useStyles = makeStyles(theme => ({
     textTransform: 'uppercase',
     justifyContent: 'center',
     display: 'flex'
+  },
+  connectButton: {
+    marginTop: '20px',
+    marginBottom: '20px',
+    width: '220px'
   }
 }));
 
@@ -113,7 +118,7 @@ const Profile = ({ user, removeSite }) => {
         />
 
         <Grid container direction='row' justify='center'>
-          <Grid item xs={5} style={{ textAlign: 'center' }}>
+          <Grid item xs style={{ textAlign: 'center' }}>
             <Facebook
               fontSize='large'
               style={{ color: '#3b5998', height: 120, width: 120 }}
@@ -121,19 +126,12 @@ const Profile = ({ user, removeSite }) => {
             <br />
             <ProfileAuthenticationText website={'facebook'} />
             <Button
+              className={classes.connectButton}
               variant='contained'
               style={
                 is_connected_facebook
-                  ? {
-                      backgroundColor: 'rgb(200,200,200)',
-                      margin: '20px',
-                      width: '220px'
-                    }
-                  : {
-                      backgroundColor: colors.colorDarkPink,
-                      margin: '20px',
-                      width: '220px'
-                    }
+                  ? { backgroundColor: 'rgb(200,200,200)' }
+                  : { backgroundColor: colors.colorDarkPink }
               }
               disabled={is_connected_facebook}>
               <a
@@ -162,7 +160,7 @@ const Profile = ({ user, removeSite }) => {
           <Grid item>
             <Divider orientation='vertical' style={{ marginTop: '20px' }} />
           </Grid>
-          <Grid item xs={5} style={{ textAlign: 'center' }}>
+          <Grid item xs style={{ textAlign: 'center' }}>
             <Twitter
               fontSize='large'
               style={{ color: '#1DA1F2', height: 120, width: 120 }}
@@ -170,19 +168,12 @@ const Profile = ({ user, removeSite }) => {
             <br />
             <ProfileAuthenticationText website={'twitter'} />
             <Button
+              className={classes.connectButton}
               variant='contained'
               style={
                 is_connected_twitter
-                  ? {
-                      backgroundColor: 'rgb(200,200,200)',
-                      margin: '20px',
-                      width: '220px'
-                    }
-                  : {
-                      backgroundColor: colors.colorDarkPink,
-                      margin: '20px',
-                      width: '220px'
-                    }
+                  ? { backgroundColor: 'rgb(200,200,200)' }
+                  : { backgroundColor: colors.colorDarkPink }
               }
               disabled={is_connected_twitter}>
               <a
