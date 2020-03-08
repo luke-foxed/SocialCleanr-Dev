@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { makeStyles } from '@material-ui/core/styles';
-import FacebookIcon from '@material-ui/icons/Facebook';
-import TwitterIcon from '@material-ui/icons/Twitter';
 import * as colors from '../../helpers/colors';
 import {
   ButtonGroup,
@@ -14,13 +11,21 @@ import {
   Button,
   Paper,
   Collapse,
-  FormGroup
+  FormGroup,
+  InputAdornment,
+  IconButton
 } from '@material-ui/core';
 import { register, login } from '../../actions/auth';
 import { connect } from 'react-redux';
 import { setAlert } from '../../actions/alert';
 import PropTypes from 'prop-types';
-import { LockOpen, PersonAdd, VerifiedUser } from '@material-ui/icons';
+import {
+  LockOpen,
+  PersonAdd,
+  VerifiedUser,
+  Visibility,
+  VisibilityOff
+} from '@material-ui/icons';
 import { Redirect } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
@@ -70,7 +75,8 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
     name: '',
     email: '',
     password: '',
-    confirm_password: ''
+    confirm_password: '',
+    showPassword: false
   });
 
   const [loginData, setLoginData] = useState({
@@ -90,6 +96,10 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
       setFormData({ ...formData, email: '', password: '' });
     }
     setAuthAction(e.currentTarget.id);
+  };
+
+  const handleClickShowPassword = () => {
+    setFormData({ ...formData, showPassword: !formData.showPassword });
   };
 
   const submitRegister = () => {
@@ -250,11 +260,26 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
               fullWidth
               name='password'
               label='Password'
-              type='password'
+              type={formData.showPassword ? 'text' : 'password'}
               id='password'
               onInput={e =>
                 setFormData({ ...formData, [e.target.name]: e.target.value })
               }
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    <IconButton
+                      aria-label='toggle password visibility'
+                      onClick={handleClickShowPassword}>
+                      {formData.showPassword ? (
+                        <Visibility />
+                      ) : (
+                        <VisibilityOff />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
             />
 
             <TextField
@@ -264,11 +289,26 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
               fullWidth
               name='confirm_password'
               label='Confirm Password'
-              type='password'
+              type={formData.showPassword ? 'text' : 'password'}
               id='confirm_password'
               onInput={e =>
                 setFormData({ ...formData, [e.target.name]: e.target.value })
               }
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position='end'>
+                    <IconButton
+                      aria-label='toggle password visibility'
+                      onClick={handleClickShowPassword}>
+                      {formData.showPassword ? (
+                        <Visibility />
+                      ) : (
+                        <VisibilityOff />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
             />
 
             <Button
