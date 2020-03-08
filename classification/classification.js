@@ -5,7 +5,8 @@ const tf = require('@tensorflow/tfjs-node');
 const modelPaths = require('./paths');
 const tfImage = require('@teachablemachine/image');
 const faceapi = require('face-api.js');
-const helpers = require('../helpers/classificationHelpers');
+const generalHelpers = require('../helpers/generalHelpers');
+const classificationHelpers = require('../helpers/classificationHelpers');
 const cocoSSD = require('@tensorflow-models/coco-ssd');
 const toxicity = require('@tensorflow-models/toxicity');
 require('@tensorflow/tfjs-node');
@@ -83,7 +84,7 @@ const loadModels = async () => {
 
 const detectPeople = async image => {
   let boundingBoxes = [];
-  let canvasImage = await helpers.createCanvasImage(image);
+  let canvasImage = await classificationHelpers.createCanvasImage(image);
   let tensor = tf.browser.fromPixels(canvasImage);
   let results = await personDetectionModel.detect(tensor);
   results.forEach(element => {
@@ -92,7 +93,10 @@ const detectPeople = async image => {
   });
 
   // return array of images containing people
-  let images = await helpers.boundingBoxesToImage(boundingBoxes, canvasImage);
+  let images = await classificationHelpers.boundingBoxesToImage(
+    boundingBoxes,
+    canvasImage
+  );
   return images;
 };
 
@@ -138,7 +142,7 @@ const detectClothing = async image => {
   let peopleAgeGender = [];
   let classifcation = [];
 
-  await helpers.asyncForEach(people, async person => {
+  await generalHelpers.asyncForEach(people, async person => {
     let detection = await detectAgeGender(person.image);
 
     peopleAgeGender.push({
@@ -148,7 +152,7 @@ const detectClothing = async image => {
     });
   });
 
-  await helpers.asyncForEach(peopleAgeGender, async person => {
+  await generalHelpers.asyncForEach(peopleAgeGender, async person => {
     let image = await loadImage(person.image);
     if (person.gender === 'male') {
       classifcation = await maleClothingModel.predict(image);
@@ -171,10 +175,10 @@ const detectClothing = async image => {
 };
 
 const detectText = async image => {
-  let text = await helpers.convertToText(image);
+  let text = await classificationHelpers.convertToText(image);
 
   if (text.length > 0) {
-    await helpers.asyncForEach(text, async item => {
+    await generalHelpers.asyncForEach(text, async item => {
       let predictions = await toxicityModel.classify(item.word);
       predictions.forEach(prediction => {
         if (prediction.results[0].match === true) {
@@ -192,7 +196,7 @@ const detectText = async image => {
 };
 
 const detectGesture = async image => {
-  let canvasImage = await helpers.createCanvasImage(image);
+  let canvasImage = await classificationHelpers.createCanvasImage(image);
   let tensor = tf.browser.fromPixels(canvasImage);
   tensor = tensor.expandDims(0);
 
@@ -214,7 +218,11 @@ const detectGesture = async image => {
   tf.dispose(output);
 
   // 300 represents required tensor shape
-  const [maxScores, classes] = helpers.calculateMaxScores(scores, 300, 1);
+  const [maxScores, classes] = classificationHelpers.calculateMaxScores(
+    scores,
+    300,
+    1
+  );
 
   const prevBackend = tf.getBackend();
   // run post process in cpu
@@ -235,7 +243,7 @@ const detectGesture = async image => {
   // restore previous backend
   tf.setBackend(prevBackend);
 
-  const objects = helpers.buildDetectedObjects(
+  const objects = classificationHelpers.buildDetectedObjects(
     width,
     height,
     boxes,

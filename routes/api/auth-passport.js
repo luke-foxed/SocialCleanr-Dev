@@ -4,11 +4,13 @@ const passport = require('passport');
 const graph = require('fbgraph');
 const twitter = require('twitter');
 const config = require('config');
-const { ensureAuthenticated } = require('../../middleware/auth');
+const AES = require('crypto-js/aes');
+const cryptoEnc = require('crypto-js/enc-utf8');
+const auth = require('../../middleware/auth');
+const User = require('../../models/User');
 
-const SUCCESS_REDIRECT_FACEBOOK = 'http://localhost:3000/dashboard?facebook';
-const SUCCESS_REDIRECT_TWITTER = 'http://localhost:3000/dashboard?twitter';
-const FAILURE_REDIRECT = 'http://localhost:3000/';
+const SUCCESS_REDIRECT = 'http://localhost:3000/dashboard';
+const FAILURE_REDIRECT = 'http://localhost:3000/login';
 
 var client = {
   consumer_key: config.twitterAPIKey,
@@ -18,53 +20,125 @@ var client = {
 
 // AUTHENTICATION //
 
-router.get('/login-facebook', passport.authenticate('facebook'));
+router.get('/login-facebook/:id', function(req, res, next) {
+  // create temp cookie to store user ID
+  res.cookie('userID', req.params.id, {
+    maxAge: 20000,
+    httpOnly: true
+  });
+  passport.authenticate('facebook')(req, res, next);
+});
 
 router.get(
   '/auth/facebook/callback',
   passport.authenticate('facebook', {
-    successRedirect: SUCCESS_REDIRECT_FACEBOOK,
-    failureRedirect: FAILURE_REDIRECT
-  })
+    session: false
+  }),
+  async (req, res) => {
+    // get API token and userID to write to DB
+    const token = req.user;
+    const userID = req.cookies['userID'];
+    const encryptedToken = await AES.encrypt(
+      token,
+      config.get('cryptoPassphrase')
+    ).toString();
+
+    // let decrypted = AES.decrypt(encryptedToken, config.get('cryptoPassphrase')).toString(cryptoEnc);
+
+    // delete cookie after value is assigned
+    delete req.cookies['userID'], req.user;
+
+    try {
+      await User.findOneAndUpdate(
+        { _id: userID },
+        {
+          $set: { is_connected_facebook: true, facebook_token: encryptedToken }
+        },
+        { new: true }
+      );
+      res.redirect(SUCCESS_REDIRECT);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send(err.message);
+    }
+  }
 );
 
-router.get('/login-twitter', passport.authenticate('twitter'));
+router.get('/login-twitter/:id', function(req, res, next) {
+  // log user ID to cookie to be used in callback
+  res.cookie('userID', req.params.id, {
+    maxAge: 20000,
+    httpOnly: true
+  });
+  passport.authenticate('twitter')(req, res, next);
+});
 
 router.get(
   '/auth/twitter/callback',
   passport.authenticate('twitter', {
-    successRedirect: SUCCESS_REDIRECT_TWITTER,
-    failureRedirect: FAILURE_REDIRECT
-  })
+    session: false
+  }),
+  async (req, res) => {
+    // get API token and userID to write to DB
+    const token = req.user;
+    const userID = req.cookies['userID'];
+    const encryptedToken = await AES.encrypt(
+      token,
+      config.get('cryptoPassphrase')
+    ).toString();
+
+    // let decrypted = AES.decrypt(encryptedToken, config.get('cryptoPassphrase')).toString(cryptoEnc);
+
+    // delete cookie after value is assigned
+    delete req.cookies['userID'], req.user;
+
+    try {
+      await User.findOneAndUpdate(
+        { _id: userID },
+        { $set: { is_connected_twitter: true, twitter_token: encryptedToken } },
+        { new: true }
+      );
+      res.redirect(SUCCESS_REDIRECT);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
 );
 
-router.get('/login/failed', (req, res) => {
-  res.status(401).json({
-    success: false,
-    message: 'user failed to authenticate.'
-  });
+router.post('/remove-site', auth, async (req, res) => {
+  let site = req.body.site;
+  try {
+    let user = await User.findOneAndUpdate(
+      { _id: req.user.id },
+      { $set: { [`is_connected_${site}`]: false, [`${site}_token`]: '' } }
+    );
+    res.json(user);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
 });
 
-// USER
-
-router.get('/my-facebook', ensureAuthenticated, (req, res) => {
+router.get('/my-facebook', auth, (req, res) => {
   graph.get(
-    '/me?fields=id,name,email,posts{picture}',
+    '/me?fields=posts{picture}',
     { access_token: req.user.token },
     function(err, data) {
+      console.log(data);
       res.send(data);
     }
   );
 });
 
-router.get('/my-twitter', ensureAuthenticated, (req, res) => {
-  client.bearer_token = req.user.token;
+router.get('/my-twitter', auth, (req, res) => {
+  client.bearer_token = req.authUser.token;
   const twitterClient = new twitter(client);
   const options = {
-    user_id: req.user.id
+    user_id: req.authUser.twitter_id
   };
   twitterClient.get('users/lookup', options, (err, res) => {
-    console.log(res);
+    res.send(res);
   });
 });
 

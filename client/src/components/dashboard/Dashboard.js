@@ -1,26 +1,32 @@
 import React from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Drawer from '@material-ui/core/Drawer';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
-import Container from '@material-ui/core/Container';
-import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import NotificationsIcon from '@material-ui/icons/Notifications';
+import {
+  Drawer,
+  AppBar,
+  Toolbar,
+  List,
+  Typography,
+  Divider,
+  IconButton,
+  Badge,
+  CssBaseline,
+  Container,
+  Collapse
+} from '@material-ui/core';
+import { Menu, ChevronLeft, Notifications } from '@material-ui/icons';
 import { Route, HashRouter, Redirect } from 'react-router-dom';
-import { createHashHistory } from 'history';
 import SidebarItems from './SidebarItems';
-import Profile from './pages/Profile';
-import Home from './pages/Home';
-import Scan from './pages/Scan';
+import Profile from './pages/Profile/Profile';
+import Home from './pages/Home/Home';
+import Scan from './pages/Scan/Scan';
 import Upload from './pages/Upload/Upload';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { useEffect } from 'react';
+import { getUser } from '../../actions/user';
+import { logout } from '../../actions/auth';
+import * as colors from '../../helpers/colors';
 
 const drawerWidth = 240;
 
@@ -33,8 +39,9 @@ const useStyles = makeStyles(theme => ({
   },
   toolbarIcon: {
     display: 'flex',
+    direction: 'column',
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     padding: '0 8px',
     ...theme.mixins.toolbar
   },
@@ -60,7 +67,8 @@ const useStyles = makeStyles(theme => ({
     display: 'none'
   },
   title: {
-    flexGrow: 1
+    flexGrow: 1,
+    textTransform: 'uppercase'
   },
   drawerPaper: {
     position: 'relative',
@@ -103,9 +111,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Dashboard = () => {
+const Dashboard = ({ auth, logout, getUser, profile }) => {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -113,24 +121,35 @@ const Dashboard = () => {
     setOpen(false);
   };
 
+  // useEffect(() => {
+  //   getUser();
+  // }, []);
+
   return (
     <div className={classes.root}>
       <CssBaseline />
       <AppBar
+        style={{ backgroundColor: colors.colorPurple }}
         position='absolute'
         className={clsx(classes.appBar, open && classes.appBarShift)}>
         <Toolbar className={classes.toolbar}>
-          <IconButton
-            edge='start'
-            color='inherit'
-            aria-label='open drawer'
-            onClick={handleDrawerOpen}
-            className={clsx(
-              classes.menuButton,
-              open && classes.menuButtonHidden
-            )}>
-            <MenuIcon />
-          </IconButton>
+          {!open ? (
+            <IconButton
+              edge='start'
+              color='inherit'
+              aria-label='open drawer'
+              onClick={handleDrawerOpen}
+              className={clsx(
+                classes.menuButton,
+                open && classes.menuButtonHidden
+              )}>
+              <Menu />
+            </IconButton>
+          ) : (
+            <IconButton onClick={handleDrawerClose}>
+              <ChevronLeft style={{ color: 'white' }} />
+            </IconButton>
+          )}
           <Typography
             component='h1'
             variant='h6'
@@ -141,7 +160,7 @@ const Dashboard = () => {
           </Typography>
           <IconButton color='inherit'>
             <Badge badgeContent={4} color='secondary'>
-              <NotificationsIcon />
+              <Notifications />
             </Badge>
           </IconButton>
         </Toolbar>
@@ -154,14 +173,21 @@ const Dashboard = () => {
           }}
           open={open}>
           <div className={classes.toolbarIcon}>
-            <IconButton onClick={handleDrawerClose}>
-              <ChevronLeftIcon />
-            </IconButton>
+            <Collapse in={open} style={{ textAlign: 'center' }} timeout={500}>
+              <br />
+              <img
+                src='https://i.ya-webdesign.com/images/raccoon-face-png.png'
+                height={100}
+                width={100}
+              />
+              {auth.user && (
+                <Typography variant='h5'>{auth.user.name}</Typography>
+              )}
+            </Collapse>
           </div>
-          <Divider />
 
           <List>
-            <SidebarItems></SidebarItems>
+            <SidebarItems onLogoutClick={() => logout()} />
           </List>
         </Drawer>
 
@@ -180,4 +206,13 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+Dashboard.propTypes = {
+  auth: PropTypes.object.isRequired,
+  getUser: PropTypes.func.isRequired,
+  logout: PropTypes.func.isRequired,
+  profile: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({ auth: state.auth, profile: state.profile });
+
+export default connect(mapStateToProps, { getUser, logout })(Dashboard);

@@ -1,4 +1,5 @@
-const { loadImage, createCanvas } = require('canvas');
+import { loadImage, createCanvas } from 'canvas';
+
 const helpers = require('./generalHelpers');
 
 export const cleanResults = results => {
@@ -100,18 +101,6 @@ export const blurAllContent = async (image, boxes) => {
   });
 
   return cleanedImage;
-};
-
-export const validationCheck = (models, image) => {
-  let alertProps = { type: 'error', message: '' };
-
-  if (models['clothing'] && models['gestures'] && models['text'] === false) {
-    console.log('ERROR');
-    alertProps.type = 'Please Select A Model';
-  } else if (image === '') {
-    alertProps.message = 'Please Upload An Image';
-  }
-  return alertProps;
 };
 
 export const createDownloadImage = image => {
