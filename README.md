@@ -13,10 +13,12 @@ Made with (so far):
 - FaceAPI.js
 - ExpressJS
 - Google Cloud Vision (OCR)
-- React
+- React & Redux
 - MongoDB
+- JWT
+- PassportJS
+- CryptoJS
 
 Planned: 
-- Redux (React state management)
 - Docker
 - WebdriverIO & Mocha/Chai (for testing)
