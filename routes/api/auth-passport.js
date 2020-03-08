@@ -4,6 +4,8 @@ const passport = require('passport');
 const graph = require('fbgraph');
 const twitter = require('twitter');
 const config = require('config');
+const AES = require('crypto-js/aes');
+const cryptoEnc = require('crypto-js/enc-utf8');
 const auth = require('../../middleware/auth');
 const User = require('../../models/User');
 
@@ -19,8 +21,11 @@ var client = {
 // AUTHENTICATION //
 
 router.get('/login-facebook/:id', function(req, res, next) {
-  // log user ID to cookie to be used in callback
-  res.cookie('userID', req.params.id);
+  // create temp cookie to store user ID
+  res.cookie('userID', req.params.id, {
+    maxAge: 20000,
+    httpOnly: true
+  });
   passport.authenticate('facebook')(req, res, next);
 });
 
@@ -33,6 +38,12 @@ router.get(
     // get API token and userID to write to DB
     const token = req.user;
     const userID = req.cookies['userID'];
+    const encryptedToken = await AES.encrypt(
+      token,
+      config.get('cryptoPassphrase')
+    ).toString();
+
+    // let decrypted = AES.decrypt(encryptedToken, config.get('cryptoPassphrase')).toString(cryptoEnc);
 
     // delete cookie after value is assigned
     delete req.cookies['userID'], req.user;
@@ -40,20 +51,25 @@ router.get(
     try {
       await User.findOneAndUpdate(
         { _id: userID },
-        { $set: { is_connected_facebook: true, facebook_token: token } },
+        {
+          $set: { is_connected_facebook: true, facebook_token: encryptedToken }
+        },
         { new: true }
       );
       res.redirect(SUCCESS_REDIRECT);
     } catch (err) {
       console.error(err.message);
-      res.status(500).send('Server Error');
+      res.status(500).send(err.message);
     }
   }
 );
 
 router.get('/login-twitter/:id', function(req, res, next) {
   // log user ID to cookie to be used in callback
-  res.cookie('userID', req.params.id);
+  res.cookie('userID', req.params.id, {
+    maxAge: 20000,
+    httpOnly: true
+  });
   passport.authenticate('twitter')(req, res, next);
 });
 
@@ -66,6 +82,12 @@ router.get(
     // get API token and userID to write to DB
     const token = req.user;
     const userID = req.cookies['userID'];
+    const encryptedToken = await AES.encrypt(
+      token,
+      config.get('cryptoPassphrase')
+    ).toString();
+
+    // let decrypted = AES.decrypt(encryptedToken, config.get('cryptoPassphrase')).toString(cryptoEnc);
 
     // delete cookie after value is assigned
     delete req.cookies['userID'], req.user;
@@ -73,7 +95,7 @@ router.get(
     try {
       await User.findOneAndUpdate(
         { _id: userID },
-        { $set: { is_connected_twitter: true, twitter_token: token } },
+        { $set: { is_connected_twitter: true, twitter_token: encryptedToken } },
         { new: true }
       );
       res.redirect(SUCCESS_REDIRECT);
@@ -99,7 +121,6 @@ router.post('/remove-site', auth, async (req, res) => {
 });
 
 router.get('/my-facebook', auth, (req, res) => {
-  console.log(req.user.token);
   graph.get(
     '/me?fields=posts{picture}',
     { access_token: req.user.token },
