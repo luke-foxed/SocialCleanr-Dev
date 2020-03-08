@@ -13,7 +13,8 @@ import {
   Face,
   Language,
   Facebook,
-  CheckCircle
+  CheckCircle,
+  Cancel
 } from '@material-ui/icons';
 import * as colors from '../../../../helpers/colors';
 import { connect } from 'react-redux';
@@ -35,11 +36,33 @@ const useStyles = makeStyles(theme => ({
   paperHeader: {
     fontFamily: 'Raleway',
     textTransform: 'uppercase'
+  },
+  authenticatedText: {
+    fontFamily: 'Raleway',
+    textTransform: 'uppercase',
+    justifyContent: 'center',
+    display: 'flex'
   }
 }));
 
 const Profile = ({ user }) => {
-  const ProfileAuthenticationText = () => {};
+  const { is_connected_facebook, is_connected_twitter } = user;
+  const ProfileAuthenticationText = ({ props }) => {
+    let connected =
+      props === 'facebook' ? is_connected_facebook : is_connected_twitter;
+    return (
+      <Typography
+        className={classes.authenticatedText}
+        style={connected ? { color: 'green' } : { color: 'red' }}>
+        {props} is&nbsp;{connected ? '' : 'not'}&nbsp;authenticated
+        {connected ? (
+          <CheckCircle style={{ marginLeft: '5px' }} />
+        ) : (
+          <Cancel style={{ marginLeft: '5px' }} />
+        )}
+      </Typography>
+    );
+  };
 
   const classes = useStyles();
   return (
@@ -92,15 +115,7 @@ const Profile = ({ user }) => {
               style={{ color: '#3b5998', height: 120, width: 120 }}
             />
             <br />
-            <Typography
-              style={{
-                display: 'flex',
-                color: 'green',
-                justifyContent: 'center'
-              }}>
-              Twitter is authenticated
-              <CheckCircle style={{ marginLeft: '5px' }} />
-            </Typography>
+            <ProfileAuthenticationText props={'facebook'} />
             <Button>
               <a
                 href='http://localhost:5000/api/passport-auth/login-facebook/111'
@@ -119,15 +134,7 @@ const Profile = ({ user }) => {
               style={{ color: '#1DA1F2', height: 120, width: 120 }}
             />
             <br />
-            <Typography
-              style={{
-                display: 'flex',
-                color: 'green',
-                justifyContent: 'center'
-              }}>
-              Twitter is authenticated
-              <CheckCircle style={{ marginLeft: '5px' }} />
-            </Typography>
+            <ProfileAuthenticationText props={'twitter'} />
             <Button>
               <a
                 href={`http://localhost:5000/api/passport-auth/login-twitter/${user._id}`}
