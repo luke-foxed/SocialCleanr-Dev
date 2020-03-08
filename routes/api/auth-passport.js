@@ -5,11 +5,9 @@ const graph = require('fbgraph');
 const twitter = require('twitter');
 const config = require('config');
 const auth = require('../../middleware/auth');
-const FacebookUser = require('../../models/FacebookUser');
-const TwitterUser = require('../../models/TwitterUser');
+const User = require('../../models/User');
 
-const SUCCESS_REDIRECT_FACEBOOK = 'http://localhost:3000/auth?facebook';
-const SUCCESS_REDIRECT_TWITTER = 'http://localhost:3000/auth?twitter';
+const SUCCESS_REDIRECT = 'http://localhost:3000/dashboard';
 const FAILURE_REDIRECT = 'http://localhost:3000/login';
 
 var client = {
@@ -20,44 +18,55 @@ var client = {
 
 // AUTHENTICATION //
 
-router.get('/login-facebook', passport.authenticate('facebook'));
-
-router.get(
-  '/auth/facebook/callback',
+router.get('/login-facebook/:id', function(req, res, next) {
+  console.log(req.user);
   passport.authenticate('facebook', {
-    successRedirect: SUCCESS_REDIRECT_FACEBOOK,
-    failureRedirect: FAILURE_REDIRECT
-  })
-);
-
-router.get('/get-token', (req, res) => {
-  try {
-    let token = req.user;
-    res.send(token);
-  } catch (err) {
-    console.error(err.message);
-    res
-      .status(401)
-      .json({ errors: [{ msg: 'No authentication token found' }] });
-  }
+    callbackURL: '/api/passport-auth/auth/facebook/callback/' + req.params.id
+  })(req, res, next);
 });
 
-router.get('/login-twitter', passport.authenticate('twitter'));
+router.get('/auth/facebook/callback/:id', function(req, res, next) {
+  passport.authenticate('facebook', {
+    callbackURL: '/api/passport-auth/auth/facebook/callback/' + req.params.id
+  }),
+    (req, res, next) => {
+      console.log(req.params.id);
+    };
+});
+
+router.get('/login-twitter/:id', function(req, res, next) {
+  // log user ID to cookie to be used in callback
+  res.cookie('userID', req.params.id);
+  passport.authenticate('twitter')(req, res, next);
+});
 
 router.get(
   '/auth/twitter/callback',
   passport.authenticate('twitter', {
-    successRedirect: SUCCESS_REDIRECT_TWITTER,
-    failureRedirect: FAILURE_REDIRECT
-  })
-);
+    session: false
+  }),
+  async (req, res) => {
+    // get API token and userID to write to DB
+    const token = req.user;
+    const userID = req.cookies['userID'];
 
-router.get('/login/failed', (req, res) => {
-  res.status(401).json({
-    success: false,
-    message: 'user failed to authenticate.'
-  });
-});
+    // delete cookie after value is assigned
+    delete req.cookies['userID'], req.user;
+
+    try {
+      await User.findOneAndUpdate(
+        { _id: userID },
+        { $set: { is_connected_twitter: true, twitter_token: token } },
+        { new: true }
+      );
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+
+    res.redirect(SUCCESS_REDIRECT);
+  }
+);
 
 // USERS
 

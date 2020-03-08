@@ -7,6 +7,7 @@ const cors = require('cors');
 const app = express();
 const passport = require('passport');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 
 // Connect to DB
 connectDB();
@@ -31,6 +32,7 @@ app.use(bodyParser({ limit: '50mb' }));
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: false })); // support encoded bodies
 app.use(express.json({ extended: false }));
+app.use(cookieParser());
 
 // Fix cors error
 app.use(

@@ -27,12 +27,34 @@ const UserSchema = new mongoose.Schema({
     required: false
   },
 
-  images_Cleaned: {
+  images_cleaned: {
     type: Number,
     required: false
   },
 
-  text_Cleaned: {
+  text_cleaned: {
+    type: String,
+    required: false
+  },
+
+  is_connected_facebook: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+
+  is_connected_twitter: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
+
+  facebook_token: {
+    type: String,
+    required: false
+  },
+
+  twitter_token: {
     type: String,
     required: false
   }

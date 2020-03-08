@@ -8,8 +8,16 @@ import {
   Divider,
   Button
 } from '@material-ui/core';
-import { Twitter, Face, Language, Facebook } from '@material-ui/icons';
+import {
+  Twitter,
+  Face,
+  Language,
+  Facebook,
+  CheckCircle
+} from '@material-ui/icons';
 import * as colors from '../../../../helpers/colors';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -30,7 +38,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Profile = () => {
+const Profile = ({ user }) => {
+  const ProfileAuthenticationText = () => {};
+
   const classes = useStyles();
   return (
     <Container component='main' maxWidth='md'>
@@ -82,7 +92,23 @@ const Profile = () => {
               style={{ color: '#3b5998', height: 120, width: 120 }}
             />
             <br />
-            <Button>Test</Button>
+            <Typography
+              style={{
+                display: 'flex',
+                color: 'green',
+                justifyContent: 'center'
+              }}>
+              Twitter is authenticated
+              <CheckCircle style={{ marginLeft: '5px' }} />
+            </Typography>
+            <Button>
+              <a
+                href='http://localhost:5000/api/passport-auth/login-facebook/111'
+                target='_self'
+                style={{ textDecoration: 'none' }}>
+                Connect with Facebook
+              </a>
+            </Button>
           </Grid>
           <Grid item>
             <Divider orientation='vertical' style={{ marginTop: '20px' }} />
@@ -93,7 +119,23 @@ const Profile = () => {
               style={{ color: '#1DA1F2', height: 120, width: 120 }}
             />
             <br />
-            <Button>Test</Button>
+            <Typography
+              style={{
+                display: 'flex',
+                color: 'green',
+                justifyContent: 'center'
+              }}>
+              Twitter is authenticated
+              <CheckCircle style={{ marginLeft: '5px' }} />
+            </Typography>
+            <Button>
+              <a
+                href={`http://localhost:5000/api/passport-auth/login-twitter/${user._id}`}
+                target='_self'
+                style={{ textDecoration: 'none' }}>
+                Connect with Twitter
+              </a>
+            </Button>
           </Grid>
         </Grid>
       </Paper>
@@ -101,4 +143,10 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+Profile.propTypes = {
+  user: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({ user: state.auth.user });
+
+export default connect(mapStateToProps)(Profile);

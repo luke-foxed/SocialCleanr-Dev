@@ -10,7 +10,10 @@ const User = require('../../models/User');
 // authenticate
 router.get('/', auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select('-password');
+    const user = await User.findById(req.user.id)
+      .select('-password')
+      .select('-twitter_token')
+      .select('-facebook_token');
     res.json(user);
   } catch (err) {
     console.error(err.message);
