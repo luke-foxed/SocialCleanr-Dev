@@ -11,7 +11,8 @@ import {
   IconButton,
   Badge,
   CssBaseline,
-  Container
+  Container,
+  Collapse
 } from '@material-ui/core';
 import { Menu, ChevronLeft, Notifications } from '@material-ui/icons';
 import { Route, HashRouter, Redirect } from 'react-router-dom';
@@ -25,6 +26,7 @@ import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 import { getUser } from '../../actions/user';
 import { logout } from '../../actions/auth';
+import * as colors from '../../helpers/colors';
 
 const drawerWidth = 240;
 
@@ -37,8 +39,9 @@ const useStyles = makeStyles(theme => ({
   },
   toolbarIcon: {
     display: 'flex',
+    direction: 'column',
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     padding: '0 8px',
     ...theme.mixins.toolbar
   },
@@ -108,9 +111,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Dashboard = ({ getUser, auth, profile, logout }) => {
+const Dashboard = ({ auth, logout, getUser, profile }) => {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -126,20 +129,27 @@ const Dashboard = ({ getUser, auth, profile, logout }) => {
     <div className={classes.root}>
       <CssBaseline />
       <AppBar
+        style={{ backgroundColor: colors.colorPurple }}
         position='absolute'
         className={clsx(classes.appBar, open && classes.appBarShift)}>
         <Toolbar className={classes.toolbar}>
-          <IconButton
-            edge='start'
-            color='inherit'
-            aria-label='open drawer'
-            onClick={handleDrawerOpen}
-            className={clsx(
-              classes.menuButton,
-              open && classes.menuButtonHidden
-            )}>
-            <Menu />
-          </IconButton>
+          {!open ? (
+            <IconButton
+              edge='start'
+              color='inherit'
+              aria-label='open drawer'
+              onClick={handleDrawerOpen}
+              className={clsx(
+                classes.menuButton,
+                open && classes.menuButtonHidden
+              )}>
+              <Menu />
+            </IconButton>
+          ) : (
+            <IconButton onClick={handleDrawerClose}>
+              <ChevronLeft style={{ color: 'white' }} />
+            </IconButton>
+          )}
           <Typography
             component='h1'
             variant='h6'
@@ -163,11 +173,18 @@ const Dashboard = ({ getUser, auth, profile, logout }) => {
           }}
           open={open}>
           <div className={classes.toolbarIcon}>
-            <IconButton onClick={handleDrawerClose}>
-              <ChevronLeft />
-            </IconButton>
+            <Collapse in={open} style={{ textAlign: 'center' }} timeout={500}>
+              <br />
+              <img
+                src='https://i.ya-webdesign.com/images/raccoon-face-png.png'
+                height={100}
+                width={100}
+              />
+              {auth.user && (
+                <Typography variant='h5'>{auth.user.name}</Typography>
+              )}
+            </Collapse>
           </div>
-          <Divider />
 
           <List>
             <SidebarItems onLogoutClick={() => logout()} />
