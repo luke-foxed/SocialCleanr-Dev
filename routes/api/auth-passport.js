@@ -59,25 +59,21 @@ router.get(
         { $set: { is_connected_twitter: true, twitter_token: token } },
         { new: true }
       );
+      res.redirect(SUCCESS_REDIRECT);
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server Error');
     }
-
-    res.redirect(SUCCESS_REDIRECT);
   }
 );
 
-// USERS
-
-router.post('/get-user', auth, async (req, res) => {
+router.post('/remove-site', auth, async (req, res) => {
+  let site = req.body.site;
   try {
-    let user = '';
-    if (req.body.website === 'facebook#_=_') {
-      user = await FacebookUser.findById(req.authUser.id).select('-token');
-    } else {
-      user = await TwitterUser.findById(req.authUser.id).select('-token');
-    }
+    let user = await User.findOneAndUpdate(
+      { _id: req.user.id },
+      { $set: { [`is_connected_${site}`]: false, [`${site}_token`]: '' } }
+    );
     res.json(user);
   } catch (err) {
     console.error(err.message);
