@@ -122,11 +122,19 @@ const Profile = ({ user, removeSite }) => {
             <ProfileAuthenticationText website={'facebook'} />
             <Button
               variant='contained'
-              style={{
-                backgroundColor: colors.colorDarkOrange,
-                margin: '20px',
-                width: '220px'
-              }}
+              style={
+                is_connected_facebook
+                  ? {
+                      backgroundColor: 'rgb(200,200,200)',
+                      margin: '20px',
+                      width: '220px'
+                    }
+                  : {
+                      backgroundColor: colors.colorDarkPink,
+                      margin: '20px',
+                      width: '220px'
+                    }
+              }
               disabled={is_connected_facebook}>
               <a
                 href={`http://localhost:5000/api/passport-auth/login-facebook/${user._id}`}
@@ -171,7 +179,7 @@ const Profile = ({ user, removeSite }) => {
                       width: '220px'
                     }
                   : {
-                      backgroundColor: colors.colorDarkOrange,
+                      backgroundColor: colors.colorDarkPink,
                       margin: '20px',
                       width: '220px'
                     }

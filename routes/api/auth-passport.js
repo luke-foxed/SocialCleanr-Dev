@@ -19,20 +19,37 @@ var client = {
 // AUTHENTICATION //
 
 router.get('/login-facebook/:id', function(req, res, next) {
-  console.log(req.user);
-  passport.authenticate('facebook', {
-    callbackURL: '/api/passport-auth/auth/facebook/callback/' + req.params.id
-  })(req, res, next);
+  // log user ID to cookie to be used in callback
+  res.cookie('userID', req.params.id);
+  passport.authenticate('facebook')(req, res, next);
 });
 
-router.get('/auth/facebook/callback/:id', function(req, res, next) {
+router.get(
+  '/auth/facebook/callback',
   passport.authenticate('facebook', {
-    callbackURL: '/api/passport-auth/auth/facebook/callback/' + req.params.id
+    session: false
   }),
-    (req, res, next) => {
-      console.log(req.params.id);
-    };
-});
+  async (req, res) => {
+    // get API token and userID to write to DB
+    const token = req.user;
+    const userID = req.cookies['userID'];
+
+    // delete cookie after value is assigned
+    delete req.cookies['userID'], req.user;
+
+    try {
+      await User.findOneAndUpdate(
+        { _id: userID },
+        { $set: { is_connected_facebook: true, facebook_token: token } },
+        { new: true }
+      );
+      res.redirect(SUCCESS_REDIRECT);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
 
 router.get('/login-twitter/:id', function(req, res, next) {
   // log user ID to cookie to be used in callback

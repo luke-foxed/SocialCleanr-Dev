@@ -13,14 +13,11 @@ module.exports = function(passport) {
     new FacebookStrategy(
       {
         clientID: facebookID,
-        clientSecret: facebookSecret
-        // callbackURL: '/api/passport-auth/auth/facebook/callback'
+        clientSecret: facebookSecret,
+        callbackURL: '/api/passport-auth/auth/facebook/callback'
       },
       async (accessToken, refreshToken, profile, done) => {
-        async (accessToken, refreshToken, profile, done) => {
-          console.log(profile);
-          done(null, accessToken);
-        };
+        done(null, accessToken);
       }
     )
   );
