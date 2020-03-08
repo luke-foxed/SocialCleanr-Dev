@@ -5,7 +5,8 @@ import {
   REGISTER_FAIL,
   REGISTER_SUCCESS,
   AUTH_ERROR,
-  USER_LOADED
+  USER_LOADED,
+  LOGOUT
 } from './types';
 import { setAlert } from './alert';
 import setAuthToken from '../helpers/tokenHelper';
@@ -46,6 +47,8 @@ export const register = ({ name, email, password }) => async dispatch => {
       type: REGISTER_SUCCESS,
       payload: res.data
     });
+
+    await dispatch(loadUser());
   } catch (err) {
     const errors = err.response.data.errors;
 
@@ -86,4 +89,8 @@ export const login = (email, password) => async dispatch => {
       errors.forEach(error => dispatch(setAlert(error.msg, 'warning')));
     }
   }
+};
+
+export const logout = () => dispatch => {
+  dispatch({ type: LOGOUT });
 };

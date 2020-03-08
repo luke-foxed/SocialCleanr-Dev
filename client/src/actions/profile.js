@@ -5,7 +5,6 @@ import { CollectionsOutlined } from '@material-ui/icons';
 
 export const removeSite = website => async dispatch => {
   try {
-    console.log('HERE');
     await axios.post('/api/passport-auth/remove-site', { site: website });
     dispatch(setAlert('Done!', 'success'));
     await dispatch(loadUser());

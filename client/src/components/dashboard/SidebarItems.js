@@ -17,11 +17,15 @@ import {
   ListItemText
 } from '@material-ui/core';
 
-const SidebarItems = () => {
+const SidebarItems = ({ onLogoutClick }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
+  };
+
+  const handleLogout = () => {
+    onLogoutClick()
   };
 
   return (
@@ -101,11 +105,11 @@ const SidebarItems = () => {
         <ListItemText primary='Guide' />
       </ListItem>
 
-      <ListItem button>
+      <ListItem button onClick={() => handleLogout()}>
         <ListItemIcon>
           <ExitToApp />
         </ListItemIcon>
-        <ListItemText primary='Revoke App Access' />
+        <ListItemText primary='Logout' />
       </ListItem>
     </div>
   );

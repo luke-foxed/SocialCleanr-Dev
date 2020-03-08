@@ -24,6 +24,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 import { getUser } from '../../actions/user';
+import { logout } from '../../actions/auth';
 
 const drawerWidth = 240;
 
@@ -107,7 +108,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Dashboard = ({ getUser, auth, profile }) => {
+const Dashboard = ({ getUser, auth, profile, logout }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   const handleDrawerOpen = () => {
@@ -169,7 +170,7 @@ const Dashboard = ({ getUser, auth, profile }) => {
           <Divider />
 
           <List>
-            <SidebarItems></SidebarItems>
+            <SidebarItems onLogoutClick={() => logout()} />
           </List>
         </Drawer>
 
@@ -191,9 +192,10 @@ const Dashboard = ({ getUser, auth, profile }) => {
 Dashboard.propTypes = {
   auth: PropTypes.object.isRequired,
   getUser: PropTypes.func.isRequired,
+  logout: PropTypes.func.isRequired,
   profile: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({ auth: state.auth, profile: state.profile });
 
-export default connect(mapStateToProps, { getUser })(Dashboard);
+export default connect(mapStateToProps, { getUser, logout })(Dashboard);
