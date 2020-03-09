@@ -33,10 +33,24 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const modalStyle = {
+  content: {
+    left: 100,
+    right: 100
+  }
+};
+
 const Home = ({ user, profile }) => {
   const classes = useStyles();
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [isPhotoOpen, setPhotoOpen] = useState(false);
+
+  const handleImageClick = index => {
+    setPhotoOpen(true);
+    setLightboxIndex(index);
+  };
+
+  const photos = profile.photos;
 
   return (
     <Container component='main' maxWidth='lg'>
@@ -84,32 +98,29 @@ const Home = ({ user, profile }) => {
             />
 
             <GridList cellHeight={160} cols={3}>
-              {profile.photos.map(tile => (
-                <GridListTile cols={tile.cols || 1}>
-                  <img src={tile} onClick={() => setPhotoOpen(true)} />
+              {photos.map((tile, index) => (
+                <GridListTile key={index} cols={tile.cols || 1}>
+                  <img src={tile} onClick={() => handleImageClick(index)} />
                 </GridListTile>
               ))}
             </GridList>
 
             {isPhotoOpen && (
               <Lightbox
-                mainSrc={profile.photos[lightboxIndex]}
-                nextSrc={
-                  profile.photos[(lightboxIndex + 1) % profile.photos.length]
-                }
+                reactModalStyle={modalStyle}
+                mainSrc={photos[lightboxIndex]}
+                nextSrc={photos[(lightboxIndex + 1) % photos.length]}
                 prevSrc={
-                  profile.photos[
-                    (lightboxIndex + profile.photos.length - 1) %
-                      profile.photos.length
-                  ]
+                  photos[(lightboxIndex + photos.length - 1) % photos.length]
                 }
                 onCloseRequest={() => setPhotoOpen(false)}
                 onMovePrevRequest={() =>
-                  setLightboxIndex(lightboxIndex + profile.photos.length - 1) %
-                  profile.photos.length
+                  setLightboxIndex(
+                    (lightboxIndex + photos.length - 1) % photos.length
+                  )
                 }
                 onMoveNextRequest={() =>
-                  setLightboxIndex(lightboxIndex + 1) % profile.photos.length
+                  setLightboxIndex((lightboxIndex + 1) % photos.length)
                 }
               />
             )}

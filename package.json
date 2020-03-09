@@ -67,6 +67,7 @@
     "python-shell": "^1.0.8",
     "react-bounding-box": "^0.5.9",
     "react-image-lightbox": "^5.1.1",
+    "react-images": "^1.1.0-beta.3",
     "react-imgpro": "^1.4.1",
     "react-redux": "^7.2.0",
     "react-router-dom": "^5.1.0",
