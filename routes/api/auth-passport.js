@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const graph = require('fbgraph');
-const twitter = require('twitter');
+const TwitterLite = require('twitter-lite');
 const config = require('config');
 const AES = require('crypto-js/aes');
 const cryptoEnc = require('crypto-js/enc-utf8');
@@ -12,10 +12,14 @@ const User = require('../../models/User');
 const SUCCESS_REDIRECT = 'http://localhost:3000/dashboard';
 const FAILURE_REDIRECT = 'http://localhost:3000/login';
 
-var client = {
-  consumer_key: config.twitterAPIKey,
-  consumer_secret: config.twitterSecret,
-  bearer_token: ''
+// delete after
+let tokenSecret = '';
+
+var twitterConfig = {
+  consumer_key: config.get('twitterAPIKey'),
+  consumer_secret: config.get('twitterAPISecret'),
+  access_token: config.get('twitterAccessToken'),
+  access_token_secret: config.get('twitterAccessTokenSecret')
 };
 
 // AUTHENTICATION //
@@ -36,9 +40,10 @@ router.get(
   }),
   async (req, res) => {
     // get API token and userID to write to DB
-    const token = req.user;
+    const token = req.user.accessToken;
+    const facebookID = req.user.profileID;
     const userID = req.cookies['userID'];
-    const encryptedToken = await AES.encrypt(
+    const encryptedToken = AES.encrypt(
       token,
       config.get('cryptoPassphrase')
     ).toString();
@@ -52,7 +57,11 @@ router.get(
       await User.findOneAndUpdate(
         { _id: userID },
         {
-          $set: { is_connected_facebook: true, facebook_token: encryptedToken }
+          $set: {
+            is_connected_facebook: true,
+            facebook_token: encryptedToken,
+            facebook_id: facebookID
+          }
         },
         { new: true }
       );
@@ -80,7 +89,9 @@ router.get(
   }),
   async (req, res) => {
     // get API token and userID to write to DB
-    const token = req.user;
+    const token = req.user.token;
+    tokenSecret = req.user.tokenSecret;
+    const twitterID = req.user.profileID;
     const userID = req.cookies['userID'];
     const encryptedToken = await AES.encrypt(
       token,
@@ -95,7 +106,13 @@ router.get(
     try {
       await User.findOneAndUpdate(
         { _id: userID },
-        { $set: { is_connected_twitter: true, twitter_token: encryptedToken } },
+        {
+          $set: {
+            is_connected_twitter: true,
+            twitter_token: encryptedToken,
+            twitter_id: twitterID
+          }
+        },
         { new: true }
       );
       res.redirect(SUCCESS_REDIRECT);
@@ -120,10 +137,16 @@ router.post('/remove-site', auth, async (req, res) => {
   }
 });
 
-router.get('/my-facebook', auth, (req, res) => {
+router.get('/my-facebook', auth, async (req, res) => {
+  const user = await User.findById(req.user.id);
+  const decryptedToken = AES.decrypt(
+    user.facebook_token,
+    config.get('cryptoPassphrase')
+  ).toString(cryptoEnc);
+
   graph.get(
-    '/me?fields=posts{picture}',
-    { access_token: req.user.token },
+    '/me?fields=posts{picture,message}',
+    { access_token: decryptedToken },
     function(err, data) {
       console.log(data);
       res.send(data);
@@ -131,15 +154,29 @@ router.get('/my-facebook', auth, (req, res) => {
   );
 });
 
-router.get('/my-twitter', auth, (req, res) => {
-  client.bearer_token = req.authUser.token;
-  const twitterClient = new twitter(client);
+router.get('/my-twitter', auth, async (req, res) => {
+  const user = await User.findById(req.user.id);
+  const decryptedToken = AES.decrypt(
+    user.twitter_token,
+    config.get('cryptoPassphrase')
+  ).toString(cryptoEnc);
+  const twitterID = decryptedToken.split('-')[0];
+  twitterConfig.access_token = decryptedToken;
+  twitterConfig.access_token_secret = tokenSecret;
+  const twitterClient = new TwitterLite(twitterConfig);
   const options = {
-    user_id: req.authUser.twitter_id
+    id: twitterID
   };
-  twitterClient.get('users/lookup', options, (err, res) => {
-    res.send(res);
-  });
+  try {
+    twitterClient
+      .get('account/verify_credentials')
+      .then(results => {
+        console.log('results', results);
+      })
+      .catch(console.error);
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 module.exports = router;

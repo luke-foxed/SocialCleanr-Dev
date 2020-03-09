@@ -3,10 +3,10 @@ const tokenHelper = require('../utils/tokenHelper');
 const FacebookStrategy = require('passport-facebook').Strategy;
 const TwitterStrategy = require('passport-twitter').Strategy;
 
-const facebookID = config.facebookTESTAppID;
-const facebookSecret = config.facebookTESTSecret;
-const twitterKey = config.twitterAPIKey;
-const twitterSecret = config.twitterSecret;
+const facebookID = config.get('facebookTESTAppID');
+const facebookSecret = config.get('facebookTESTSecret');
+const twitterKey = config.get('twitterAPIKey');
+const twitterSecret = config.get('twitterAPISecret');
 
 module.exports = function(passport) {
   passport.use(
@@ -30,19 +30,22 @@ module.exports = function(passport) {
         callbackURL: '/api/passport-auth/auth/twitter/callback'
       },
       async (accessToken, refreshToken, profile, done) => {
-        done(null, accessToken);
+        console.log(profile);
+        done(null, { token: accessToken, tokenSecret: refreshToken });
       }
     )
   );
 
   passport.serializeUser((profile, done) => {
     console.log('SERIAL');
+    console.log(profile);
     done(null, profile);
   });
 
   // deserialize the cookieUserId to user in the database
   passport.deserializeUser((profile, done) => {
     console.log('DESERIAL');
+    console.log(profile);
     try {
       done(null, profile);
     } catch (err) {

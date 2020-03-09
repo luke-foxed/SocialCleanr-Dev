@@ -78,7 +78,9 @@
     "selenium-webdriver": "^4.0.0-alpha.5",
     "sharp": "^0.24.0",
     "tesseract.js": "^2.0.2",
+    "twit": "^2.2.11",
     "twitter": "^1.7.1",
+    "twitter-lite": "^0.9.4",
     "uuid": "^7.0.1"
   },
   "devDependencies": {
