@@ -24,10 +24,10 @@ export const removeSite = website => async dispatch => {
 export const getSocialMediaProfile = site => async dispatch => {
   try {
     // disabled for debugging to avoid rate limiting
-    // let res = await axios.get(`/api/passport-auth/my-${site}`);
-    // let cleanedResponse = parseFacebookResults(res.data);
+    // const res = await axios.get(`/api/passport-auth/my-${site}`);
+    const cleanedResponse = parseFacebookResults('');
 
-    let cleanedResponse = { photos: [], text: [], site: site };
+    // let cleanedResponse = { photos: [], text: [], site: site };
 
     dispatch({
       type: GET_PROFILE,

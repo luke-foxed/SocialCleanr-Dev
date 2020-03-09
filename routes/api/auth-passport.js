@@ -5,7 +5,7 @@ const graph = require('fbgraph');
 const TwitterLite = require('twitter-lite');
 const config = require('config');
 const AES = require('crypto-js/aes');
-const cryptoEnc = require('crypto-js/enc-utf8');
+const enctf8 = require('crypto-js/enc-utf8');
 const auth = require('../../middleware/auth');
 const User = require('../../models/User');
 
@@ -40,15 +40,14 @@ router.get(
   }),
   async (req, res) => {
     // get API token and userID to write to DB
-    const token = req.user.accessToken;
+    const token = req.user;
     const facebookID = req.user.profileID;
     const userID = req.cookies['userID'];
+
     const encryptedToken = AES.encrypt(
       token,
       config.get('cryptoPassphrase')
     ).toString();
-
-    // let decrypted = AES.decrypt(encryptedToken, config.get('cryptoPassphrase')).toString(cryptoEnc);
 
     // delete cookie after value is assigned
     delete req.cookies['userID'], req.user;
@@ -139,13 +138,12 @@ router.post('/remove-site', auth, async (req, res) => {
 
 router.get('/my-facebook', auth, async (req, res) => {
   const user = await User.findById(req.user.id);
-  const decryptedToken = AES.decrypt(
-    user.facebook_token,
-    config.get('cryptoPassphrase')
-  ).toString(cryptoEnc);
+  const decryptedToken =
+    AES.decrypt(user.facebook_token, config.get('cryptoPassphrase')) /
+    toString(enctf8);
 
   graph.get(
-    '/me?fields=posts{picture,message}',
+    '/me?fields=posts{full_picture,message},photos{images}',
     { access_token: decryptedToken },
     function(err, data) {
       console.log(data);

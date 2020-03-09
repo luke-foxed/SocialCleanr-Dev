@@ -7,7 +7,6 @@ import {
   Toolbar,
   List,
   Typography,
-  Divider,
   IconButton,
   Badge,
   CssBaseline,
@@ -27,6 +26,7 @@ import { useEffect } from 'react';
 import { getUser } from '../../actions/user';
 import { logout } from '../../actions/auth';
 import * as colors from '../../helpers/colors';
+import 'react-image-lightbox/style.css';
 
 const drawerWidth = 240;
 
