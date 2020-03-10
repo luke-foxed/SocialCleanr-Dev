@@ -57,6 +57,10 @@ const UserSchema = new mongoose.Schema({
   twitter_token: {
     type: String,
     required: false
+  },
+  twitter_token_secret: {
+    type: String,
+    required: false
   }
 });
 

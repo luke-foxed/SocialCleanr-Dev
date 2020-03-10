@@ -12,14 +12,13 @@ const User = require('../../models/User');
 const SUCCESS_REDIRECT = 'http://localhost:3000/dashboard';
 const FAILURE_REDIRECT = 'http://localhost:3000/login';
 
-// delete after
-let tokenSecret = '';
+// NEED TO MOVE ENCRYPTION DECRYPTION TO HELPER FILE
 
 var twitterConfig = {
   consumer_key: config.get('twitterAPIKey'),
   consumer_secret: config.get('twitterAPISecret'),
-  access_token: config.get('twitterAccessToken'),
-  access_token_secret: config.get('twitterAccessTokenSecret')
+  access_token_key: '',
+  access_token_secret: ''
 };
 
 // AUTHENTICATION //
@@ -41,7 +40,6 @@ router.get(
   async (req, res) => {
     // get API token and userID to write to DB
     const token = req.user;
-    const facebookID = req.user.profileID;
     const userID = req.cookies['userID'];
 
     const encryptedToken = AES.encrypt(
@@ -58,8 +56,7 @@ router.get(
         {
           $set: {
             is_connected_facebook: true,
-            facebook_token: encryptedToken,
-            facebook_id: facebookID
+            facebook_token: encryptedToken
           }
         },
         { new: true }
@@ -88,20 +85,19 @@ router.get(
   }),
   async (req, res) => {
     // get API token and userID to write to DB
-    const token = req.user.token;
-    tokenSecret = req.user.tokenSecret;
-    const twitterID = req.user.profileID;
+    const { token, tokenSecret } = req.user;
+
     const userID = req.cookies['userID'];
-    const encryptedToken = await AES.encrypt(
+
+    const encryptedToken = AES.encrypt(
       token,
       config.get('cryptoPassphrase')
     ).toString();
 
-    // let decrypted = AES.decrypt(encryptedToken, config.get('cryptoPassphrase')).toString(cryptoEnc);
-
     // delete cookie after value is assigned
     delete req.cookies['userID'], req.user;
 
+    secret = tokenSecret;
     try {
       await User.findOneAndUpdate(
         { _id: userID },
@@ -109,7 +105,8 @@ router.get(
           $set: {
             is_connected_twitter: true,
             twitter_token: encryptedToken,
-            twitter_id: twitterID
+            // needs to be encrypted
+            twitter_token_secret: tokenSecret
           }
         },
         { new: true }
@@ -138,15 +135,15 @@ router.post('/remove-site', auth, async (req, res) => {
 
 router.get('/my-facebook', auth, async (req, res) => {
   const user = await User.findById(req.user.id);
-  const decryptedToken =
-    AES.decrypt(user.facebook_token, config.get('cryptoPassphrase')) /
-    toString(enctf8);
+  const decryptedToken = AES.decrypt(
+    user.facebook_token,
+    config.get('cryptoPassphrase')
+  ).toString(enctf8);
 
   graph.get(
     '/me?fields=posts{full_picture,message},photos{images}',
     { access_token: decryptedToken },
     function(err, data) {
-      console.log(data);
       res.send(data);
     }
   );
@@ -157,23 +154,25 @@ router.get('/my-twitter', auth, async (req, res) => {
   const decryptedToken = AES.decrypt(
     user.twitter_token,
     config.get('cryptoPassphrase')
-  ).toString(cryptoEnc);
-  const twitterID = decryptedToken.split('-')[0];
-  twitterConfig.access_token = decryptedToken;
-  twitterConfig.access_token_secret = tokenSecret;
+  ).toString(enctf8);
+
+  twitterConfig.access_token_key = decryptedToken;
+  twitterConfig.access_token_secret = user.twitter_token_secret;
+
   const twitterClient = new TwitterLite(twitterConfig);
+
   const options = {
-    id: twitterID
+    user_id: 155659213, // --> RONALDO
+    // user_id: decryptedToken.split('-')[0]
+    count: 10,
+    trim_user: false
   };
   try {
-    twitterClient
-      .get('account/verify_credentials')
-      .then(results => {
-        console.log('results', results);
-      })
-      .catch(console.error);
+    let data = await twitterClient.get('statuses/user_timeline', options);
+    res.send(data);
   } catch (err) {
     console.log(err);
+    res.status(500).send('Server Error');
   }
 });
 

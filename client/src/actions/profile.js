@@ -3,7 +3,10 @@ import { setAlert } from './alert';
 import { loadUser } from './auth';
 import { CollectionsOutlined } from '@material-ui/icons';
 import { PROFILE_ERROR, GET_PROFILE } from '../actions/types';
-import { parseFacebookResults } from '../helpers/profilePageHelpers';
+import {
+  parseFacebookResults,
+  parseTwitterResults
+} from '../helpers/profilePageHelpers';
 
 export const removeSite = website => async dispatch => {
   try {
@@ -22,53 +25,33 @@ export const removeSite = website => async dispatch => {
 };
 
 export const getSocialMediaProfile = site => async dispatch => {
-  if (site === 'facebook') {
-    try {
-      // disabled for debugging to avoid rate limiting
-      // const res = await axios.get(`/api/passport-auth/my-${site}`);
-      const cleanedResponse = parseFacebookResults('');
+  let cleanedResponse = null;
+  try {
+    // disabled for debugging to avoid rate limiting
+    const res = await axios.get(`/api/passport-auth/my-${site}`);
 
-      // let cleanedResponse = { photos: [], text: [], site: site };
-
-      dispatch({
-        type: GET_PROFILE,
-        payload: cleanedResponse
-      });
-
-      dispatch(
-        setAlert(
-          `${site.toUpperCase()} has been set! You can now start a scan!`,
-          'success'
-        )
-      );
-    } catch (err) {
-      console.log(err);
-      dispatch({
-        type: PROFILE_ERROR,
-        payload: { msg: err.response.statusText, status: err.response.status }
-      });
+    if (site === 'facebook') {
+      cleanedResponse = parseFacebookResults(res.data);
+    } else {
+      cleanedResponse = parseTwitterResults(res.data);
     }
-  } else {
-    try {
-      let cleanedResponse = { photos: [], text: [], site: site };
 
-      dispatch({
-        type: GET_PROFILE,
-        payload: cleanedResponse
-      });
+    dispatch({
+      type: GET_PROFILE,
+      payload: cleanedResponse
+    });
 
-      dispatch(
-        setAlert(
-          `${site.toUpperCase()} has been set! You can now start a scan!`,
-          'success'
-        )
-      );
-    } catch (err) {
-      console.log(err);
-      dispatch({
-        type: PROFILE_ERROR,
-        payload: { msg: err.response.statusText, status: err.response.status }
-      });
-    }
+    dispatch(
+      setAlert(
+        `${site.toUpperCase()} has been set! You can now start a scan!`,
+        'success'
+      )
+    );
+  } catch (err) {
+    console.log(err);
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status }
+    });
   }
 };

@@ -96,7 +96,10 @@ const ProfileContent = ({ text, photos }) => {
               style={{ borderTop: '2px solid' + colors.colorPurple }}
             />
 
-            <GridList cellHeight={160} cols={3} style={{ height: 500 }}>
+            <GridList
+              cellHeight={200}
+              cols={3}
+              style={{ height: 500, overflow: 'auto' }}>
               {photos.map((tile, index) => (
                 <GridListTile key={index} cols={1}>
                   <img
@@ -153,7 +156,8 @@ const ProfileContent = ({ text, photos }) => {
             <List
               style={{
                 textAlign: 'center',
-                height: 500
+                height: 500,
+                overflow: 'auto'
               }}>
               {text.map((tile, index) => (
                 <ListItem key={index} button onClick={() => showText(tile)}>
@@ -171,8 +175,8 @@ const ProfileContent = ({ text, photos }) => {
       {isModalOpen && (
         <Dialog open={isModalOpen} onClose={() => setModalOpen(false)}>
           <DialogContent>
-            <DialogContentText id='alert-dialog-description'>
-              {modalText}
+            <DialogContentText>
+              <b>{modalText}</b>
             </DialogContentText>
           </DialogContent>
           <DialogActions>
