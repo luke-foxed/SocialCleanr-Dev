@@ -15,16 +15,13 @@ export const parseFacebookResults = response => {
     cleanedResults.photos.push(photo.images.source);
   });
 
-  console.log(cleanedResults);
   return cleanedResults;
 };
-
 
 export const parseTwitterResults = response => {
   let cleanedResults = { photos: [], text: [], site: 'twitter' };
 
   response.forEach(tweet => {
-    console.log(tweet);
     if (tweet.text) {
       cleanedResults.text.push(tweet.text);
     }

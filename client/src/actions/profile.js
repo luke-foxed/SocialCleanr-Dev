@@ -14,9 +14,7 @@ export const removeSite = website => async dispatch => {
     dispatch(setAlert('Done!', 'success'));
     await dispatch(loadUser());
   } catch (err) {
-    CollectionsOutlined.log('ERROR');
     const errors = err.response.data.errors;
-
     if (errors) {
       console.log(err);
       errors.forEach(error => dispatch(setAlert(error.msg, 'warning')));
@@ -49,6 +47,11 @@ export const getSocialMediaProfile = site => async dispatch => {
     );
   } catch (err) {
     console.log(err);
+
+    dispatch(
+      setAlert(`Error Retrieving data from ${site.toUpperCase()}`, 'error')
+    );
+
     dispatch({
       type: PROFILE_ERROR,
       payload: { msg: err.response.statusText, status: err.response.status }

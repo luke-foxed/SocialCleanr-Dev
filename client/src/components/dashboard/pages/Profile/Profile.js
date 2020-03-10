@@ -122,7 +122,7 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
           style={{ borderTop: '2px solid' + colors.colorPurple }}
         />
 
-        <Typography>
+        <Typography style={{ fontFamily: 'Raleway', fontSize: '18px' }}>
           Active site:{' '}
           <b style={{ color: colors.colorPurple, textTransform: 'uppercase' }}>
             {!profile.site ? 'not set' : profile.site}
@@ -146,7 +146,7 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
 
             <Button
               className={classes.connectButton}
-              disabled={!profile.site === null || profile.site === 'facebook'}
+              disabled={profile.site === 'facebook' || !is_connected_facebook}
               variant='contained'
               onClick={() => handleSetActive('facebook')}
               style={
@@ -209,7 +209,7 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
 
             <Button
               className={classes.connectButton}
-              disabled={!profile.site === null || profile.site === 'twitter'}
+              disabled={profile.site === 'twitter' || !is_connected_twitter}
               variant='contained'
               onClick={() => handleSetActive('twitter')}
               style={
