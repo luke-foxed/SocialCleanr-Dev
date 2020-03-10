@@ -38,7 +38,7 @@ let example = {
         full_picture:
           'https://scontent.xx.fbcdn.net/v/t31.0-8/s720x720/14715561_1830153603871041_5014630723291189288_o.jpg?_nc_cat=108&_nc_sid=0be424&_nc_oc=AQlsdZn6-KfkZCLabwSElQfqHP9cLcuCKQyhEbiTYTduvendyi2J6ppzuEOh2-88Sw8&_nc_ht=scontent.xx&_nc_tp=7&oh=1e2fd3426fd88795049268d5c1f9e8e1&oe=5E9515DE',
         message:
-          'UNITED. Made in Photoshop.Full size pic: http://imgur.com/a/EvbqJ',
+          'These words are supposed to be simple But it seems thats not the case This page is staring back at me Im afraid to put a mark on its face Oh, Im just tryna introduce you To this idea that Ive grown used to Its like sharing a dream with someone Once you say it out loud, it cant be undone',
         id: '2469683036584758_1830153663871035'
       },
       {
