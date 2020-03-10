@@ -146,13 +146,13 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
 
             <Button
               className={classes.connectButton}
-              disabled={profile.site && profile.site === 'facebook'}
+              disabled={!profile.site === null || profile.site === 'facebook'}
               variant='contained'
               onClick={() => handleSetActive('facebook')}
               style={
-                profile.site === 'facebook'
+                !is_connected_facebook || profile.site === 'facebook'
                   ? { backgroundColor: '#c8c8c8', color: '#8a8a8a' }
-                  : { backgroundColor: colors.colorDarkOrange }
+                  : { backgroundColor: colors.colorDarkPink }
               }>
               Set as Active
             </Button>
@@ -209,13 +209,13 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
 
             <Button
               className={classes.connectButton}
-              disabled={profile.site && profile.site === 'twitter'}
+              disabled={!profile.site === null || profile.site === 'twitter'}
               variant='contained'
               onClick={() => handleSetActive('twitter')}
               style={
-                profile.site === 'twitter'
+                !is_connected_twitter || profile.site === 'twitter'
                   ? { backgroundColor: '#c8c8c8', color: '#8a8a8a' }
-                  : { backgroundColor: colors.colorDarkOrange }
+                  : { backgroundColor: colors.colorDarkPink }
               }>
               Set as Active
             </Button>
@@ -233,7 +233,7 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
                 href={`http://localhost:5000/api/passport-auth/login-twitter/${user._id}`}
                 target='_self'
                 style={
-                  is_connected_facebook
+                  is_connected_twitter
                     ? { textDecoration: 'none', color: '#8a8a8a' }
                     : { textDecoration: 'none', color: 'white' }
                 }>

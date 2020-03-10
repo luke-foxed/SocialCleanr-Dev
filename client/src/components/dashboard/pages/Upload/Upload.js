@@ -5,7 +5,8 @@ import {
   Paper,
   Typography,
   CircularProgress,
-  Container
+  Container,
+  Backdrop
 } from '@material-ui/core';
 import * as colors from '../../../../helpers/colors';
 import {
@@ -96,6 +97,10 @@ const useStyles = makeStyles(theme => ({
     color: '#4a4a4a',
     width: '50%',
     textAlign: 'center'
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff'
   }
 }));
 
@@ -276,18 +281,12 @@ const Upload = ({ setAlert }) => {
           Submit
         </Button>
 
-        <CircularProgress
-          value={0}
-          style={
-            spinnerVisible
-              ? {
-                  display: 'block',
-                  color: colors.colorLightPink,
-                  margin: '20px'
-                }
-              : { display: 'none' }
-          }
-        />
+        <Backdrop open={spinnerVisible} className={classes.backdrop}>
+          <CircularProgress
+            value={0}
+            style={{ color: colors.colorLightPink }}
+          />
+        </Backdrop>
       </Paper>
 
       {resultsVisible && (

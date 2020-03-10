@@ -22,29 +22,53 @@ export const removeSite = website => async dispatch => {
 };
 
 export const getSocialMediaProfile = site => async dispatch => {
-  try {
-    // disabled for debugging to avoid rate limiting
-    // const res = await axios.get(`/api/passport-auth/my-${site}`);
-    const cleanedResponse = parseFacebookResults('');
+  if (site === 'facebook') {
+    try {
+      // disabled for debugging to avoid rate limiting
+      // const res = await axios.get(`/api/passport-auth/my-${site}`);
+      const cleanedResponse = parseFacebookResults('');
 
-    // let cleanedResponse = { photos: [], text: [], site: site };
+      // let cleanedResponse = { photos: [], text: [], site: site };
 
-    dispatch({
-      type: GET_PROFILE,
-      payload: cleanedResponse
-    });
+      dispatch({
+        type: GET_PROFILE,
+        payload: cleanedResponse
+      });
 
-    dispatch(
-      setAlert(
-        `${site.toUpperCase()} has been set! You can now start a scan!`,
-        'success'
-      )
-    );
-  } catch (err) {
-    console.log(err);
-    dispatch({
-      type: PROFILE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
-    });
+      dispatch(
+        setAlert(
+          `${site.toUpperCase()} has been set! You can now start a scan!`,
+          'success'
+        )
+      );
+    } catch (err) {
+      console.log(err);
+      dispatch({
+        type: PROFILE_ERROR,
+        payload: { msg: err.response.statusText, status: err.response.status }
+      });
+    }
+  } else {
+    try {
+      let cleanedResponse = { photos: [], text: [], site: site };
+
+      dispatch({
+        type: GET_PROFILE,
+        payload: cleanedResponse
+      });
+
+      dispatch(
+        setAlert(
+          `${site.toUpperCase()} has been set! You can now start a scan!`,
+          'success'
+        )
+      );
+    } catch (err) {
+      console.log(err);
+      dispatch({
+        type: PROFILE_ERROR,
+        payload: { msg: err.response.statusText, status: err.response.status }
+      });
+    }
   }
 };
