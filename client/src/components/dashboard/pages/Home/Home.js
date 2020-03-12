@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Paper, Typography, Container } from '@material-ui/core';
+import { Paper, Typography, Container, Grid } from '@material-ui/core';
 import * as colors from '../../../../helpers/colors';
 import { Dashboard } from '@material-ui/icons';
 import { connect } from 'react-redux';
@@ -10,17 +10,17 @@ import ProfileContent from './ProfileContent';
 const useStyles = makeStyles(theme => ({
   paper: {
     margin: theme.spacing(2),
-    padding: theme.spacing(4),
+    padding: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'
   },
   divider: {
-    paddingBottom: theme.spacing(2),
     width: '40px',
     border: 0
   },
   paperHeader: {
+    color: 'white',
     fontFamily: 'Raleway',
     textTransform: 'uppercase'
   }
@@ -33,24 +33,34 @@ const Home = ({ user, profile }) => {
 
   return (
     <Container component='main' maxWidth='lg'>
-      <Paper elevation={2} className={classes.paper}>
-        <Typography
-          variant='h4'
-          className={classes.paperHeader}
-          style={{ display: 'flex' }}>
-          <Dashboard
-            fontSize='large'
-            style={{
-              color: colors.colorPurple,
-              paddingRight: '10px'
-            }}
-          />
-          Dashboard
-        </Typography>
-
+      <Paper
+        elevation={4}
+        className={classes.paper}
+        style={{ backgroundColor: colors.colorPurple }}>
+        <Grid container direction='row' alignItems='center' justify='center'>
+          <Grid item>
+            <Dashboard
+              fontSize='large'
+              style={{
+                height: 80,
+                width: 80,
+                color: 'white',
+                paddingRight: '10px'
+              }}
+            />
+          </Grid>
+          <Grid item>
+            <Typography
+              variant='h4'
+              className={classes.paperHeader}
+              style={{ display: 'inline' }}>
+              Dashboard
+            </Typography>
+          </Grid>
+        </Grid>{' '}
         <hr
           className={classes.divider}
-          style={{ borderTop: '2px solid' + colors.colorPurple }}
+          style={{ borderTop: '2px solid white' }}
         />
       </Paper>
       {photos.length > 0 || text.length > 0 ? (
