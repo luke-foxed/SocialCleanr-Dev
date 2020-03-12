@@ -56,7 +56,7 @@ const loadModels = async () => {
 
     // taking the longest
     gestureModel = await tf.loadGraphModel(
-      'file://C:/Users/lukef/Documents/git/Social-Cleaner/classification/gestureDetection/model.json'
+      'file://classification/gestureDetection/model.json'
     );
 
     console.log('\nLoaded Gesture Model...\n');

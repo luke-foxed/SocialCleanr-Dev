@@ -2,20 +2,24 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const graph = require('fbgraph');
-const twitter = require('twitter');
+const TwitterLite = require('twitter-lite');
 const config = require('config');
 const AES = require('crypto-js/aes');
-const cryptoEnc = require('crypto-js/enc-utf8');
+const enctf8 = require('crypto-js/enc-utf8');
 const auth = require('../../middleware/auth');
 const User = require('../../models/User');
+const generalHelper = require('../../helpers/generalHelpers');
 
 const SUCCESS_REDIRECT = 'http://localhost:3000/dashboard';
 const FAILURE_REDIRECT = 'http://localhost:3000/login';
 
-var client = {
-  consumer_key: config.twitterAPIKey,
-  consumer_secret: config.twitterSecret,
-  bearer_token: ''
+// NEED TO MOVE ENCRYPTION DECRYPTION TO HELPER FILE
+
+var twitterConfig = {
+  consumer_key: config.get('twitterAPIKey'),
+  consumer_secret: config.get('twitterAPISecret'),
+  access_token_key: '',
+  access_token_secret: ''
 };
 
 // AUTHENTICATION //
@@ -38,12 +42,7 @@ router.get(
     // get API token and userID to write to DB
     const token = req.user;
     const userID = req.cookies['userID'];
-    const encryptedToken = await AES.encrypt(
-      token,
-      config.get('cryptoPassphrase')
-    ).toString();
-
-    // let decrypted = AES.decrypt(encryptedToken, config.get('cryptoPassphrase')).toString(cryptoEnc);
+    const encryptedToken = generalHelper.encryptAES(token);
 
     // delete cookie after value is assigned
     delete req.cookies['userID'], req.user;
@@ -52,7 +51,10 @@ router.get(
       await User.findOneAndUpdate(
         { _id: userID },
         {
-          $set: { is_connected_facebook: true, facebook_token: encryptedToken }
+          $set: {
+            is_connected_facebook: true,
+            facebook_token: encryptedToken
+          }
         },
         { new: true }
       );
@@ -80,22 +82,25 @@ router.get(
   }),
   async (req, res) => {
     // get API token and userID to write to DB
-    const token = req.user;
+    const { token, tokenSecret } = req.user;
     const userID = req.cookies['userID'];
-    const encryptedToken = await AES.encrypt(
-      token,
-      config.get('cryptoPassphrase')
-    ).toString();
-
-    // let decrypted = AES.decrypt(encryptedToken, config.get('cryptoPassphrase')).toString(cryptoEnc);
+    const encryptedToken = generalHelper.encryptAES(token);
+    const encryptedTokenSecret = generalHelper.encryptAES(tokenSecret);
 
     // delete cookie after value is assigned
     delete req.cookies['userID'], req.user;
 
+    secret = tokenSecret;
     try {
       await User.findOneAndUpdate(
         { _id: userID },
-        { $set: { is_connected_twitter: true, twitter_token: encryptedToken } },
+        {
+          $set: {
+            is_connected_twitter: true,
+            twitter_token: encryptedToken,
+            twitter_token_secret: encryptedTokenSecret
+          }
+        },
         { new: true }
       );
       res.redirect(SUCCESS_REDIRECT);
@@ -120,26 +125,56 @@ router.post('/remove-site', auth, async (req, res) => {
   }
 });
 
-router.get('/my-facebook', auth, (req, res) => {
-  graph.get(
-    '/me?fields=posts{picture}',
-    { access_token: req.user.token },
-    function(err, data) {
-      console.log(data);
-      res.send(data);
-    }
-  );
+router.get('/my-facebook', auth, async (req, res) => {
+  const user = await User.findById(req.user.id);
+  const decryptedToken = await generalHelper.decrpytAES(user.facebook_token);
+
+  try {
+    await graph.get(
+      '/me?fields=posts{full_picture,message},photos{images}',
+      {
+        access_token: decryptedToken
+      },
+      function(err, data) {
+        if (err) res.status(500).send(err);
+        else {
+          res.send(data);
+        }
+      }
+    );
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
 });
 
-router.get('/my-twitter', auth, (req, res) => {
-  client.bearer_token = req.authUser.token;
-  const twitterClient = new twitter(client);
-  const options = {
-    user_id: req.authUser.twitter_id
-  };
-  twitterClient.get('users/lookup', options, (err, res) => {
-    res.send(res);
-  });
+router.get('/my-twitter', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+
+    const decryptedToken = await generalHelper.decrpytAES(user.twitter_token);
+    const decryptedTokenSecret = await generalHelper.decrpytAES(
+      user.twitter_token_secret
+    );
+
+    twitterConfig.access_token_key = decryptedToken;
+    twitterConfig.access_token_secret = decryptedTokenSecret;
+
+    const twitterClient = new TwitterLite(twitterConfig);
+
+    const options = {
+      user_id: 155659213, // --> RONALDO
+      // user_id: decryptedToken.split('-')[0]
+      count: 10,
+      trim_user: false
+    };
+
+    let data = await twitterClient.get('statuses/user_timeline', options);
+    res.send(data);
+  } catch (err) {
+    console.log(err.errors);
+    res.status(500).send(err.errors[0].message);
+  }
 });
 
 module.exports = router;

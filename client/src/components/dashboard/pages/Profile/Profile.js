@@ -19,7 +19,7 @@ import {
 import * as colors from '../../../../helpers/colors';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { removeSite } from '../../../../actions/profile';
+import { removeSite, getSocialMediaProfile } from '../../../../actions/profile';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -45,18 +45,23 @@ const useStyles = makeStyles(theme => ({
     display: 'flex'
   },
   connectButton: {
-    marginTop: '20px',
-    marginBottom: '20px',
-    width: '220px'
+    marginTop: '10px',
+    marginBottom: '10px',
+    width: '220px',
+    color: 'white'
   }
 }));
 
-const Profile = ({ user, removeSite }) => {
+const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
   const classes = useStyles();
   const { is_connected_facebook, is_connected_twitter } = user;
 
   const handleRemoveClick = async website => {
     removeSite(website);
+  };
+
+  const handleSetActive = async site => {
+    getSocialMediaProfile(site);
   };
 
   const ProfileAuthenticationText = ({ website }) => {
@@ -117,6 +122,13 @@ const Profile = ({ user, removeSite }) => {
           style={{ borderTop: '2px solid' + colors.colorPurple }}
         />
 
+        <Typography style={{ fontFamily: 'Raleway', fontSize: '18px' }}>
+          Active site:{' '}
+          <b style={{ color: colors.colorPurple, textTransform: 'uppercase' }}>
+            {!profile.site ? 'not set' : profile.site}
+          </b>
+        </Typography>
+
         <Grid container direction='row' justify='center'>
           <Grid item xs style={{ textAlign: 'center' }}>
             <Facebook
@@ -124,34 +136,55 @@ const Profile = ({ user, removeSite }) => {
               style={{ color: '#3b5998', height: 120, width: 120 }}
             />
             <br />
+
             <ProfileAuthenticationText website={'facebook'} />
+
+            <hr
+              className={classes.divider}
+              style={{ borderTop: '2px solid #4a4a4a' }}
+            />
+
+            <Button
+              className={classes.connectButton}
+              disabled={profile.site === 'facebook' || !is_connected_facebook}
+              variant='contained'
+              onClick={() => handleSetActive('facebook')}
+              style={
+                !is_connected_facebook || profile.site === 'facebook'
+                  ? { backgroundColor: '#c8c8c8', color: '#8a8a8a' }
+                  : { backgroundColor: colors.colorDarkPink }
+              }>
+              Set as Active
+            </Button>
+
             <Button
               className={classes.connectButton}
               variant='contained'
               style={
                 is_connected_facebook
-                  ? { backgroundColor: 'rgb(200,200,200)' }
+                  ? { backgroundColor: '#c8c8c8' }
                   : { backgroundColor: colors.colorDarkPink }
               }
               disabled={is_connected_facebook}>
               <a
                 href={`http://localhost:5000/api/passport-auth/login-facebook/${user._id}`}
                 target='_self'
-                style={{ textDecoration: 'none', color: 'white' }}>
+                style={
+                  is_connected_facebook
+                    ? { textDecoration: 'none', color: '#8a8a8a' }
+                    : { textDecoration: 'none', color: 'white' }
+                }>
                 Connect with Facebook
               </a>
             </Button>
             <Button
+              className={classes.connectButton}
               disabled={!is_connected_facebook}
               variant='contained'
               style={
                 is_connected_facebook
-                  ? {
-                      backgroundColor: colors.colorPurple,
-                      width: '220px',
-                      color: 'white'
-                    }
-                  : { backgroundColor: 'rgb(200,200,200)', width: '220px' }
+                  ? { backgroundColor: colors.colorPurple }
+                  : { backgroundColor: '#c8c8c8', color: '#8a8a8a' }
               }
               onClick={() => handleRemoveClick('facebook')}>
               Remove Site Access
@@ -166,34 +199,55 @@ const Profile = ({ user, removeSite }) => {
               style={{ color: '#1DA1F2', height: 120, width: 120 }}
             />
             <br />
+
             <ProfileAuthenticationText website={'twitter'} />
+
+            <hr
+              className={classes.divider}
+              style={{ borderTop: '2px solid #4a4a4a' }}
+            />
+
+            <Button
+              className={classes.connectButton}
+              disabled={profile.site === 'twitter' || !is_connected_twitter}
+              variant='contained'
+              onClick={() => handleSetActive('twitter')}
+              style={
+                !is_connected_twitter || profile.site === 'twitter'
+                  ? { backgroundColor: '#c8c8c8', color: '#8a8a8a' }
+                  : { backgroundColor: colors.colorDarkPink }
+              }>
+              Set as Active
+            </Button>
+
             <Button
               className={classes.connectButton}
               variant='contained'
               style={
                 is_connected_twitter
-                  ? { backgroundColor: 'rgb(200,200,200)' }
+                  ? { backgroundColor: '#c8c8c8', color: '#8a8a8a' }
                   : { backgroundColor: colors.colorDarkPink }
               }
               disabled={is_connected_twitter}>
               <a
                 href={`http://localhost:5000/api/passport-auth/login-twitter/${user._id}`}
                 target='_self'
-                style={{ textDecoration: 'none', color: 'white' }}>
+                style={
+                  is_connected_twitter
+                    ? { textDecoration: 'none', color: '#8a8a8a' }
+                    : { textDecoration: 'none', color: 'white' }
+                }>
                 Connect with Twitter
               </a>
             </Button>
             <Button
+              className={classes.connectButton}
               disabled={!is_connected_twitter}
               variant='contained'
               style={
                 is_connected_twitter
-                  ? {
-                      backgroundColor: colors.colorPurple,
-                      width: '220px',
-                      color: 'white'
-                    }
-                  : { backgroundColor: 'rgb(200,200,200)', width: '220px' }
+                  ? { backgroundColor: colors.colorPurple }
+                  : { backgroundColor: '#c8c8c8', color: '#8a8a8a' }
               }
               onClick={() => handleRemoveClick('twitter')}>
               Remove Site Access
@@ -207,9 +261,16 @@ const Profile = ({ user, removeSite }) => {
 
 Profile.propTypes = {
   user: PropTypes.object.isRequired,
-  removeSite: PropTypes.func.isRequired
+  profile: PropTypes.object.isRequired,
+  removeSite: PropTypes.func.isRequired,
+  getSocialMediaProfile: PropTypes.func.isRequired
 };
 
-const mapStateToProps = state => ({ user: state.auth.user });
+const mapStateToProps = state => ({
+  user: state.auth.user,
+  profile: state.profile
+});
 
-export default connect(mapStateToProps, { removeSite })(Profile);
+export default connect(mapStateToProps, { removeSite, getSocialMediaProfile })(
+  Profile
+);

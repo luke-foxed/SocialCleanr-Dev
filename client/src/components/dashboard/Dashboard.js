@@ -7,7 +7,6 @@ import {
   Toolbar,
   List,
   Typography,
-  Divider,
   IconButton,
   Badge,
   CssBaseline,
@@ -27,6 +26,7 @@ import { useEffect } from 'react';
 import { getUser } from '../../actions/user';
 import { logout } from '../../actions/auth';
 import * as colors from '../../helpers/colors';
+import 'react-image-lightbox/style.css';
 
 const drawerWidth = 240;
 
@@ -111,7 +111,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Dashboard = ({ auth, logout, getUser, profile }) => {
+const Dashboard = ({ auth, logout }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const handleDrawerOpen = () => {
@@ -120,10 +120,6 @@ const Dashboard = ({ auth, logout, getUser, profile }) => {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
-  // useEffect(() => {
-  //   getUser();
-  // }, []);
 
   return (
     <div className={classes.root}>
@@ -208,11 +204,9 @@ const Dashboard = ({ auth, logout, getUser, profile }) => {
 
 Dashboard.propTypes = {
   auth: PropTypes.object.isRequired,
-  getUser: PropTypes.func.isRequired,
-  logout: PropTypes.func.isRequired,
-  profile: PropTypes.object.isRequired
+  logout: PropTypes.func.isRequired
 };
 
-const mapStateToProps = state => ({ auth: state.auth, profile: state.profile });
+const mapStateToProps = state => ({ auth: state.auth });
 
-export default connect(mapStateToProps, { getUser, logout })(Dashboard);
+export default connect(mapStateToProps, { logout })(Dashboard);
