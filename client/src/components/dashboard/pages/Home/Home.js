@@ -57,7 +57,7 @@ const Home = ({ user, profile }) => {
               Dashboard
             </Typography>
           </Grid>
-        </Grid>{' '}
+        </Grid>
         <hr
           className={classes.divider}
           style={{ borderTop: '2px solid white' }}
