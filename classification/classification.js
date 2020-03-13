@@ -9,7 +9,6 @@ const generalHelpers = require('../helpers/generalHelpers');
 const classificationHelpers = require('../helpers/classificationHelpers');
 const cocoSSD = require('@tensorflow-models/coco-ssd');
 const toxicity = require('@tensorflow-models/toxicity');
-require('@tensorflow/tfjs-node');
 
 // needed to overcome tensorflow dom requirements
 const dom = new JSDOM('<!DOCTYPE html>');
@@ -41,15 +40,20 @@ const loadModels = async () => {
     console.log('\nMODELS ALREADY LOADED\n');
   } else {
     maleClothingModel = await tfImage.load(
-      modelPaths.maleClothedV3.model,
-      modelPaths.maleClothedV3.metadata
+      modelPaths.maleModel.model,
+      modelPaths.maleModel.metadata
     );
+
+    // maleClothingModel = await tfImage.load(
+    //   'file://C:/Users/Luke/Documents/GitHub/Social-Cleaner/classification/clothing/male/model.json',
+    //   'file://C:/Users/Luke/Documents/GitHub/Social-Cleaner/classification/clothing/male/metadata.json'
+    // );
 
     console.log('\nLoaded Male Model...\n');
 
     femaleClothingModel = await tfImage.load(
-      modelPaths.femaleClothedV2.model,
-      modelPaths.femaleClothedV2.metadata
+      modelPaths.femaleModel.model,
+      modelPaths.femaleModel.metadata
     );
 
     console.log('\nLoaded Female Model...\n');

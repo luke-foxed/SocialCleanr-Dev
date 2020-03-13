@@ -125,15 +125,16 @@ const boundingBoxesToImage = async (boxArray, image) => {
         height: boxes[3]
       })
       .toBuffer();
+
     // append data header to base64 string
     // let encodedImage =
     //   'data:image/jpeg;base64,' + imageBuffer.toString('base64');
     images.push({ image: imageBuffer, bbox: boxes });
 
     // for debugging, to see what image is created
-    // fs.writeFile(`image_${boxes[0]}.png`, imageBuffer, function(err) {
-    //   if (err) throw err;
-    // });
+    fs.writeFile(`image_${boxes[0]}.png`, imageBuffer, function(err) {
+      if (err) throw err;
+    });
   });
 
   return images;

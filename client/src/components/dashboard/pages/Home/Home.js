@@ -6,6 +6,7 @@ import { Dashboard } from '@material-ui/icons';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ProfileContent from './ProfileContent';
+import { IconHeader } from '../../../layout/IconHeader';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -38,31 +39,7 @@ const Home = ({ user, profile }) => {
         style={{
           background: colors.gradientPurpleBlue
         }}>
-        <Grid container direction='row' alignItems='center' justify='center'>
-          <Grid item>
-            <Dashboard
-              fontSize='large'
-              style={{
-                height: 60,
-                width: 60,
-                color: 'white',
-                paddingRight: '10px'
-              }}
-            />
-          </Grid>
-          <Grid item>
-            <Typography
-              variant='h4'
-              className={classes.paperHeader}
-              style={{ color: 'white' }}>
-              Dashboard
-            </Typography>
-          </Grid>
-        </Grid>
-        <hr
-          className={classes.divider}
-          style={{ borderTop: '2px solid white' }}
-        />
+        <IconHeader icon={Dashboard} text='Dashboard' subheader={false} />
       </Paper>
       {photos.length > 0 || text.length > 0 ? (
         <ProfileContent photos={photos} text={text} />

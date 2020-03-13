@@ -21,14 +21,11 @@ import {
   ThumbsUpDown,
   Brush,
   GetApp,
-  ChildCare
+  ChildCare,
+  Palette
 } from '@material-ui/icons';
+import { runManualScan } from '../../../../actions/upload.js';
 import {
-  beginClassification,
-  runManualScan
-} from '../../../../actions/upload.js';
-import {
-  cleanResults,
   drawBoundingBox,
   drawBlurringBox,
   blurAllContent,
@@ -40,6 +37,7 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { connect } from 'react-redux';
 import { setAlert } from '../../../../actions/alert';
 import PropTypes from 'prop-types';
+import { IconHeader } from '../../../layout/IconHeader';
 
 const StyledToggleButtonGroup = withStyles(theme => ({
   grouped: {
@@ -90,7 +88,7 @@ const useStyles = makeStyles(theme => ({
   toggleButtons: {
     '& button': {
       width: '140px',
-      transition: 'all .5s ease-in-out'
+      transition: 'all .2s ease-in-out'
     }
   },
   progress: {
@@ -184,31 +182,7 @@ const Upload = ({ setAlert }) => {
         style={{
           background: colors.gradientPurpleBlue
         }}>
-        <Grid container direction='row' alignItems='center' justify='center'>
-          <Grid item>
-            <Image
-              fontSize='large'
-              style={{
-                height: 60,
-                width: 60,
-                color: 'white',
-                paddingRight: '10px'
-              }}
-            />
-          </Grid>
-          <Grid item>
-            <Typography
-              variant='h4'
-              className={classes.paperHeader}
-              style={{ color: 'white' }}>
-              Custom Scan
-            </Typography>
-          </Grid>
-        </Grid>
-        <hr
-          className={classes.divider}
-          style={{ borderTop: '2px solid white' }}
-        />
+        <IconHeader icon={Palette} text='Custom Scan' subheader={false} />
       </Paper>
 
       <Paper elevation={4} className={classes.paper}>
@@ -308,24 +282,8 @@ const Upload = ({ setAlert }) => {
 
       {resultsVisible && (
         <Paper elevation={2} className={classes.paper}>
-          <Typography
-            variant='h4'
-            className={classes.paperHeader}
-            style={{ display: 'flex' }}>
-            <Assessment
-              fontSize='large'
-              style={{
-                color: colors.colorPurple,
-                paddingRight: '10px'
-              }}
-            />
-            Results
-          </Typography>
-
-          <hr
-            className={classes.divider}
-            style={{ borderTop: '2px solid ' + colors.colorPurple }}
-          />
+          
+          <IconHeader icon={Assessment} text='Results' subheader={true} />
 
           {flaggedContent.length > 0 ? (
             <div>
