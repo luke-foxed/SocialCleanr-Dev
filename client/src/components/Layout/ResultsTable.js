@@ -5,12 +5,18 @@ import {
   IconButton,
   Table,
   TableBody,
-  TableHead
+  TableHead,
+  Avatar
 } from '@material-ui/core';
 import React from 'react';
 import { Warning, Visibility, DeleteForever, Brush } from '@material-ui/icons';
 
-export const ResultsTable = ({ flaggedContent, onViewClick, onCleanClick }) => {
+export const ResultsTable = ({
+  flaggedContent,
+  onViewClick,
+  onCleanClick,
+  resultsType
+}) => {
   const handleBoxView = bbox => {
     onViewClick(bbox);
   };
@@ -27,6 +33,9 @@ export const ResultsTable = ({ flaggedContent, onViewClick, onCleanClick }) => {
           <TableCell align='center'>Warning Type</TableCell>
           <TableCell align='center'>Message</TableCell>
           <TableCell align='center'>Probability</TableCell>
+          <TableCell align='center'>
+            {resultsType[0].toUpperCase() + resultsType.slice(1)}
+          </TableCell>
           <TableCell align='center'>Actions</TableCell>
         </TableRow>
       </TableHead>
@@ -46,6 +55,13 @@ export const ResultsTable = ({ flaggedContent, onViewClick, onCleanClick }) => {
             <TableCell align='center'>{value.type}</TableCell>
             <TableCell align='center'>{value.message}</TableCell>
             <TableCell align='center'>{value.probability}%</TableCell>
+            <TableCell align='center'>
+              {resultsType === 'image' ? (
+                <Avatar src={value.image} style={{ width: 100, height: 100 }} />
+              ) : (
+                <h1>Text goes here</h1>
+              )}
+            </TableCell>
             <TableCell align='center'>
               <IconButton onClick={() => handleBoxView(value.box)}>
                 <Visibility />

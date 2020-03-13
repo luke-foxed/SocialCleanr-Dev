@@ -138,6 +138,13 @@ const detectAgeGender = async image => {
 };
 
 const detectClothing = async image => {
+  results = {
+    people: [],
+    gestures: [],
+    text: [],
+    age: []
+  };
+
   let people = await detectPeople(image);
   let peopleAgeGender = [];
   let classifcation = [];
@@ -179,16 +186,20 @@ const detectText = async image => {
 
   if (text.length > 0) {
     await generalHelpers.asyncForEach(text, async item => {
-      let predictions = await toxicityModel.classify(item.word);
-      predictions.forEach(prediction => {
-        if (prediction.results[0].match === true) {
-          results.text.push({
-            text: item.word,
-            reason: prediction.label,
-            bbox: item.bbox
-          });
-        }
-      });
+      try {
+        let predictions = await toxicityModel.classify(item.word);
+        predictions.forEach(prediction => {
+          if (prediction.results[0].match === true) {
+            results.text.push({
+              text: item.word,
+              reason: prediction.label,
+              bbox: item.bbox
+            });
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
     });
   }
 
@@ -196,6 +207,13 @@ const detectText = async image => {
 };
 
 const detectGesture = async image => {
+  results = {
+    people: [],
+    gestures: [],
+    text: [],
+    age: []
+  };
+
   let canvasImage = await classificationHelpers.createCanvasImage(image);
   let tensor = tf.browser.fromPixels(canvasImage);
   tensor = tensor.expandDims(0);

@@ -41,4 +41,28 @@ router.post('/filter_models', async (req, res) => {
   res.send(results);
 });
 
+router.post('/automated-scan', async (req, res) => {
+  await classification.loadModels();
+  let results = {};
+  let gestureResults = (ageResults = clothingResults = textResults = []);
+
+  if (req.body.type === 'image') {
+    gestureResults = await classification.detectGesture(req.body.data);
+    clothingResults = await classification.detectClothing(req.body.data);
+    //textResults = await classification.detectText(req.body.data);
+  } else {
+    //textResults = await classification.detectText(req.body.data);
+  }
+
+  results.people = clothingResults.people || [];
+  results.gestures = gestureResults.gestures || [];
+  results.text = textResults.text || [];
+  results.age = ageResults.age || [];
+
+  res.send(results);
+
+  console.log('\nIMAGE RESULTS\n');
+  console.log(results);
+});
+
 module.exports = router;

@@ -6,7 +6,8 @@ import {
   Typography,
   CircularProgress,
   Container,
-  Backdrop
+  Backdrop,
+  Grid
 } from '@material-ui/core';
 import * as colors from '../../../../helpers/colors';
 import {
@@ -22,15 +23,18 @@ import {
   GetApp,
   ChildCare
 } from '@material-ui/icons';
-import { beginClassification } from '../../../../actions/upload.js';
+import {
+  beginClassification,
+  runManualScan
+} from '../../../../actions/upload.js';
 import {
   cleanResults,
   drawBoundingBox,
   drawBlurringBox,
   blurAllContent,
   createDownloadImage
-} from '../../../../helpers/uploadPageHelper';
-import { ResultsTable } from './ResultsTable';
+} from '../../../../helpers/classificationHelper';
+import { ResultsTable } from '../../../layout/ResultsTable';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { connect } from 'react-redux';
@@ -60,13 +64,12 @@ const StyledToggleButton = withStyles({
 const useStyles = makeStyles(theme => ({
   paper: {
     margin: theme.spacing(2),
-    padding: theme.spacing(4),
+    padding: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'
   },
   divider: {
-    paddingBottom: theme.spacing(2),
     width: '40px',
     border: 0
   },
@@ -143,8 +146,8 @@ const Upload = ({ setAlert }) => {
       setAlert('No Image Uploaded', 'error');
     } else {
       setSpinnerVisible(true);
-      let response = await beginClassification(models, image);
-      setFlaggedContent(cleanResults(response.data));
+      let response = await runManualScan(models, image);
+      setFlaggedContent(response);
       setSpinnerVisible(false);
       setResultsVisible(true);
     }
@@ -174,27 +177,41 @@ const Upload = ({ setAlert }) => {
   };
 
   return (
-    <Container component='main' maxWidth='md'>
-      <Paper elevation={2} className={classes.paper}>
-        <Typography
-          variant='h4'
-          className={classes.paperHeader}
-          style={{ display: 'flex' }}>
-          <Image
-            fontSize='large'
-            style={{
-              color: colors.colorPurple,
-              paddingRight: '10px'
-            }}
-          />
-          Upload An Image
-        </Typography>
-
+    <Container component='main' maxWidth='lg'>
+      <Paper
+        elevation={4}
+        className={classes.paper}
+        style={{
+          background: colors.gradientPurpleBlue
+        }}>
+        <Grid container direction='row' alignItems='center' justify='center'>
+          <Grid item>
+            <Image
+              fontSize='large'
+              style={{
+                height: 60,
+                width: 60,
+                color: 'white',
+                paddingRight: '10px'
+              }}
+            />
+          </Grid>
+          <Grid item>
+            <Typography
+              variant='h4'
+              className={classes.paperHeader}
+              style={{ color: 'white' }}>
+              Custom Scan
+            </Typography>
+          </Grid>
+        </Grid>
         <hr
           className={classes.divider}
-          style={{ borderTop: '2px solid' + colors.colorPurple }}
+          style={{ borderTop: '2px solid white' }}
         />
+      </Paper>
 
+      <Paper elevation={4} className={classes.paper}>
         <Typography className={classes.subtext}>
           Want to scan an image before you upload it to your profile? Simple!
           Just upload an image, set the content you wish to scan and then
@@ -203,7 +220,7 @@ const Upload = ({ setAlert }) => {
 
         <hr
           className={classes.divider}
-          style={{ borderTop: '2px solid #4a4a4a' }}
+          style={{ borderTop: '2px solid #4a4a4a', padding: '10px' }}
         />
 
         <input
@@ -267,7 +284,7 @@ const Upload = ({ setAlert }) => {
 
         <hr
           className={classes.divider}
-          style={{ borderTop: '2px solid #4a4a4a' }}
+          style={{ borderTop: '2px solid #4a4a4a', padding: '10px' }}
         />
 
         <Button
@@ -316,6 +333,7 @@ const Upload = ({ setAlert }) => {
                 flaggedContent={flaggedContent}
                 onViewClick={bbox => showBox(bbox)}
                 onCleanClick={bbox => cleanImage(bbox)}
+                resultsType='image'
               />
 
               <hr

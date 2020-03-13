@@ -20,7 +20,6 @@ const useStyles = makeStyles(theme => ({
     border: 0
   },
   paperHeader: {
-    color: 'white',
     fontFamily: 'Raleway',
     textTransform: 'uppercase'
   }
@@ -36,14 +35,16 @@ const Home = ({ user, profile }) => {
       <Paper
         elevation={4}
         className={classes.paper}
-        style={{ backgroundColor: colors.colorPurple }}>
+        style={{
+          background: colors.gradientPurpleBlue
+        }}>
         <Grid container direction='row' alignItems='center' justify='center'>
           <Grid item>
             <Dashboard
               fontSize='large'
               style={{
-                height: 80,
-                width: 80,
+                height: 60,
+                width: 60,
                 color: 'white',
                 paddingRight: '10px'
               }}
@@ -53,7 +54,7 @@ const Home = ({ user, profile }) => {
             <Typography
               variant='h4'
               className={classes.paperHeader}
-              style={{ display: 'inline' }}>
+              style={{ color: 'white' }}>
               Dashboard
             </Typography>
           </Grid>

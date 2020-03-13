@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { cleanResults } from '../helpers/classificationHelper';
 
-export const beginClassification = async (modelSelection, image) => {
+export const runManualScan = async (modelSelection, image) => {
   let response = await axios({
     method: 'post',
     url: '/api/classifier/filter_models',
@@ -10,5 +11,6 @@ export const beginClassification = async (modelSelection, image) => {
     }
   });
 
-  return response;
+  let flaggedContent = cleanResults(response.data, image);
+  return flaggedContent;
 };

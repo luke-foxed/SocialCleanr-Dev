@@ -2,7 +2,7 @@ import { loadImage, createCanvas } from 'canvas';
 
 const helpers = require('./generalHelpers');
 
-export const cleanResults = results => {
+export const cleanResults = (results, image) => {
   let flaggedContent = [];
 
   if (results['people'].length !== 0) {
@@ -13,7 +13,8 @@ export const cleanResults = results => {
           message:
             'A person with an innapropriate level of clothing has been found',
           probability: person.topless_prediction,
-          box: person.bbox
+          box: person.bbox,
+          image: image
         });
       }
     });
@@ -25,7 +26,8 @@ export const cleanResults = results => {
         type: 'Offensive Gesture',
         message: 'An offensive gesture has been detected in this image',
         probability: gesture.score,
-        box: gesture.bbox
+        box: gesture.bbox,
+        image: image
       });
     });
   }
@@ -36,7 +38,8 @@ export const cleanResults = results => {
         type: 'Offensive Word',
         message: `The word ${item.text} has been flagged as ${item.reason}`,
         probability: '>80',
-        box: item.bbox
+        box: item.bbox,
+        image: image
       });
     });
   }
@@ -48,7 +51,8 @@ export const cleanResults = results => {
           type: 'Child Detected',
           message: `A child below the age of 5 (aged ${item.age}) has been detected`,
           probability: item.probability,
-          box: item.bbox
+          box: item.bbox,
+          image: image
         });
       }
     });

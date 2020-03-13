@@ -7,6 +7,9 @@ const colorDarkOrange = '#FF9671';
 const colorLightOrange = '#FFC75F';
 const colorYellow = '#F9F871';
 
+const gradientPurpleBlue =
+  'linear-gradient(0deg, rgba(72,133,255,1) 0%, rgba(132,94,194,1) 100%)';
+
 module.exports = {
   colorPurple,
   colorDarkPink,
@@ -15,5 +18,7 @@ module.exports = {
   colorLightOrange,
   colorBlue,
   colorGreen,
-  colorYellow
+  colorYellow,
+
+  gradientPurpleBlue
 };
