@@ -163,13 +163,20 @@ const detectClothing = async image => {
     });
   });
 
+  console.log('NUMBER OF PEOPLE');
+  console.log(peopleAgeGender.length);
+
   await generalHelpers.asyncForEach(peopleAgeGender, async person => {
     let image = await loadImage(person.image);
+
     if (person.gender === 'male') {
       classifcation = await maleClothingModel.predict(image);
-    } else if (person.gender === 'female') {
+    }
+    if (person.gender === 'female') {
       classifcation = await femaleClothingModel.predict(image);
     }
+
+    console.log(classifcation);
 
     if (classifcation.length > 0) {
       results.people.push({
