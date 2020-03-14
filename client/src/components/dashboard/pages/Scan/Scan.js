@@ -113,12 +113,22 @@ const useStyles = makeStyles(theme => ({
       width: '140px',
       transition: 'all .2s ease-in-out'
     }
+  },
+  imageBox: {
+    margin: theme.spacing(2),
+    border: '4px solid' + colors.colorPurple
+  },
+  image: {
+    padding: theme.spacing(1),
+    height: 600,
+    width: '100%',
+    objectFit: 'cover'
   }
 }));
 
 const Scan = ({ user, profile }) => {
   const classes = useStyles();
-
+  const [boxImage, setBoxImage] = useState('');
   const [scanType, setScanType] = useState('image');
   const [flaggedContent, setFlaggedContent] = useState([]);
   const [resultsLoaded, setResultsLoaded] = useState(false);
@@ -137,7 +147,11 @@ const Scan = ({ user, profile }) => {
     setScanType(type);
   };
 
-  const showBox = async box => {};
+  const showBox = async (box, image) => {
+    console.log(box);
+    //let boxImage = await drawBoundingBox(image, box);
+    setBoxImage(boxImage);
+  };
 
   const cleanImage = async box => {};
 
@@ -213,12 +227,18 @@ const Scan = ({ user, profile }) => {
               </Typography>
 
               <Typography className={classes.infoTextHeader}>
-                Estimated Time Required:
+                Estimated Time Required**:
               </Typography>
               <Typography className={classes.infoText}>
                 {estimatedTime} Seconds
               </Typography>
             </Grid>
+
+            <Typography
+              className={classes.infoTextHeader}
+              style={{ fontSize: '12px' }}>
+              **Calculated time based off a stable internet collection.
+            </Typography>
 
             <hr
               className={classes.divider}
@@ -245,7 +265,7 @@ const Scan = ({ user, profile }) => {
                 <div>
                   <ResultsTable
                     flaggedContent={flaggedContent}
-                    onViewClick={bbox => showBox(bbox)}
+                    onViewClick={(bbox, image) => showBox(bbox, image)}
                     onCleanClick={bbox => cleanImage(bbox)}
                     resultsType='image'
                   />
@@ -269,10 +289,18 @@ const Scan = ({ user, profile }) => {
         <Typography
           variant='h6'
           className={classes.paperHeader}
-          style={{ display: 'flex' }}>
+          style={{ display: 'flex', textAlign: 'center' }}>
           To View Your Social Media Content, Select A Website From The 'Profile'
           Page!
         </Typography>
+      )}
+
+      {boxImage !== '' && (
+        <Paper elevation={2} className={classes.paper}>
+          <div className={classes.imageBox}>
+            <img src={boxImage} className={classes.image} />
+          </div>
+        </Paper>
       )}
     </Container>
   );

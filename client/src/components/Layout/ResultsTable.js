@@ -17,8 +17,8 @@ export const ResultsTable = ({
   onCleanClick,
   resultsType
 }) => {
-  const handleBoxView = bbox => {
-    onViewClick(bbox);
+  const handleBoxView = (bbox, image) => {
+    onViewClick(bbox, image);
   };
 
   const handleCleanImage = bbox => {
@@ -63,7 +63,7 @@ export const ResultsTable = ({
               )}
             </TableCell>
             <TableCell align='center'>
-              <IconButton onClick={() => handleBoxView(value.box)}>
+              <IconButton onClick={() => handleBoxView(value.box, value.image)}>
                 <Visibility />
               </IconButton>
 

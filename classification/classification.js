@@ -163,9 +163,6 @@ const detectClothing = async image => {
     });
   });
 
-  console.log('NUMBER OF PEOPLE');
-  console.log(peopleAgeGender.length);
-
   await generalHelpers.asyncForEach(peopleAgeGender, async person => {
     let image = await loadImage(person.image);
 
@@ -176,9 +173,7 @@ const detectClothing = async image => {
       classifcation = await femaleClothingModel.predict(image);
     }
 
-    console.log(classifcation);
-
-    if (classifcation.length > 0) {
+    if (classifcation.length > 0 && classifcation[0].probability > 0.7) {
       results.people.push({
         gender: person.gender,
         topless_prediction: Math.round(100 * classifcation[0].probability),
@@ -280,13 +275,17 @@ const detectGesture = async image => {
     indexes,
     classes
   );
+
   if (objects.length > 0) {
     objects.forEach(gesture => {
-      results.gestures.push({
-        type: gesture.class,
-        score: Math.round(100 * gesture.score),
-        bbox: gesture.bbox
-      });
+      if (gesture.score > 0.7) {
+        console.log(gesture.score);
+        results.gestures.push({
+          type: gesture.class,
+          score: Math.round(100 * gesture.score),
+          bbox: gesture.bbox
+        });
+      }
     });
   } else {
     console.log('No gestures detected');
