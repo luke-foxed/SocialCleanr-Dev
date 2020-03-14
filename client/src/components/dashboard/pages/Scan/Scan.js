@@ -27,15 +27,15 @@ import { useState } from 'react';
 import { ResultsTable } from '../../../layout/ResultsTable';
 import {
   drawBlurringBox,
-  drawBoundingBox
+  drawBoundingBoxURL
 } from '../../../../helpers/classificationHelper';
 import { IconHeader } from '../../../layout/IconHeader';
 
 let test = {
   site: 'twitter',
   photos: [
-    // 'http://pbs.twimg.com/media/ER5BzvyXYAY4mY4.jpg',
-    'http://pbs.twimg.com/media/ERow7S_X0AADPJw.jpg'
+    'http://pbs.twimg.com/media/ER5BzvyXYAY4mY4.jpg'
+    //'http://pbs.twimg.com/media/ERow7S_X0AADPJw.jpg'
     // 'http://pbs.twimg.com/media/ERaBT0sXUAEoycx.jpg',
     // 'http://pbs.twimg.com/media/EQ_8LdnXsAEkUeV.jpg',
     // 'http://pbs.twimg.com/media/EQvtLTxXkAEktoM.jpg'
@@ -148,8 +148,7 @@ const Scan = ({ user, profile }) => {
   };
 
   const showBox = async (box, image) => {
-    console.log(box);
-    //let boxImage = await drawBoundingBox(image, box);
+    let boxImage = await drawBoundingBoxURL(image, box);
     setBoxImage(boxImage);
   };
 
@@ -212,7 +211,9 @@ const Scan = ({ user, profile }) => {
               <Typography className={classes.infoTextHeader}>
                 Currently Selected Site:
               </Typography>
-              <Typography className={classes.infoText}>{test.site}</Typography>
+              <Typography className={classes.infoText}>
+                {profile.site}
+              </Typography>
 
               <Typography className={classes.infoTextHeader}>
                 Scan Type:
@@ -223,7 +224,7 @@ const Scan = ({ user, profile }) => {
                 Number of {scanType}s:
               </Typography>
               <Typography className={classes.infoText}>
-                {scanType === 'photos' ? photos.length : text.length}
+                {scanType === 'image' ? photos.length : text.length}
               </Typography>
 
               <Typography className={classes.infoTextHeader}>

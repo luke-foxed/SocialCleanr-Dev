@@ -11,8 +11,8 @@ export const parseFacebookResults = response => {
     }
   });
 
-  response.photos.data.forEach(photo => {
-    cleanedResults.photos.push(photo.images.source);
+  response.photos.data.forEach(photoArray => {
+    cleanedResults.photos.push(photoArray.images[0].source);
   });
 
   return cleanedResults;

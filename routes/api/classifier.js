@@ -1,8 +1,18 @@
 const express = require('express');
+const axios = require('axios');
 const router = express.Router();
 const classification = require('../../classification/classification');
 const helpers = require('../../helpers/generalHelpers');
 require('@tensorflow/tfjs-node');
+
+router.post('/get-image', async (req, res) => {
+  let response = await axios.get(req.body.image, {
+    responseType: 'arraybuffer'
+  });
+
+  let base64 = Buffer.from(response.data, 'binary').toString('base64');
+  res.end(base64);
+});
 
 router.post('/filter_models', async (req, res) => {
   await classification.loadModels();
@@ -46,23 +56,24 @@ router.post('/automated-scan', async (req, res) => {
   let results = {};
   let gestureResults = (ageResults = clothingResults = textResults = []);
 
-  if (req.body.type === 'image') {
-    gestureResults = await classification.detectGesture(req.body.data);
-    clothingResults = await classification.detectClothing(req.body.data);
-    //textResults = await classification.detectText(req.body.data);
-  } else {
-    //textResults = await classification.detectText(req.body.data);
+  try {
+    if (req.body.type === 'image') {
+      gestureResults = await classification.detectGesture(req.body.data);
+      clothingResults = await classification.detectClothing(req.body.data);
+      //textResults = await classification.detectText(req.body.data);
+    } else {
+      //textResults = await classification.detectText(req.body.data);
+    }
+
+    results.people = clothingResults.people || [];
+    results.gestures = gestureResults.gestures || [];
+    results.text = textResults.text || [];
+    results.age = ageResults.age || [];
+
+    res.send(results);
+  } catch (err) {
+    console.error(err);
   }
-
-  results.people = clothingResults.people || [];
-  results.gestures = gestureResults.gestures || [];
-  results.text = textResults.text || [];
-  results.age = ageResults.age || [];
-
-  res.send(results);
-
-  console.log('\nIMAGE RESULTS\n');
-  console.log(results);
 });
 
 module.exports = router;

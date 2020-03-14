@@ -1,4 +1,5 @@
 import { loadImage, createCanvas } from 'canvas';
+import { getImageAsBase64 } from '../actions/scan';
 
 const helpers = require('./generalHelpers');
 
@@ -59,6 +60,12 @@ export const cleanResults = (results, image) => {
   }
 
   return flaggedContent;
+};
+
+export const drawBoundingBoxURL = async (imageURL, box) => {
+  let base64 = await getImageAsBase64(imageURL);
+  let image = await drawBoundingBox(base64, box);
+  return image;
 };
 
 export const drawBoundingBox = async (image, box) => {
