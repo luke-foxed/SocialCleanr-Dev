@@ -160,7 +160,7 @@ const Scan = ({ user, profile }) => {
         elevation={4}
         className={classes.paper}
         style={{
-          background: colors.gradientPurpleBlue
+          background: colors.colorDarkOrange
         }}>
         <IconHeader icon={ImageSearch} text='New Scan' subheader={false} />
       </Paper>

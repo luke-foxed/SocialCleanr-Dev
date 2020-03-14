@@ -6,14 +6,12 @@ import {
   Typography,
   CircularProgress,
   Container,
-  Backdrop,
-  Grid
+  Backdrop
 } from '@material-ui/core';
 import * as colors from '../../../../helpers/colors';
 import {
   CloudUpload,
   Send,
-  Image,
   Assessment,
   CheckCircle,
   EmojiPeople,
@@ -61,8 +59,10 @@ const StyledToggleButton = withStyles({
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    margin: theme.spacing(2),
-    padding: theme.spacing(2),
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'
@@ -86,6 +86,13 @@ const useStyles = makeStyles(theme => ({
     objectFit: 'cover'
   },
   toggleButtons: {
+    // FOR MOBILE
+
+    // display: 'flex',
+    // flexDirection: 'column',
+    // width: 250,
+    // alignItems: 'center',
+    // margin: '0 auto',
     '& button': {
       width: '140px',
       transition: 'all .2s ease-in-out'
@@ -97,7 +104,8 @@ const useStyles = makeStyles(theme => ({
   subtext: {
     color: '#4a4a4a',
     width: '50%',
-    textAlign: 'center'
+    textAlign: 'center',
+    fontFamily: 'Raleway'
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -180,7 +188,7 @@ const Upload = ({ setAlert }) => {
         elevation={4}
         className={classes.paper}
         style={{
-          background: colors.gradientPurpleBlue
+          background: colors.colorDarkOrange
         }}>
         <IconHeader icon={Palette} text='Custom Scan' subheader={false} />
       </Paper>
@@ -209,6 +217,7 @@ const Upload = ({ setAlert }) => {
             variant='contained'
             style={{ backgroundColor: colors.colorDarkPink }}
             color='primary'
+            size='large'
             startIcon={<CloudUpload />}
             component='span'>
             Upload
@@ -228,33 +237,36 @@ const Upload = ({ setAlert }) => {
           Select which models you wish to use:
         </Typography>
 
-        <StyledToggleButtonGroup
-          size='small'
-          className={classes.toggleButtons}
-          value={models}
-          onChange={handleModelSelect}>
-          <StyledToggleButton
-            value='clothing'
-            classes={{ selected: classes.toggleSelected }}>
-            Clothing
-            <EmojiPeople fontSize='large' style={{ paddingLeft: '5px' }} />
-          </StyledToggleButton>
+        <Container maxWidth='sm'>
+          <StyledToggleButtonGroup
+            orientation='vertical'
+            size='small'
+            className={classes.toggleButtons}
+            value={models}
+            onChange={handleModelSelect}>
+            <StyledToggleButton
+              value='clothing'
+              classes={{ selected: classes.toggleSelected }}>
+              Clothing
+              <EmojiPeople fontSize='large' style={{ paddingLeft: '5px' }} />
+            </StyledToggleButton>
 
-          <StyledToggleButton value='text'>
-            Text
-            <Spellcheck fontSize='large' style={{ paddingLeft: '5px' }} />
-          </StyledToggleButton>
+            <StyledToggleButton value='text'>
+              Text
+              <Spellcheck fontSize='large' style={{ paddingLeft: '5px' }} />
+            </StyledToggleButton>
 
-          <StyledToggleButton value='gestures'>
-            Gestures
-            <ThumbsUpDown fontSize='large' style={{ paddingLeft: '5px' }} />
-          </StyledToggleButton>
+            <StyledToggleButton value='gestures'>
+              Gestures
+              <ThumbsUpDown fontSize='large' style={{ paddingLeft: '5px' }} />
+            </StyledToggleButton>
 
-          <StyledToggleButton value='age'>
-            Age
-            <ChildCare fontSize='large' style={{ paddingLeft: '5px' }} />
-          </StyledToggleButton>
-        </StyledToggleButtonGroup>
+            <StyledToggleButton value='age'>
+              Age
+              <ChildCare fontSize='large' style={{ paddingLeft: '5px' }} />
+            </StyledToggleButton>
+          </StyledToggleButtonGroup>
+        </Container>
 
         <hr
           className={classes.divider}
@@ -282,7 +294,6 @@ const Upload = ({ setAlert }) => {
 
       {resultsVisible && (
         <Paper elevation={2} className={classes.paper}>
-          
           <IconHeader icon={Assessment} text='Results' subheader={true} />
 
           {flaggedContent.length > 0 ? (
@@ -303,7 +314,7 @@ const Upload = ({ setAlert }) => {
                 <Button
                   variant='contained'
                   color='primary'
-                  size='medium'
+                  size='large'
                   style={{
                     backgroundColor: colors.colorDarkPink,
                     margin: '5px',
@@ -317,7 +328,7 @@ const Upload = ({ setAlert }) => {
                 <Button
                   variant='contained'
                   color='primary'
-                  size='medium'
+                  size='large'
                   style={{
                     backgroundColor: colors.colorLightOrange,
                     margin: '5px',

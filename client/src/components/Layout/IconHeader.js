@@ -23,7 +23,7 @@ const useStyles = makeStyles(theme => ({
 
 export const IconHeader = ({ icon, text, subheader }) => {
   const classes = useStyles();
-  const color = subheader ? colors.colorPurple : 'white';
+  const color = subheader ? colors.colorDarkOrange : 'white';
   const iconSize = subheader ? 40 : 60;
   const Icon = icon;
   return (
