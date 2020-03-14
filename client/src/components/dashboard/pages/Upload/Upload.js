@@ -194,6 +194,12 @@ const Upload = ({ setAlert }) => {
       </Paper>
 
       <Paper elevation={4} className={classes.paper}>
+        <IconHeader
+          icon={CloudUpload}
+          text='Upload An Image'
+          subheader={true}
+        />
+
         <Typography className={classes.subtext}>
           Want to scan an image before you upload it to your profile? Simple!
           Just upload an image, set the content you wish to scan and then
@@ -218,7 +224,6 @@ const Upload = ({ setAlert }) => {
             style={{ backgroundColor: colors.colorDarkPink }}
             color='primary'
             size='large'
-            startIcon={<CloudUpload />}
             component='span'>
             Upload
           </Button>

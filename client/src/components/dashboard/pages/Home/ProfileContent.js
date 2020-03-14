@@ -17,8 +17,9 @@ import {
   DialogContentText
 } from '@material-ui/core';
 import * as colors from '../../../../helpers/colors';
-import { Image, ArrowForward } from '@material-ui/icons';
+import { Image, ArrowForward, Chat } from '@material-ui/icons';
 import Lightbox from 'react-image-lightbox';
+import { IconHeader } from '../../../layout/IconHeader';
 
 const modalStyle = {
   content: {
@@ -77,24 +78,7 @@ const ProfileContent = ({ text, photos }) => {
       <Grid container spacing={1}>
         <Grid item xs={12} sm={6}>
           <Paper elevation={2} className={classes.paper}>
-            <Typography
-              variant='h4'
-              className={classes.paperHeader}
-              style={{ display: 'flex' }}>
-              <Image
-                fontSize='large'
-                style={{
-                  color: colors.colorPurple,
-                  paddingRight: '10px'
-                }}
-              />
-              Photos
-            </Typography>
-
-            <hr
-              className={classes.divider}
-              style={{ borderTop: '2px solid' + colors.colorPurple }}
-            />
+            <IconHeader icon={Image} text='Photos' subheader={true} />
 
             <GridList
               cellHeight={200}
@@ -134,24 +118,7 @@ const ProfileContent = ({ text, photos }) => {
         </Grid>
         <Grid item xs={12} sm={6}>
           <Paper elevation={2} className={classes.paper}>
-            <Typography
-              variant='h4'
-              className={classes.paperHeader}
-              style={{ display: 'flex' }}>
-              <Image
-                fontSize='large'
-                style={{
-                  color: colors.colorPurple,
-                  paddingRight: '10px'
-                }}
-              />
-              Text
-            </Typography>
-
-            <hr
-              className={classes.divider}
-              style={{ borderTop: '2px solid' + colors.colorPurple }}
-            />
+            <IconHeader icon={Chat} text='Posts' subheader={true} />
 
             <List
               style={{
