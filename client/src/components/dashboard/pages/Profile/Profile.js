@@ -6,7 +6,8 @@ import {
   makeStyles,
   Grid,
   Divider,
-  Button
+  Button,
+  Avatar
 } from '@material-ui/core';
 import {
   Twitter,
@@ -56,6 +57,14 @@ const useStyles = makeStyles(theme => ({
     margin: '10px',
     width: '220px',
     color: 'white'
+  },
+  siteAvatar: {
+    background:
+      'linear-gradient(0deg, rgba(214,93,177,1) 0%, rgba(132,94,194,1) 100%)',
+    boxShadow: '0px 0px 22px -2px rgba(0,0,0,0.55)',
+    height: 150,
+    width: 150,
+    margin: '0 auto'
   }
 }));
 
@@ -113,10 +122,10 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
 
         <Grid container direction='row' justify='center'>
           <Grid item xs style={{ textAlign: 'center' }}>
-            <Facebook
-              fontSize='large'
-              style={{ color: 'black', height: 160, width: 160 }}
-            />
+            <br />
+            <Avatar className={classes.siteAvatar}>
+              <Facebook fontSize='large' style={{ height: 130, width: 130 }} />
+            </Avatar>
             <br />
 
             <ProfileAuthenticationText website={'facebook'} />
@@ -178,10 +187,10 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
             <Divider orientation='vertical' style={{ marginTop: '12px' }} />
           </Grid>
           <Grid item xs style={{ textAlign: 'center' }}>
-            <Twitter
-              fontSize='large'
-              style={{ color: 'black', height: 160, width: 160 }}
-            />
+            <br />
+            <Avatar className={classes.siteAvatar}>
+              <Twitter fontSize='large' style={{ height: 130, width: 130 }} />
+            </Avatar>
             <br />
 
             <ProfileAuthenticationText website={'twitter'} />

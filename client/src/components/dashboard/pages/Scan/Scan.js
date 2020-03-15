@@ -238,14 +238,14 @@ const Scan = ({ user, profile }) => {
               <Typography className={classes.infoText}>{scanType}</Typography>
 
               <Typography className={classes.infoTextHeader}>
-                Number of {scanType}:
+                Number of {scanType[0].toUpperCase() + scanType.slice(1)}:
               </Typography>
               <Typography className={classes.infoText}>
                 {scanType === 'photos' ? photos.length : text.length}
               </Typography>
 
               <Typography className={classes.infoTextHeader}>
-                Estimated Time Required**:
+                **Estimated Time Required:
               </Typography>
               <Typography className={classes.infoText}>
                 {estimatedTime} Seconds
@@ -254,7 +254,7 @@ const Scan = ({ user, profile }) => {
 
             <Typography
               className={classes.infoTextHeader}
-              style={{ fontSize: '12px' }}>
+              style={{ fontSize: '12px', fontStyle: 'italic' }}>
               **Calculated time based off a stable internet collection.
             </Typography>
 
