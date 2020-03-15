@@ -1,22 +1,24 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Paper, Typography, Container } from '@material-ui/core';
+import { Paper, Typography, Container, Grid } from '@material-ui/core';
 import * as colors from '../../../../helpers/colors';
 import { Dashboard } from '@material-ui/icons';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ProfileContent from './ProfileContent';
+import { IconHeader } from '../../../layout/IconHeader';
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    margin: theme.spacing(2),
-    padding: theme.spacing(4),
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'
   },
   divider: {
-    paddingBottom: theme.spacing(2),
     width: '40px',
     border: 0
   },
@@ -33,25 +35,13 @@ const Home = ({ user, profile }) => {
 
   return (
     <Container component='main' maxWidth='lg'>
-      <Paper elevation={2} className={classes.paper}>
-        <Typography
-          variant='h4'
-          className={classes.paperHeader}
-          style={{ display: 'flex' }}>
-          <Dashboard
-            fontSize='large'
-            style={{
-              color: colors.colorPurple,
-              paddingRight: '10px'
-            }}
-          />
-          Dashboard
-        </Typography>
-
-        <hr
-          className={classes.divider}
-          style={{ borderTop: '2px solid' + colors.colorPurple }}
-        />
+      <Paper
+        elevation={4}
+        className={classes.paper}
+        style={{
+          background: colors.colorDarkOrange
+        }}>
+        <IconHeader icon={Dashboard} text='Dashboard' subheader={false} />
       </Paper>
       {photos.length > 0 || text.length > 0 ? (
         <ProfileContent photos={photos} text={text} />

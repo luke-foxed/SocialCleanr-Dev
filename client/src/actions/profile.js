@@ -46,7 +46,7 @@ export const getSocialMediaProfile = site => async dispatch => {
       )
     );
   } catch (err) {
-    console.log(err);
+    console.error(err);
 
     dispatch(
       setAlert(`Error Retrieving data from ${site.toUpperCase()}`, 'error')

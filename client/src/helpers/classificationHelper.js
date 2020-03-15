@@ -1,8 +1,9 @@
 import { loadImage, createCanvas } from 'canvas';
+import { getImageAsBase64 } from '../actions/scan';
 
 const helpers = require('./generalHelpers');
 
-export const cleanResults = results => {
+export const cleanResults = (results, content) => {
   let flaggedContent = [];
 
   if (results['people'].length !== 0) {
@@ -13,7 +14,8 @@ export const cleanResults = results => {
           message:
             'A person with an innapropriate level of clothing has been found',
           probability: person.topless_prediction,
-          box: person.bbox
+          box: person.bbox,
+          content: content
         });
       }
     });
@@ -25,7 +27,8 @@ export const cleanResults = results => {
         type: 'Offensive Gesture',
         message: 'An offensive gesture has been detected in this image',
         probability: gesture.score,
-        box: gesture.bbox
+        box: gesture.bbox,
+        content: content
       });
     });
   }
@@ -36,7 +39,8 @@ export const cleanResults = results => {
         type: 'Offensive Word',
         message: `The word ${item.text} has been flagged as ${item.reason}`,
         probability: '>80',
-        box: item.bbox
+        box: item.bbox,
+        content: content
       });
     });
   }
@@ -48,13 +52,26 @@ export const cleanResults = results => {
           type: 'Child Detected',
           message: `A child below the age of 5 (aged ${item.age}) has been detected`,
           probability: item.probability,
-          box: item.bbox
+          box: item.bbox,
+          content: content
         });
       }
     });
   }
 
   return flaggedContent;
+};
+
+export const drawBoundingBoxURL = async (imageURL, box) => {
+  let base64 = await getImageAsBase64(imageURL);
+  let image = await drawBoundingBox(base64, box);
+  return image;
+};
+
+export const drawBlurringBoxURL = async (imageURL, box) => {
+  let base64 = await getImageAsBase64(imageURL);
+  let image = await drawBlurringBox(base64, box);
+  return image;
 };
 
 export const drawBoundingBox = async (image, box) => {

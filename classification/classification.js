@@ -9,7 +9,6 @@ const generalHelpers = require('../helpers/generalHelpers');
 const classificationHelpers = require('../helpers/classificationHelpers');
 const cocoSSD = require('@tensorflow-models/coco-ssd');
 const toxicity = require('@tensorflow-models/toxicity');
-require('@tensorflow/tfjs-node');
 
 // needed to overcome tensorflow dom requirements
 const dom = new JSDOM('<!DOCTYPE html>');
@@ -41,15 +40,20 @@ const loadModels = async () => {
     console.log('\nMODELS ALREADY LOADED\n');
   } else {
     maleClothingModel = await tfImage.load(
-      modelPaths.maleClothedV3.model,
-      modelPaths.maleClothedV3.metadata
+      modelPaths.maleModel.model,
+      modelPaths.maleModel.metadata
     );
+
+    // maleClothingModel = await tfImage.load(
+    //   'file://C:/Users/Luke/Documents/GitHub/Social-Cleaner/classification/clothing/male/model.json',
+    //   'file://C:/Users/Luke/Documents/GitHub/Social-Cleaner/classification/clothing/male/metadata.json'
+    // );
 
     console.log('\nLoaded Male Model...\n');
 
     femaleClothingModel = await tfImage.load(
-      modelPaths.femaleClothedV2.model,
-      modelPaths.femaleClothedV2.metadata
+      modelPaths.femaleModel.model,
+      modelPaths.femaleModel.metadata
     );
 
     console.log('\nLoaded Female Model...\n');
@@ -138,6 +142,13 @@ const detectAgeGender = async image => {
 };
 
 const detectClothing = async image => {
+  results = {
+    people: [],
+    gestures: [],
+    text: [],
+    age: []
+  };
+
   let people = await detectPeople(image);
   let peopleAgeGender = [];
   let classifcation = [];
@@ -154,13 +165,15 @@ const detectClothing = async image => {
 
   await generalHelpers.asyncForEach(peopleAgeGender, async person => {
     let image = await loadImage(person.image);
+
     if (person.gender === 'male') {
       classifcation = await maleClothingModel.predict(image);
-    } else if (person.gender === 'female') {
+    }
+    if (person.gender === 'female') {
       classifcation = await femaleClothingModel.predict(image);
     }
 
-    if (classifcation.length > 0) {
+    if (classifcation.length > 0 && classifcation[0].probability > 0.7) {
       results.people.push({
         gender: person.gender,
         topless_prediction: Math.round(100 * classifcation[0].probability),
@@ -174,21 +187,46 @@ const detectClothing = async image => {
   return results;
 };
 
-const detectText = async image => {
+const detectText = async text => {
+  let words = text.trim().split(' ');
+  await generalHelpers.asyncForEach(words, async word => {
+    try {
+      let predictions = await toxicityModel.classify(word);
+      predictions.forEach(prediction => {
+        if (prediction.results[0].match === true) {
+          results.text.push({
+            text: word,
+            reason: prediction.label
+          });
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+  return results;
+};
+
+const detectTextFromImage = async image => {
   let text = await classificationHelpers.convertToText(image);
 
   if (text.length > 0) {
     await generalHelpers.asyncForEach(text, async item => {
-      let predictions = await toxicityModel.classify(item.word);
-      predictions.forEach(prediction => {
-        if (prediction.results[0].match === true) {
-          results.text.push({
-            text: item.word,
-            reason: prediction.label,
-            bbox: item.bbox
-          });
-        }
-      });
+      try {
+        let predictions = await toxicityModel.classify(item.word);
+        predictions.forEach(prediction => {
+          if (prediction.results[0].match === true) {
+            results.text.push({
+              text: item.word,
+              reason: prediction.label,
+              bbox: item.bbox
+            });
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
     });
   }
 
@@ -196,6 +234,13 @@ const detectText = async image => {
 };
 
 const detectGesture = async image => {
+  results = {
+    people: [],
+    gestures: [],
+    text: [],
+    age: []
+  };
+
   let canvasImage = await classificationHelpers.createCanvasImage(image);
   let tensor = tf.browser.fromPixels(canvasImage);
   tensor = tensor.expandDims(0);
@@ -251,13 +296,17 @@ const detectGesture = async image => {
     indexes,
     classes
   );
+
   if (objects.length > 0) {
     objects.forEach(gesture => {
-      results.gestures.push({
-        type: gesture.class,
-        score: Math.round(100 * gesture.score),
-        bbox: gesture.bbox
-      });
+      if (gesture.score > 0.7) {
+        console.log(gesture.score);
+        results.gestures.push({
+          type: gesture.class,
+          score: Math.round(100 * gesture.score),
+          bbox: gesture.bbox
+        });
+      }
     });
   } else {
     console.log('No gestures detected');
@@ -271,5 +320,6 @@ module.exports = {
   detectClothing,
   detectGesture,
   detectText,
+  detectTextFromImage,
   detectMultipleAgeGender
 };

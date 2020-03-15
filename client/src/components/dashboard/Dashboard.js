@@ -19,14 +19,12 @@ import SidebarItems from './SidebarItems';
 import Profile from './pages/Profile/Profile';
 import Home from './pages/Home/Home';
 import Scan from './pages/Scan/Scan';
-import Upload from './pages/Upload/Upload';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { useEffect } from 'react';
-import { getUser } from '../../actions/user';
 import { logout } from '../../actions/auth';
 import * as colors from '../../helpers/colors';
 import 'react-image-lightbox/style.css';
+import Custom from './pages/Custom/Custom';
 
 const drawerWidth = 240;
 
@@ -194,7 +192,7 @@ const Dashboard = ({ auth, logout }) => {
             <Route exact path='/' component={Home} />
             <Route exact path='/scan' component={Scan} />
             <Route exact path='/profile' component={Profile} />
-            <Route exact path='/upload' component={Upload} />
+            <Route exact path='/custom' component={Custom} />
           </Container>
         </main>
       </HashRouter>

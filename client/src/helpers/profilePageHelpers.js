@@ -11,8 +11,8 @@ export const parseFacebookResults = response => {
     }
   });
 
-  response.photos.data.forEach(photo => {
-    cleanedResults.photos.push(photo.images.source);
+  response.photos.data.forEach(photoArray => {
+    cleanedResults.photos.push(photoArray.images[0].source);
   });
 
   return cleanedResults;
@@ -27,7 +27,14 @@ export const parseTwitterResults = response => {
     }
 
     if (tweet.extended_entities) {
-      cleanedResults.photos.push(tweet.extended_entities.media[0].media_url);
+      // ignore video thumbnails
+      if (
+        tweet.extended_entities.media[0].media_url.indexOf(
+          'ext_tw_video_thumb'
+        ) === -1
+      ) {
+        cleanedResults.photos.push(tweet.extended_entities.media[0].media_url);
+      }
     }
   });
 

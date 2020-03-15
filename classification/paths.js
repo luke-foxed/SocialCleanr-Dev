@@ -1,16 +1,22 @@
-const maleClothedV3 = {
+const maleModel = {
   metadata:
     'https://teachablemachine.withgoogle.com/models/_LEWFdms/metadata.json',
   model: 'https://teachablemachine.withgoogle.com/models/_LEWFdms/model.json'
 };
 
-const femaleClothedV2 = {
+const maleModelLocal = {
+  metadata: 'file://classification/clothing/male/metadata.json',
+  model: 'file://classification/clothing/male/model.json'
+};
+
+const femaleModel = {
   metadata:
     'https://teachablemachine.withgoogle.com/models/aWzTCdCP/metadata.json',
   model: 'https://teachablemachine.withgoogle.com/models/aWzTCdCP/model.json'
 };
 
 module.exports = {
-  maleClothedV3,
-  femaleClothedV2
+  maleModel,
+  maleModelLocal,
+  femaleModel
 };

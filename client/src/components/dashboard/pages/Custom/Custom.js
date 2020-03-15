@@ -12,7 +12,6 @@ import * as colors from '../../../../helpers/colors';
 import {
   CloudUpload,
   Send,
-  Image,
   Assessment,
   CheckCircle,
   EmojiPeople,
@@ -20,22 +19,23 @@ import {
   ThumbsUpDown,
   Brush,
   GetApp,
-  ChildCare
+  ChildCare,
+  Palette
 } from '@material-ui/icons';
-import { beginClassification } from '../../../../actions/upload.js';
+import { runManualScan } from '../../../../actions/upload.js';
 import {
-  cleanResults,
   drawBoundingBox,
   drawBlurringBox,
   blurAllContent,
   createDownloadImage
-} from '../../../../helpers/uploadPageHelper';
-import { ResultsTable } from './ResultsTable';
+} from '../../../../helpers/classificationHelper';
+import { ResultsTable } from '../../../layout/ResultsTable';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import { connect } from 'react-redux';
 import { setAlert } from '../../../../actions/alert';
 import PropTypes from 'prop-types';
+import { IconHeader } from '../../../layout/IconHeader';
 
 const StyledToggleButtonGroup = withStyles(theme => ({
   grouped: {
@@ -59,14 +59,15 @@ const StyledToggleButton = withStyles({
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    margin: theme.spacing(2),
-    padding: theme.spacing(4),
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'
   },
   divider: {
-    paddingBottom: theme.spacing(2),
     width: '40px',
     border: 0
   },
@@ -85,9 +86,16 @@ const useStyles = makeStyles(theme => ({
     objectFit: 'cover'
   },
   toggleButtons: {
+    // FOR MOBILE
+
+    // display: 'flex',
+    // flexDirection: 'column',
+    // width: 250,
+    // alignItems: 'center',
+    // margin: '0 auto',
     '& button': {
       width: '140px',
-      transition: 'all .5s ease-in-out'
+      transition: 'all .2s ease-in-out'
     }
   },
   progress: {
@@ -96,7 +104,8 @@ const useStyles = makeStyles(theme => ({
   subtext: {
     color: '#4a4a4a',
     width: '50%',
-    textAlign: 'center'
+    textAlign: 'center',
+    fontFamily: 'Raleway'
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -111,13 +120,8 @@ const Upload = ({ setAlert }) => {
   const [spinnerVisible, setSpinnerVisible] = useState(false);
   const [resultsVisible, setResultsVisible] = useState(false);
   const [flaggedContent, setFlaggedContent] = useState([]);
+  const [scanType, setScanType] = useState('photos');
   const [models, setModels] = useState(() => []);
-
-  const [results, setResults] = useState({
-    people: [],
-    text: [],
-    gestures: []
-  });
 
   const handleInput = event => {
     setImage('');
@@ -143,8 +147,8 @@ const Upload = ({ setAlert }) => {
       setAlert('No Image Uploaded', 'error');
     } else {
       setSpinnerVisible(true);
-      let response = await beginClassification(models, image);
-      setFlaggedContent(cleanResults(response.data));
+      let response = await runManualScan(models, image);
+      setFlaggedContent(response);
       setSpinnerVisible(false);
       setResultsVisible(true);
     }
@@ -174,25 +178,21 @@ const Upload = ({ setAlert }) => {
   };
 
   return (
-    <Container component='main' maxWidth='md'>
-      <Paper elevation={2} className={classes.paper}>
-        <Typography
-          variant='h4'
-          className={classes.paperHeader}
-          style={{ display: 'flex' }}>
-          <Image
-            fontSize='large'
-            style={{
-              color: colors.colorPurple,
-              paddingRight: '10px'
-            }}
-          />
-          Upload An Image
-        </Typography>
+    <Container component='main' maxWidth='lg'>
+      <Paper
+        elevation={4}
+        className={classes.paper}
+        style={{
+          background: colors.colorDarkOrange
+        }}>
+        <IconHeader icon={Palette} text='Custom Scan' subheader={false} />
+      </Paper>
 
-        <hr
-          className={classes.divider}
-          style={{ borderTop: '2px solid' + colors.colorPurple }}
+      <Paper elevation={4} className={classes.paper}>
+        <IconHeader
+          icon={CloudUpload}
+          text='Upload An Image'
+          subheader={true}
         />
 
         <Typography className={classes.subtext}>
@@ -203,7 +203,7 @@ const Upload = ({ setAlert }) => {
 
         <hr
           className={classes.divider}
-          style={{ borderTop: '2px solid #4a4a4a' }}
+          style={{ borderTop: '2px solid #4a4a4a', padding: '10px' }}
         />
 
         <input
@@ -218,7 +218,7 @@ const Upload = ({ setAlert }) => {
             variant='contained'
             style={{ backgroundColor: colors.colorDarkPink }}
             color='primary'
-            startIcon={<CloudUpload />}
+            size='large'
             component='span'>
             Upload
           </Button>
@@ -237,37 +237,40 @@ const Upload = ({ setAlert }) => {
           Select which models you wish to use:
         </Typography>
 
-        <StyledToggleButtonGroup
-          size='small'
-          className={classes.toggleButtons}
-          value={models}
-          onChange={handleModelSelect}>
-          <StyledToggleButton
-            value='clothing'
-            classes={{ selected: classes.toggleSelected }}>
-            Clothing
-            <EmojiPeople fontSize='large' style={{ paddingLeft: '5px' }} />
-          </StyledToggleButton>
+        <Container maxWidth='sm'>
+          <StyledToggleButtonGroup
+            orientation='vertical'
+            size='small'
+            className={classes.toggleButtons}
+            value={models}
+            onChange={handleModelSelect}>
+            <StyledToggleButton
+              value='clothing'
+              classes={{ selected: classes.toggleSelected }}>
+              Clothing
+              <EmojiPeople fontSize='large' style={{ paddingLeft: '5px' }} />
+            </StyledToggleButton>
 
-          <StyledToggleButton value='text'>
-            Text
-            <Spellcheck fontSize='large' style={{ paddingLeft: '5px' }} />
-          </StyledToggleButton>
+            <StyledToggleButton value='text'>
+              Text
+              <Spellcheck fontSize='large' style={{ paddingLeft: '5px' }} />
+            </StyledToggleButton>
 
-          <StyledToggleButton value='gestures'>
-            Gestures
-            <ThumbsUpDown fontSize='large' style={{ paddingLeft: '5px' }} />
-          </StyledToggleButton>
+            <StyledToggleButton value='gestures'>
+              Gestures
+              <ThumbsUpDown fontSize='large' style={{ paddingLeft: '5px' }} />
+            </StyledToggleButton>
 
-          <StyledToggleButton value='age'>
-            Age
-            <ChildCare fontSize='large' style={{ paddingLeft: '5px' }} />
-          </StyledToggleButton>
-        </StyledToggleButtonGroup>
+            <StyledToggleButton value='age'>
+              Age
+              <ChildCare fontSize='large' style={{ paddingLeft: '5px' }} />
+            </StyledToggleButton>
+          </StyledToggleButtonGroup>
+        </Container>
 
         <hr
           className={classes.divider}
-          style={{ borderTop: '2px solid #4a4a4a' }}
+          style={{ borderTop: '2px solid #4a4a4a', padding: '10px' }}
         />
 
         <Button
@@ -290,25 +293,11 @@ const Upload = ({ setAlert }) => {
       </Paper>
 
       {resultsVisible && (
-        <Paper elevation={2} className={classes.paper}>
-          <Typography
-            variant='h4'
-            className={classes.paperHeader}
-            style={{ display: 'flex' }}>
-            <Assessment
-              fontSize='large'
-              style={{
-                color: colors.colorPurple,
-                paddingRight: '10px'
-              }}
-            />
-            Results
-          </Typography>
-
-          <hr
-            className={classes.divider}
-            style={{ borderTop: '2px solid ' + colors.colorPurple }}
-          />
+        <Paper
+          elevation={2}
+          className={classes.paper}
+          style={{ display: 'block', width: '100%', overflowX: 'auto' }}>
+          <IconHeader icon={Assessment} text='Results' subheader={true} />
 
           {flaggedContent.length > 0 ? (
             <div>
@@ -316,6 +305,7 @@ const Upload = ({ setAlert }) => {
                 flaggedContent={flaggedContent}
                 onViewClick={bbox => showBox(bbox)}
                 onCleanClick={bbox => cleanImage(bbox)}
+                resultsType={scanType}
               />
 
               <hr

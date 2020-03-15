@@ -25,7 +25,7 @@ const SidebarItems = ({ onLogoutClick }) => {
   };
 
   const handleLogout = () => {
-    onLogoutClick()
+    onLogoutClick();
   };
 
   return (
@@ -60,7 +60,7 @@ const SidebarItems = ({ onLogoutClick }) => {
         onClick={event => handleListItemClick(event, 2)}
         button
         component={Link}
-        to='/upload'>
+        to='/custom'>
         <ListItemIcon>
           <Palette />
         </ListItemIcon>
@@ -76,7 +76,7 @@ const SidebarItems = ({ onLogoutClick }) => {
         <ListItemIcon>
           <Face />
         </ListItemIcon>
-        <ListItemText primary='My Profile' />
+        <ListItemText primary='Profile' />
       </ListItem>
 
       <Divider></Divider>

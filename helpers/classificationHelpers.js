@@ -4,6 +4,7 @@ const axios = require('axios');
 const sharp = require('sharp');
 const client = new vision.ImageAnnotatorClient();
 const helpers = require('./generalHelpers');
+const fs = require('fs');
 
 // for converting URLs into tensor objects
 const getTensor3dObject = async imageURL => {
@@ -123,11 +124,18 @@ const boundingBoxesToImage = async (boxArray, image) => {
         width: boxes[2],
         height: boxes[3]
       })
+      .toFormat('png')
       .toBuffer();
+
     // append data header to base64 string
     let encodedImage =
       'data:image/jpeg;base64,' + imageBuffer.toString('base64');
-    images.push({ image: encodedImage, bbox: boxes });
+    images.push({ image: imageBuffer, bbox: boxes });
+
+    // for debugging, to see what image is created
+    // fs.writeFile(`image_${boxes[0]}.png`, imageBuffer, function(err) {
+    //   if (err) throw err;
+    // });
   });
 
   return images;
@@ -135,15 +143,27 @@ const boundingBoxesToImage = async (boxArray, image) => {
 
 const convertToText = async image => {
   let text = [];
+  let request = {};
 
-  // remove 'data:image/jpeg;base64,' from string
-  const base64result = image.split(',')[1];
+  // if URL or base64 string
+  if (image.substring(0, 4) === 'http') {
+    request = {
+      image: {
+        source: {
+          imageUri: image
+        }
+      }
+    };
+  } else {
+    // remove 'data:image/jpeg;base64,' from string
+    const base64result = image.split(',')[1];
 
-  const request = {
-    image: {
-      content: base64result
-    }
-  };
+    request = {
+      image: {
+        content: base64result
+      }
+    };
+  }
 
   const [result] = await client.textDetection(request);
   const detections = await result.textAnnotations;
