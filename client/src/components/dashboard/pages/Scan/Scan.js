@@ -28,33 +28,10 @@ import { runAutomatedScan } from '../../../../actions/scan';
 import { useState } from 'react';
 import { ResultsTable } from '../../../layout/ResultsTable';
 import {
-  drawBlurringBox,
+  drawBlurringBoxURL,
   drawBoundingBoxURL
 } from '../../../../helpers/classificationHelper';
 import { IconHeader } from '../../../layout/IconHeader';
-
-let test = {
-  site: 'twitter',
-  photos: [
-    'http://pbs.twimg.com/media/ER5BzvyXYAY4mY4.jpg',
-    'http://pbs.twimg.com/media/ERow7S_X0AADPJw.jpg',
-    'http://pbs.twimg.com/media/ERaBT0sXUAEoycx.jpg',
-    'http://pbs.twimg.com/media/EQ_8LdnXsAEkUeV.jpg',
-    'http://pbs.twimg.com/media/EQvtLTxXkAEktoM.jpg'
-  ],
-  text: [
-    'So proud to reach 1000 official games in my career with a very important victory that put us on the top of the tabl… https://t.co/0KmVFS0RUP',
-    'Thank you for all your messages of support for my mum. She is currently stable and recovering in hospital. Me and m… https://t.co/GQDHGLFJOB',
-    'Stay focused on your goals 💪 https://t.co/UNuGkAAUXm',
-    'Always on my mind... see you tomorrow 💪#UCL #forzajuve https://t.co/jXSbJoDCMP',
-    '3 more important points!💪🏽\nNow let’s focus on UCL game!\n#finoallafine #forzajuve https://t.co/AzGNpKte4r',
-    'My new Mercurial Dream Speed is here and they make me feel like I can move at the speed of light ⚡\nSo excited to se… https://t.co/eWziv3X7Rf',
-    'Ice recovery 🧊 💪 https://t.co/6lq1FjrmA6',
-    'Family’s lunch ❤️ https://t.co/9r7zgwiGey',
-    'No excuses 🤷🏽\u200d♂️💪 https://t.co/QNjMQDvfd4',
-    'Good to get back to victories and happy to score again in our stadium!⚽⚽\nProud to reach 50 goals with the bianconer… https://t.co/fKJMw4Ytnc'
-  ]
-};
 
 const StyledToggleButtonGroup = withStyles(theme => ({
   grouped: {
@@ -166,12 +143,15 @@ const Scan = ({ user, profile }) => {
     setBoxImage('');
   };
 
-  const showBox = async (box, image) => {
-    let boxImage = await drawBoundingBoxURL(image, box);
+  const showBox = async (box, content) => {
+    let boxImage = await drawBoundingBoxURL(content, box);
     setBoxImage(boxImage);
   };
 
-  const cleanImage = async box => {};
+  const cleanImage = async (box, image) => {
+    let boxImage = await drawBlurringBoxURL(image, box);
+    setBoxImage(boxImage);
+  };
 
   return (
     <Container component='main' maxWidth='lg'>
@@ -288,8 +268,8 @@ const Scan = ({ user, profile }) => {
                 <div>
                   <ResultsTable
                     flaggedContent={flaggedContent}
-                    onViewClick={(bbox, image) => showBox(bbox, image)}
-                    onCleanClick={bbox => cleanImage(bbox)}
+                    onViewClick={(bbox, content) => showBox(bbox, content)}
+                    onCleanClick={(bbox, content) => cleanImage(bbox, content)}
                     resultsType={scanType}
                   />
                 </div>

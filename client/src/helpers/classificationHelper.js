@@ -68,6 +68,12 @@ export const drawBoundingBoxURL = async (imageURL, box) => {
   return image;
 };
 
+export const drawBlurringBoxURL = async (imageURL, box) => {
+  let base64 = await getImageAsBase64(imageURL);
+  let image = await drawBlurringBox(base64, box);
+  return image;
+};
+
 export const drawBoundingBox = async (image, box) => {
   const canvasImage = await createCanvasImage(image);
   const ctx = canvasImage.getContext('2d');
