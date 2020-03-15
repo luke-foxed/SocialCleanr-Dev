@@ -145,7 +145,7 @@ const Scan = ({ user, profile }) => {
 
   const { photos, text } = test;
   const estimatedTime =
-    scanType === 'image' ? photos.length * 20 : text.length * 10;
+    scanType === 'photos' ? photos.length * 20 : text.length * 10;
 
   const handleScanStart = async () => {
     setSpinnerVisible(true);
@@ -160,6 +160,8 @@ const Scan = ({ user, profile }) => {
 
   const handleScanTypeSelect = (event, type) => {
     setScanType(type);
+    setResultsLoaded(false);
+    setBoxImage('');
   };
 
   const showBox = async (box, image) => {
@@ -236,10 +238,10 @@ const Scan = ({ user, profile }) => {
               <Typography className={classes.infoText}>{scanType}</Typography>
 
               <Typography className={classes.infoTextHeader}>
-                Number of {scanType}s:
+                Number of {scanType}:
               </Typography>
               <Typography className={classes.infoText}>
-                {scanType === 'image' ? photos.length : text.length}
+                {scanType === 'photos' ? photos.length : text.length}
               </Typography>
 
               <Typography className={classes.infoTextHeader}>
@@ -286,7 +288,7 @@ const Scan = ({ user, profile }) => {
                     flaggedContent={flaggedContent}
                     onViewClick={(bbox, image) => showBox(bbox, image)}
                     onCleanClick={bbox => cleanImage(bbox)}
-                    resultsType='image'
+                    resultsType={scanType}
                   />
                 </div>
               ) : (

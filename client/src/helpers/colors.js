@@ -15,5 +15,5 @@ module.exports = {
   colorLightOrange,
   colorBlue,
   colorGreen,
-  colorYellow,
+  colorYellow
 };

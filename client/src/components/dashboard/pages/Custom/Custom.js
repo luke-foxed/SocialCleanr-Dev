@@ -120,6 +120,7 @@ const Upload = ({ setAlert }) => {
   const [spinnerVisible, setSpinnerVisible] = useState(false);
   const [resultsVisible, setResultsVisible] = useState(false);
   const [flaggedContent, setFlaggedContent] = useState([]);
+  const [scanType, setScanType] = useState('photos');
   const [models, setModels] = useState(() => []);
 
   const handleInput = event => {
@@ -304,7 +305,7 @@ const Upload = ({ setAlert }) => {
                 flaggedContent={flaggedContent}
                 onViewClick={bbox => showBox(bbox)}
                 onCleanClick={bbox => cleanImage(bbox)}
-                resultsType='image'
+                resultsType={scanType}
               />
 
               <hr

@@ -6,11 +6,15 @@ import {
   Table,
   TableBody,
   TableHead,
-  TableContainer,
+  DialogContent,
+  DialogActions,
+  DialogContentText,
   Avatar,
-  Grid
+  Grid,
+  Typography,
+  Dialog
 } from '@material-ui/core';
-import React from 'react';
+import React, { useState } from 'react';
 import { Warning, Visibility, DeleteForever, Brush } from '@material-ui/icons';
 
 export const ResultsTable = ({
@@ -19,12 +23,20 @@ export const ResultsTable = ({
   onCleanClick,
   resultsType
 }) => {
-  const handleBoxView = (bbox, image) => {
-    onViewClick(bbox, image);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [modalText, setModalText] = useState('');
+
+  const handleViewContent = (bbox, content) => {
+    if (resultsType === 'text') {
+      setModalText(content);
+      setModalOpen(true);
+    } else {
+      onViewClick(bbox, content);
+    }
   };
 
-  const handleCleanImage = bbox => {
-    onCleanClick(bbox);
+  const handleCleanContent = (bbox, content) => {
+    onCleanClick(bbox, content);
   };
 
   return (
@@ -48,33 +60,39 @@ export const ResultsTable = ({
               <TableCell>
                 <Warning
                   fontSize={'large'}
-                  style={
-                    value.probability > 80
-                      ? { color: 'rgb(240, 87, 79)' }
-                      : { color: 'rgb(240, 208, 79)' }
-                  }
+                  style={{ color: 'rgb(240, 87, 79)' }}
                 />
               </TableCell>
               <TableCell align='center'>{value.type}</TableCell>
               <TableCell align='center'>{value.message}</TableCell>
               <TableCell align='center'>{value.probability}%</TableCell>
               <TableCell align='center'>
-                {resultsType === 'image' ? (
+                {resultsType === 'photos' ? (
                   <Avatar
-                    src={value.image}
-                    style={{ width: 100, height: 100 }}
+                    src={value.content}
+                    style={{
+                      width: 100,
+                      height: 100,
+                      margin: '0 auto'
+                    }}
                   />
                 ) : (
-                  <h1>Text goes here</h1>
+                  <Typography>{value.content.substring(0, 20)}...</Typography>
                 )}
               </TableCell>
               <TableCell align='center'>
                 <IconButton
-                  onClick={() => handleBoxView(value.box, value.image)}>
+                  onClick={() => handleViewContent(value.box, value.content)}>
                   <Visibility />
                 </IconButton>
 
-                <IconButton onClick={() => handleCleanImage(value.box)}>
+                <IconButton
+                  style={
+                    resultsType === 'photos'
+                      ? { display: 'inline' }
+                      : { display: 'none' }
+                  }
+                  onClick={() => handleCleanContent(value.box, value.content)}>
                   <Brush />
                 </IconButton>
 
@@ -86,6 +104,21 @@ export const ResultsTable = ({
           ))}
         </TableBody>
       </Table>
+
+      {isModalOpen && (
+        <Dialog open={isModalOpen} onClose={() => setModalOpen(false)}>
+          <DialogContent>
+            <DialogContentText>
+              <b>{modalText}</b>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button color='primary' onClick={() => setModalOpen(false)}>
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </Grid>
   );
 };

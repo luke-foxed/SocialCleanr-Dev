@@ -3,7 +3,7 @@ import { getImageAsBase64 } from '../actions/scan';
 
 const helpers = require('./generalHelpers');
 
-export const cleanResults = (results, image) => {
+export const cleanResults = (results, content) => {
   let flaggedContent = [];
 
   if (results['people'].length !== 0) {
@@ -15,7 +15,7 @@ export const cleanResults = (results, image) => {
             'A person with an innapropriate level of clothing has been found',
           probability: person.topless_prediction,
           box: person.bbox,
-          image: image
+          content: content
         });
       }
     });
@@ -28,7 +28,7 @@ export const cleanResults = (results, image) => {
         message: 'An offensive gesture has been detected in this image',
         probability: gesture.score,
         box: gesture.bbox,
-        image: image
+        content: content
       });
     });
   }
@@ -40,7 +40,7 @@ export const cleanResults = (results, image) => {
         message: `The word ${item.text} has been flagged as ${item.reason}`,
         probability: '>80',
         box: item.bbox,
-        image: image
+        content: content
       });
     });
   }
@@ -53,7 +53,7 @@ export const cleanResults = (results, image) => {
           message: `A child below the age of 5 (aged ${item.age}) has been detected`,
           probability: item.probability,
           box: item.bbox,
-          image: image
+          content: content
         });
       }
     });
