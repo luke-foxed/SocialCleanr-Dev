@@ -11,9 +11,6 @@ const User = require('../../models/User');
 const generalHelper = require('../../helpers/generalHelpers');
 
 const SUCCESS_REDIRECT = 'http://localhost:3000/dashboard';
-const FAILURE_REDIRECT = 'http://localhost:3000/login';
-
-// NEED TO MOVE ENCRYPTION DECRYPTION TO HELPER FILE
 
 var twitterConfig = {
   consumer_key: config.get('twitterAPIKey'),
@@ -116,7 +113,13 @@ router.post('/remove-site', auth, async (req, res) => {
   try {
     let user = await User.findOneAndUpdate(
       { _id: req.user.id },
-      { $set: { [`is_connected_${site}`]: false, [`${site}_token`]: '' } }
+      {
+        $set: {
+          [`is_connected_${site}`]: false,
+          [`${site}_token`]: '',
+          [`${site}_token_secret`]: ''
+        }
+      }
     );
     res.json(user);
   } catch (err) {
