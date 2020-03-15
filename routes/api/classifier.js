@@ -30,7 +30,7 @@ router.post('/filter_models', async (req, res) => {
         break;
       case 'text':
         console.log('\nSELECTED TEXT\n');
-        textResults = await classification.detectText(req.body.image);
+        textResults = await classification.detectTextFromImage(req.body.image);
         break;
       case 'clothing':
         console.log('\nSELECTED CLOTHING\n');
@@ -56,13 +56,15 @@ router.post('/automated-scan', async (req, res) => {
   let results = {};
   let gestureResults = (ageResults = clothingResults = textResults = []);
 
+  console.log(req.body.type);
+
   try {
-    if (req.body.type === 'image') {
+    if (req.body.type === 'photos') {
       gestureResults = await classification.detectGesture(req.body.data);
       clothingResults = await classification.detectClothing(req.body.data);
-      //textResults = await classification.detectText(req.body.data);
-    } else {
-      //textResults = await classification.detectText(req.body.data);
+      textResults = await classification.detectTextFromImage(req.body.data);
+    } else if (req.body.type === 'text') {
+      textResults = await classification.detectText(req.body.data);
     }
 
     results.people = clothingResults.people || [];

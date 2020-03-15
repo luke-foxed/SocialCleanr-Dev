@@ -5,25 +5,23 @@ import { asyncForEach } from '../helpers/generalHelpers';
 export const runAutomatedScan = async (type, data) => {
   let results = [];
 
-  if (type === 'image') {
-    await asyncForEach(data, async image => {
-      let response = await axios({
-        method: 'post',
-        url: '/api/classifier/automated-scan',
-        data: {
-          type: type,
-          data: image
-        }
-      });
-
-      let flaggedContent = cleanResults(response.data, image);
-      results.push(flaggedContent);
+  await asyncForEach(data, async content => {
+    let response = await axios({
+      method: 'post',
+      url: '/api/classifier/automated-scan',
+      data: {
+        type: type,
+        data: content
+      }
     });
 
-    var flattened = [].concat.apply([], results);
+    let flaggedContent = cleanResults(response.data, content);
+    results.push(flaggedContent);
+  });
 
-    return flattened;
-  }
+  var flattened = [].concat.apply([], results);
+
+  return flattened;
 };
 
 export const getImageAsBase64 = async image => {

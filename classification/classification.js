@@ -187,7 +187,28 @@ const detectClothing = async image => {
   return results;
 };
 
-const detectText = async image => {
+const detectText = async text => {
+  let words = text.trim().split(' ');
+  await generalHelpers.asyncForEach(words, async word => {
+    try {
+      let predictions = await toxicityModel.classify(word);
+      predictions.forEach(prediction => {
+        if (prediction.results[0].match === true) {
+          results.text.push({
+            text: word,
+            reason: prediction.label
+          });
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+  return results;
+};
+
+const detectTextFromImage = async image => {
   let text = await classificationHelpers.convertToText(image);
 
   if (text.length > 0) {
@@ -299,5 +320,6 @@ module.exports = {
   detectClothing,
   detectGesture,
   detectText,
+  detectTextFromImage,
   detectMultipleAgeGender
 };

@@ -138,7 +138,7 @@ const useStyles = makeStyles(theme => ({
 const Scan = ({ user, profile }) => {
   const classes = useStyles();
   const [boxImage, setBoxImage] = useState('');
-  const [scanType, setScanType] = useState('image');
+  const [scanType, setScanType] = useState('photos');
   const [flaggedContent, setFlaggedContent] = useState([]);
   const [resultsLoaded, setResultsLoaded] = useState(false);
   const [spinnerVisible, setSpinnerVisible] = useState(false);
@@ -149,7 +149,10 @@ const Scan = ({ user, profile }) => {
 
   const handleScanStart = async () => {
     setSpinnerVisible(true);
-    let clean = await runAutomatedScan('image', photos);
+    let clean = await runAutomatedScan(
+      scanType,
+      scanType === 'photos' ? photos : text
+    );
     setFlaggedContent(clean);
     setResultsLoaded(true);
     setSpinnerVisible(false);
@@ -197,9 +200,9 @@ const Scan = ({ user, profile }) => {
               value={scanType}
               onChange={handleScanTypeSelect}>
               <StyledToggleButton
-                value='image'
+                value='photos'
                 classes={{ selected: classes.toggleSelected }}>
-                Image
+                Photos
                 <Image fontSize='large' style={{ paddingLeft: '5px' }} />
               </StyledToggleButton>
 
@@ -276,7 +279,6 @@ const Scan = ({ user, profile }) => {
               elevation={2}
               className={classes.paper}
               style={{ display: 'block', width: '100%', overflowX: 'auto' }}>
-              
               <IconHeader icon={Assessment} text='Results' subheader={true} />
               {flaggedContent.length > 0 ? (
                 <div>
