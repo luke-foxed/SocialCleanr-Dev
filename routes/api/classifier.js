@@ -56,13 +56,12 @@ router.post('/automated-scan', async (req, res) => {
   let results = {};
   let gestureResults = (ageResults = clothingResults = textResults = []);
 
-  console.log(req.body.type);
-
   try {
     if (req.body.type === 'photos') {
       gestureResults = await classification.detectGesture(req.body.data);
       clothingResults = await classification.detectClothing(req.body.data);
       textResults = await classification.detectTextFromImage(req.body.data);
+      ageResults = await classification.detectMultipleAgeGender(req.body.data);
     } else if (req.body.type === 'text') {
       textResults = await classification.detectText(req.body.data);
     }

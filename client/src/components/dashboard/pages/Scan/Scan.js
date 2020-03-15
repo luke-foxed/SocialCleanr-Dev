@@ -143,9 +143,11 @@ const Scan = ({ user, profile }) => {
   const [resultsLoaded, setResultsLoaded] = useState(false);
   const [spinnerVisible, setSpinnerVisible] = useState(false);
 
-  const { photos, text } = test;
+  const { photos, text } = profile;
+
+  // time per image + model loading time
   const estimatedTime =
-    scanType === 'photos' ? photos.length * 20 : text.length * 10;
+    scanType === 'photos' ? photos.length * 6 + 10 : text.length * 4 + 10;
 
   const handleScanStart = async () => {
     setSpinnerVisible(true);
@@ -248,7 +250,7 @@ const Scan = ({ user, profile }) => {
                 **Estimated Time Required:
               </Typography>
               <Typography className={classes.infoText}>
-                {estimatedTime} Seconds
+                ~{estimatedTime} Seconds
               </Typography>
             </Grid>
 
