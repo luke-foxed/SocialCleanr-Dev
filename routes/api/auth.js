@@ -13,7 +13,9 @@ router.get('/', auth, async (req, res) => {
     const user = await User.findById(req.user.id)
       .select('-password')
       .select('-twitter_token')
+      .select('-twitter_token_secret')
       .select('-facebook_token');
+
     res.json(user);
   } catch (err) {
     console.error(err.message);
