@@ -6,7 +6,9 @@ import {
   Container,
   Grid,
   Button,
-  withStyles
+  withStyles,
+  Backdrop,
+  CircularProgress
 } from '@material-ui/core';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
@@ -34,11 +36,11 @@ import { IconHeader } from '../../../layout/IconHeader';
 let test = {
   site: 'twitter',
   photos: [
-    'http://pbs.twimg.com/media/ER5BzvyXYAY4mY4.jpg'
-    //'http://pbs.twimg.com/media/ERow7S_X0AADPJw.jpg'
-    // 'http://pbs.twimg.com/media/ERaBT0sXUAEoycx.jpg',
-    // 'http://pbs.twimg.com/media/EQ_8LdnXsAEkUeV.jpg',
-    // 'http://pbs.twimg.com/media/EQvtLTxXkAEktoM.jpg'
+    'http://pbs.twimg.com/media/ER5BzvyXYAY4mY4.jpg',
+    'http://pbs.twimg.com/media/ERow7S_X0AADPJw.jpg',
+    'http://pbs.twimg.com/media/ERaBT0sXUAEoycx.jpg',
+    'http://pbs.twimg.com/media/EQ_8LdnXsAEkUeV.jpg',
+    'http://pbs.twimg.com/media/EQvtLTxXkAEktoM.jpg'
   ],
   text: [
     'So proud to reach 1000 official games in my career with a very important victory that put us on the top of the tabl… https://t.co/0KmVFS0RUP',
@@ -123,6 +125,13 @@ const useStyles = makeStyles(theme => ({
     height: 600,
     width: '100%',
     objectFit: 'cover'
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
   }
 }));
 
@@ -132,15 +141,18 @@ const Scan = ({ user, profile }) => {
   const [scanType, setScanType] = useState('image');
   const [flaggedContent, setFlaggedContent] = useState([]);
   const [resultsLoaded, setResultsLoaded] = useState(false);
+  const [spinnerVisible, setSpinnerVisible] = useState(false);
 
-  const { photos, text } = profile;
+  const { photos, text } = test;
   const estimatedTime =
     scanType === 'image' ? photos.length * 20 : text.length * 10;
 
   const handleScanStart = async () => {
+    setSpinnerVisible(true);
     let clean = await runAutomatedScan('image', photos);
     setFlaggedContent(clean);
     setResultsLoaded(true);
+    setSpinnerVisible(false);
   };
 
   const handleScanTypeSelect = (event, type) => {
@@ -260,7 +272,11 @@ const Scan = ({ user, profile }) => {
           </Paper>
 
           {resultsLoaded && (
-            <Paper elevation={2} className={classes.paper}>
+            <Paper
+              elevation={2}
+              className={classes.paper}
+              style={{ display: 'block', width: '100%', overflowX: 'auto' }}>
+              
               <IconHeader icon={Assessment} text='Results' subheader={true} />
               {flaggedContent.length > 0 ? (
                 <div>
@@ -303,6 +319,15 @@ const Scan = ({ user, profile }) => {
           </div>
         </Paper>
       )}
+
+      <Backdrop open={spinnerVisible} className={classes.backdrop}>
+        <CircularProgress value={0} style={{ color: colors.colorLightPink }} />
+        <br />
+        <Typography>
+          Your content is currently being searched. This may take some time,
+          please do not refresh or close this tab.
+        </Typography>
+      </Backdrop>
     </Container>
   );
 };

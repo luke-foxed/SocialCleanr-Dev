@@ -122,12 +122,6 @@ const Upload = ({ setAlert }) => {
   const [flaggedContent, setFlaggedContent] = useState([]);
   const [models, setModels] = useState(() => []);
 
-  const [results, setResults] = useState({
-    people: [],
-    text: [],
-    gestures: []
-  });
-
   const handleInput = event => {
     setImage('');
     setBoxImage('');
@@ -298,7 +292,10 @@ const Upload = ({ setAlert }) => {
       </Paper>
 
       {resultsVisible && (
-        <Paper elevation={2} className={classes.paper}>
+        <Paper
+          elevation={2}
+          className={classes.paper}
+          style={{ display: 'block', width: '100%', overflowX: 'auto' }}>
           <IconHeader icon={Assessment} text='Results' subheader={true} />
 
           {flaggedContent.length > 0 ? (
@@ -319,7 +316,7 @@ const Upload = ({ setAlert }) => {
                 <Button
                   variant='contained'
                   color='primary'
-                  size='large'
+                  size='medium'
                   style={{
                     backgroundColor: colors.colorDarkPink,
                     margin: '5px',
@@ -333,7 +330,7 @@ const Upload = ({ setAlert }) => {
                 <Button
                   variant='contained'
                   color='primary'
-                  size='large'
+                  size='medium'
                   style={{
                     backgroundColor: colors.colorLightOrange,
                     margin: '5px',
