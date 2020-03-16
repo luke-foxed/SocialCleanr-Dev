@@ -8,7 +8,7 @@ import {
   Button,
   Avatar
 } from '@material-ui/core';
-import { Face, Contacts } from '@material-ui/icons';
+import { Face } from '@material-ui/icons';
 import * as colors from '../../../../helpers/colors';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -28,9 +28,9 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center'
   },
   avatarFrame: {
-    width: 200,
-    height: 200,
-    borderRadius: '100px',
+    width: 210,
+    height: 210,
+    borderRadius: '50%',
     background:
       'linear-gradient(0deg, rgba(214,93,177,1) 0%, rgba(132,94,194,1) 100%)',
     display: ' flex',
@@ -39,6 +39,8 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center'
   },
   avatar: {
+    padding: '10px',
+    borderRadius: '50%',
     width: 190,
     height: 190,
     backgroundColor: 'white'
@@ -66,11 +68,7 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
 
       <Paper elevation={2} className={classes.paper}>
         <div className={classes.avatarFrame}>
-          <Avatar
-            className={classes.avatar}
-            variant='circle'
-            src='https://i.ya-webdesign.com/images/raccoon-face-png.png'
-          />
+          <img className={classes.avatar} variant='circle' src={user.avatar} />
         </div>
 
         <Typography variant='h3' className={classes.name}>
