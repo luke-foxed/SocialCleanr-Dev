@@ -12,6 +12,16 @@ const cookieParser = require('cookie-parser');
 // Connect to DB
 connectDB();
 
+// Init session (needed for OAuth)
+app.use(
+  session({
+    secret: 'test',
+    store: new MongoStore({ mongooseConnection: mongoose.connection }),
+    resave: true,
+    saveUninitialized: true
+  })
+);
+
 // Init passport
 require('./config/passport')(passport);
 app.use(passport.initialize());
