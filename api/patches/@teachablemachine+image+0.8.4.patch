@@ -1,0 +1,19 @@
+diff --git a/node_modules/@teachablemachine/image/dist/utils/canvas.js b/node_modules/@teachablemachine/image/dist/utils/canvas.js
+index 94bd4f6..6dd0f45 100644
+--- a/node_modules/@teachablemachine/image/dist/utils/canvas.js
++++ b/node_modules/@teachablemachine/image/dist/utils/canvas.js
+@@ -45,10 +45,10 @@ function cropTo(image, size, flipped, canvas) {
+     var width = image.width;
+     var height = image.height;
+     // if video element
+-    if (image instanceof HTMLVideoElement) {
+-        width = image.videoWidth;
+-        height = image.videoHeight;
+-    }
++    // if (image instanceof HTMLVideoElement) {
++    //     width = image.videoWidth;
++    //     height = image.videoHeight;
++    // }
+     var min = Math.min(width, height);
+     var scale = size / min;
+     var scaledW = Math.ceil(width * scale);

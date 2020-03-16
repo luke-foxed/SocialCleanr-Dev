@@ -8,7 +8,7 @@ export const runAutomatedScan = async (type, data) => {
   await asyncForEach(data, async content => {
     let response = await axios({
       method: 'post',
-      url: '/api/classifier/automated-scan',
+      url: 'http://localhost:8080/api/classifier/automated-scan',
       data: {
         type: type,
         data: content
@@ -27,7 +27,7 @@ export const runAutomatedScan = async (type, data) => {
 export const getImageAsBase64 = async image => {
   let response = await axios({
     method: 'post',
-    url: '/api/classifier/get-image',
+    url: 'http://localhost:8080/api/classifier/get-image',
     data: {
       image: image
     }

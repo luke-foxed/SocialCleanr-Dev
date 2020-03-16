@@ -37,7 +37,7 @@ app.use(cookieParser());
 // Fix cors error
 app.use(
   cors({
-    origin: 'http://localhost:3000', // allow to server to accept request from different origin
+    origin: 'http://localhost', // allow to server to accept request from different origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true // allow session cookie from browser to pass through
   })
@@ -54,6 +54,6 @@ app.use('/api/scrape', require('./routes/api/scrape'));
 app.use('/api/passport-auth', require('./routes/api/auth-passport'));
 app.use('/api/classifier', require('./routes/api/classifier'));
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

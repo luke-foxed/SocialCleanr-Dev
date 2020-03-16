@@ -1,7 +1,7 @@
-const scraper = require('../scraper');
+// const scraper = require('../scraper');
 const express = require('express');
 const router = express.Router();
-const config = require('config');
+// const config = require('config');
 
 /**
 @route   GET api/scrape
@@ -10,9 +10,9 @@ const config = require('config');
 */
 
 router.post('/login', async (req, res) => {
-  let { email, password, authcode } = req.body;
-  const login = await scraper.loginFacebook(email, password, authcode);
-  res.send(login);
+  // let { email, password, authcode } = req.body;
+  // const login = await scraper.loginFacebook(email, password, authcode);
+  // res.send(login);
   // const login = await scraper.loginFacebook(
   //   config.facebookEmail,
   //   config.facebookPassword,
@@ -21,8 +21,8 @@ router.post('/login', async (req, res) => {
 });
 
 router.get('/scrape', async (req, res) => {
-  const scrape = await scraper.scrapePhotos();
-  res.send(scrape);
+  // const scrape = await scraper.scrapePhotos();
+  // res.send(scrape);
 });
 
 module.exports = router;

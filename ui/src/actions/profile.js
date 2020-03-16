@@ -2,7 +2,7 @@ import axios from 'axios';
 import { setAlert } from './alert';
 import { loadUser } from './auth';
 import { CollectionsOutlined } from '@material-ui/icons';
-import { PROFILE_ERROR, GET_PROFILE } from '../actions/types';
+import { PROFILE_ERROR, GET_PROFILE } from './types';
 import {
   parseFacebookResults,
   parseTwitterResults
@@ -10,7 +10,7 @@ import {
 
 export const removeSite = website => async dispatch => {
   try {
-    await axios.post('/api/passport-auth/remove-site', { site: website });
+    await axios.post('http://localhost:8080/api/passport-auth/remove-site', { site: website });
     dispatch(setAlert('Done!', 'success'));
     await dispatch(loadUser());
   } catch (err) {
@@ -26,7 +26,7 @@ export const getSocialMediaProfile = site => async dispatch => {
   let cleanedResponse = null;
   try {
     // disabled for debugging to avoid rate limiting
-    const res = await axios.get(`/api/passport-auth/my-${site}`);
+    const res = await axios.get(`http://localhost:8080/api/passport-auth/my-${site}`);
 
     if (site === 'facebook') {
       cleanedResponse = parseFacebookResults(res.data);
