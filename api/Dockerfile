@@ -14,6 +14,9 @@ COPY . .
 # Install modified teachablemachine package
 RUN npm run postinstall
 
+# Set Google Cloud Vision ENV
+ENV GOOGLE_APPLICATION_CREDENTIALS="config/key.json"
+
 # Expose port and start application
 EXPOSE 8080
 CMD [ "npm", "start" ]
