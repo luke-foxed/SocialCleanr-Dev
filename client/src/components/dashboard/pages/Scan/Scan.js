@@ -32,6 +32,7 @@ import {
   drawBoundingBoxURL
 } from '../../../../helpers/classificationHelper';
 import { IconHeader } from '../../../layout/IconHeader';
+import { MiniDivider } from '../../../layout/MiniDivider';
 
 const StyledToggleButtonGroup = withStyles(theme => ({
   grouped: {
@@ -62,10 +63,6 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'
-  },
-  divider: {
-    width: '40px',
-    border: 0
   },
   paperHeader: {
     fontFamily: 'Raleway',
@@ -196,10 +193,7 @@ const Scan = ({ user, profile }) => {
               </StyledToggleButton>
             </StyledToggleButtonGroup>
 
-            <hr
-              className={classes.divider}
-              style={{ borderTop: '2px solid #4a4a4a', padding: '10px' }}
-            />
+            <MiniDivider color={'#4a4a4a'} />
 
             <Grid
               container
@@ -240,10 +234,7 @@ const Scan = ({ user, profile }) => {
               **Calculated time based off a stable internet collection.
             </Typography>
 
-            <hr
-              className={classes.divider}
-              style={{ borderTop: '2px solid #4a4a4a', padding: '10px' }}
-            />
+            <MiniDivider color={'#4a4a4a'} />
 
             <Button
               variant='contained'
