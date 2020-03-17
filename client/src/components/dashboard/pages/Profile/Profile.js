@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Container,
   Typography,
@@ -23,14 +23,7 @@ import { removeSite, getSocialMediaProfile } from '../../../../actions/profile';
 import { IconHeader } from '../../../layout/IconHeader';
 import { ProfileSocialMedia } from './ProfileSocialMedia';
 import { MiniDivider } from '../../../layout/MiniDivider';
-
-import MuiTableCell from '@material-ui/core/TableCell';
-
-const BorderlessCell = withStyles({
-  root: {
-    border: 'none'
-  }
-})(MuiTableCell);
+import { EditDialog } from './EditDialog';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -77,6 +70,15 @@ const useStyles = makeStyles(theme => ({
 
 const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
   const classes = useStyles();
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleOpenDialog = () => {
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+  };
 
   return (
     <Container component='main' maxWidth='lg'>
@@ -119,7 +121,7 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
 
             <Grid item xs={12} sm={4}>
               <div className={classes.gridCell}>
-                <IconButton size='small'>
+                <IconButton size='small' onClick={() => setDialogOpen(true)}>
                   <Edit style={{ color: colors.colorDarkPink }} />
                 </IconButton>
               </div>
@@ -185,6 +187,13 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
         profile={profile}
         onRemoveClick={website => removeSite(website)}
         onSetActiveClick={website => getSocialMediaProfile(website)}
+      />
+
+      <EditDialog
+        isOpen={dialogOpen}
+        setOpen={handleOpenDialog}
+        setClose={handleCloseDialog}
+        editType={'email'}
       />
     </Container>
   );
