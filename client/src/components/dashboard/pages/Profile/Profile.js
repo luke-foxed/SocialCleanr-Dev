@@ -12,9 +12,10 @@ import {
   Button,
   Avatar,
   withStyles,
-  IconButton
+  IconButton,
+  Divider
 } from '@material-ui/core';
-import { Face, Mail, Today, Edit } from '@material-ui/icons';
+import { Face, Mail, Today, Edit, Lock } from '@material-ui/icons';
 import * as colors from '../../../../helpers/colors';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -67,8 +68,10 @@ const useStyles = makeStyles(theme => ({
     textTransform: 'uppercase',
     padding: '10px'
   },
-  table: {
-    width: '400px'
+  gridCell: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
   }
 }));
 
@@ -97,39 +100,84 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
 
         <MiniDivider color={'#4a4a4a'} />
 
-        <Grid container direction='row' justify='center' style={{ width: 360 }}>
-          <Grid item xs='auto' style={{ textAlign: 'center', display: 'flex' }}>
-            <Mail style={{ marginRight: '10px' }} />
-            <Typography variant='h6'>Email: </Typography>
-          </Grid>
+        <div style={{ flexGrow: 1, width: '40%' }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4}>
+              <div
+                className={classes.gridCell}
+                style={{ flexDirection: 'row' }}>
+                <Mail style={{ marginRight: '10px' }} />
+                <Typography variant='h6'>Email</Typography>
+              </div>
+            </Grid>
 
-          <Grid
-            item
-            xs='auto'
-            style={{
-              textAlign: 'center',
-              flex: 1
-            }}>
-            <Typography variant='h6'>{user.email}</Typography>
-          </Grid>
-        </Grid>
+            <Grid item xs={12} sm={4}>
+              <div className={classes.gridCell}>
+                <Typography variant='h6'>{user.email}</Typography>
+              </div>
+            </Grid>
 
-        <Grid container direction='row' justify='center' style={{ width: 360 }}>
-          <Grid item xs='auto' style={{ textAlign: 'center', display: 'flex' }}>
-            <Today style={{ marginRight: '10px' }} />
-            <Typography variant='h6'>Created: </Typography>
-          </Grid>
+            <Grid item xs={12} sm={4}>
+              <div className={classes.gridCell}>
+                <IconButton size='small'>
+                  <Edit style={{ color: colors.colorDarkPink }} />
+                </IconButton>
+              </div>
+            </Grid>
 
-          <Grid
-            item
-            xs='auto'
-            style={{
-              textAlign: 'center',
-              flex: 1
-            }}>
-            <Typography variant='h6'>{user.date.split('T')[0]}</Typography>
+            <Grid item xs={12} sm={4}>
+              <div
+                className={classes.gridCell}
+                style={{ flexDirection: 'row' }}>
+                <Lock style={{ marginRight: '10px' }} />
+                <Typography variant='h6'>Pasword</Typography>
+              </div>
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <div className={classes.gridCell}>
+                <Typography variant='h6'>*************</Typography>
+              </div>
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <div className={classes.gridCell}>
+                <IconButton size='small'>
+                  <Edit style={{ color: colors.colorDarkPink }} />
+                </IconButton>
+              </div>
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <div
+                className={classes.gridCell}
+                style={{ flexDirection: 'row' }}>
+                <Today style={{ marginRight: '10px' }} />
+                <Typography variant='h6'>Created</Typography>
+              </div>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <div className={classes.gridCell}>
+                <Typography variant='h6'>{user.date.split('T')[0]}</Typography>
+              </div>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <div className={classes.gridCell}>
+                <IconButton size='small'>
+                  <Edit style={{ color: colors.colorDarkPink }} />
+                </IconButton>
+              </div>
+            </Grid>
           </Grid>
-        </Grid>
+        </div>
+
+        <MiniDivider color={'#4a4a4a'} />
+
+        <Button
+          size='large'
+          style={{ backgroundColor: colors.colorDarkPink, color: 'white' }}>
+          Change Avatar
+        </Button>
       </Paper>
 
       <ProfileSocialMedia
