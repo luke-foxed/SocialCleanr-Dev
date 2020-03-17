@@ -62,21 +62,21 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
+    '& p, h3, h4, h5, h6': {
+      fontFamily: 'Raleway'
+    }
   },
   paperHeader: {
-    fontFamily: 'Raleway',
     textTransform: 'uppercase'
   },
   infoGrid: {
     width: '40%'
   },
   infoTextHeader: {
-    color: '#808080',
-    fontFamily: 'Raleway'
+    color: '#808080'
   },
   infoText: {
-    fontFamily: 'Raleway',
     textTransform: 'uppercase',
     color: colors.colorDarkPink,
     fontSize: '18px',

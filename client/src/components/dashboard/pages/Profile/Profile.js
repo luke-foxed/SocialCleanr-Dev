@@ -4,11 +4,17 @@ import {
   Typography,
   Paper,
   makeStyles,
+  Table,
+  TableBody,
+  TableRow,
+  TableCell,
   Grid,
   Button,
-  Avatar
+  Avatar,
+  withStyles,
+  IconButton
 } from '@material-ui/core';
-import { Face } from '@material-ui/icons';
+import { Face, Mail, Today, Edit } from '@material-ui/icons';
 import * as colors from '../../../../helpers/colors';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -16,6 +22,14 @@ import { removeSite, getSocialMediaProfile } from '../../../../actions/profile';
 import { IconHeader } from '../../../layout/IconHeader';
 import { ProfileSocialMedia } from './ProfileSocialMedia';
 import { MiniDivider } from '../../../layout/MiniDivider';
+
+import MuiTableCell from '@material-ui/core/TableCell';
+
+const BorderlessCell = withStyles({
+  root: {
+    border: 'none'
+  }
+})(MuiTableCell);
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -25,7 +39,11 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
+
+    '& p, h3, h4, h5, h6': {
+      fontFamily: 'Raleway'
+    }
   },
   avatarFrame: {
     width: 210,
@@ -46,9 +64,11 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: 'white'
   },
   name: {
-    fontFamily: 'Raleway',
     textTransform: 'uppercase',
     padding: '10px'
+  },
+  table: {
+    width: '400px'
   }
 }));
 
@@ -76,6 +96,40 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
         </Typography>
 
         <MiniDivider color={'#4a4a4a'} />
+
+        <Grid container direction='row' justify='center' style={{ width: 360 }}>
+          <Grid item xs='auto' style={{ textAlign: 'center', display: 'flex' }}>
+            <Mail style={{ marginRight: '10px' }} />
+            <Typography variant='h6'>Email: </Typography>
+          </Grid>
+
+          <Grid
+            item
+            xs='auto'
+            style={{
+              textAlign: 'center',
+              flex: 1
+            }}>
+            <Typography variant='h6'>{user.email}</Typography>
+          </Grid>
+        </Grid>
+
+        <Grid container direction='row' justify='center' style={{ width: 360 }}>
+          <Grid item xs='auto' style={{ textAlign: 'center', display: 'flex' }}>
+            <Today style={{ marginRight: '10px' }} />
+            <Typography variant='h6'>Created: </Typography>
+          </Grid>
+
+          <Grid
+            item
+            xs='auto'
+            style={{
+              textAlign: 'center',
+              flex: 1
+            }}>
+            <Typography variant='h6'>{user.date.split('T')[0]}</Typography>
+          </Grid>
+        </Grid>
       </Paper>
 
       <ProfileSocialMedia

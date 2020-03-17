@@ -16,14 +16,17 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
+
+    '& p, h3, h4, h5, h6': {
+      fontFamily: 'Raleway'
+    }
   },
   divider: {
     width: '40px',
     border: 0
   },
   paperHeader: {
-    fontFamily: 'Raleway',
     textTransform: 'uppercase'
   }
 }));
