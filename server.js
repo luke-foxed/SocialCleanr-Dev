@@ -52,6 +52,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', require('./routes/api/auth'));
 app.use('/api/passport-auth', require('./routes/api/auth-passport'));
 app.use('/api/classifier', require('./routes/api/classifier'));
+app.use('/api/user', require('./routes/api/user'));
 
 const PORT = process.env.PORT || 5000;
 

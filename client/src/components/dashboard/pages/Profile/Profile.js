@@ -23,7 +23,7 @@ import { removeSite, getSocialMediaProfile } from '../../../../actions/profile';
 import { IconHeader } from '../../../layout/IconHeader';
 import { ProfileSocialMedia } from './ProfileSocialMedia';
 import { MiniDivider } from '../../../layout/MiniDivider';
-import { EditDialog } from './EditDialog';
+import EditDialog from './EditDialog';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -71,8 +71,10 @@ const useStyles = makeStyles(theme => ({
 const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
   const classes = useStyles();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogType, setDialogType] = useState('');
 
-  const handleOpenDialog = () => {
+  const handleOpenDialog = dialogType => {
+    setDialogType(dialogType);
     setDialogOpen(true);
   };
 
@@ -121,7 +123,9 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
 
             <Grid item xs={12} sm={4}>
               <div className={classes.gridCell}>
-                <IconButton size='small' onClick={() => setDialogOpen(true)}>
+                <IconButton
+                  size='small'
+                  onClick={() => handleOpenDialog('email')}>
                   <Edit style={{ color: colors.colorDarkPink }} />
                 </IconButton>
               </div>
@@ -144,7 +148,9 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
 
             <Grid item xs={12} sm={4}>
               <div className={classes.gridCell}>
-                <IconButton size='small'>
+                <IconButton
+                  size='small'
+                  onClick={() => handleOpenDialog('password')}>
                   <Edit style={{ color: colors.colorDarkPink }} />
                 </IconButton>
               </div>
@@ -163,13 +169,7 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
                 <Typography variant='h6'>{user.date.split('T')[0]}</Typography>
               </div>
             </Grid>
-            <Grid item xs={12} sm={4}>
-              <div className={classes.gridCell}>
-                <IconButton size='small'>
-                  <Edit style={{ color: colors.colorDarkPink }} />
-                </IconButton>
-              </div>
-            </Grid>
+            <Grid item xs={12} sm={4} />
           </Grid>
         </div>
 
@@ -177,6 +177,7 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
 
         <Button
           size='large'
+          onClick={() => handleOpenDialog('avatar')}
           style={{ backgroundColor: colors.colorDarkPink, color: 'white' }}>
           Change Avatar
         </Button>
@@ -193,7 +194,7 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
         isOpen={dialogOpen}
         setOpen={handleOpenDialog}
         setClose={handleCloseDialog}
-        editType={'email'}
+        editType={dialogType}
       />
     </Container>
   );

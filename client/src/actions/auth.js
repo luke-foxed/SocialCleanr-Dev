@@ -1,6 +1,5 @@
 import axios from 'axios';
 import {
-  LOGIN_FAILURE,
   LOGIN_SUCCESS,
   REGISTER_FAIL,
   REGISTER_SUCCESS,
