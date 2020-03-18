@@ -54,8 +54,8 @@ const Home = ({ user, profile }) => {
             variant='h6'
             className={classes.paperHeader}
             style={{ display: 'flex' }}>
-            To View Your Social Media Content, Select A Website From The
-            'Profile' Page!
+            To View Your Social Media Content, Select A Social Media Profile
+            From The 'Profile' Page!
           </Typography>
         </Paper>
       )}

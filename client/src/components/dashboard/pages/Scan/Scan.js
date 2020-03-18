@@ -280,13 +280,15 @@ const Scan = ({ user, profile }) => {
           )}
         </div>
       ) : (
-        <Typography
-          variant='h6'
-          className={classes.paperHeader}
-          style={{ display: 'flex', textAlign: 'center' }}>
-          To View Your Social Media Content, Select A Website From The 'Profile'
-          Page!
-        </Typography>
+        <Paper elevation={2} className={classes.paper}>
+          <Typography
+            variant='h6'
+            className={classes.paperHeader}
+            style={{ display: 'flex' }}>
+            To Start Scanning, Select A Social Media Profile From The 'Profile'
+            Page!
+          </Typography>
+        </Paper>
       )}
 
       {boxImage !== '' && (

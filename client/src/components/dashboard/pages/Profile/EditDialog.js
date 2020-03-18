@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
-import { updateUser } from '../../../../actions/user';
+import { updateUser, deleteUser } from '../../../../actions/user';
 import {
   DialogActions,
   DialogContent,
@@ -8,14 +8,23 @@ import {
   Dialog,
   DialogTitle,
   TextField,
-  Avatar
+  Avatar,
+  Typography
 } from '@material-ui/core';
 import { MiniDivider } from '../../../layout/MiniDivider';
 import { setAlert } from '../../../../actions/alert';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { Warning } from '@material-ui/icons';
 
-const EditDialog = ({ isOpen, setClose, editType, updateUser }) => {
+const EditDialog = ({
+  isOpen,
+  setClose,
+  editType,
+  updateUser,
+  deleteUser,
+  setAlert
+}) => {
   const [formData, setFormData] = useState({
     email: '',
     current_password: '',
@@ -24,7 +33,13 @@ const EditDialog = ({ isOpen, setClose, editType, updateUser }) => {
     avatar: ''
   });
 
-  const { email, current_password, password, avatar } = formData;
+  const {
+    email,
+    current_password,
+    password,
+    confirm_password,
+    avatar
+  } = formData;
 
   const handleInputChange = e => {
     const { name, value } = e.target;
@@ -32,19 +47,29 @@ const EditDialog = ({ isOpen, setClose, editType, updateUser }) => {
   };
 
   const handleSubmit = () => {
-    // if (password !== confirm_password) {
-    //   setAlert('Passwords Do Not Match', 'error');
-    // } else {
-    setClose();
-    updateUser({ email, current_password, password, avatar }, editType);
+    if (editType === 'delete') {
+      deleteUser();
+    } else {
+      if (editType === 'password' && password !== confirm_password) {
+        setAlert('Passwords Do Not Match', 'error');
+      } else {
+        setClose();
+        updateUser({ email, current_password, password, avatar }, editType);
+      }
+    }
   };
 
   return (
     <div>
       <Dialog open={isOpen} onClose={setClose}>
-        <DialogTitle>CHANGE {editType.toUpperCase()}</DialogTitle>
+        <DialogTitle>{editType.toUpperCase()}</DialogTitle>
         <DialogContent>
-          <DialogContentText>
+          <DialogContentText
+            style={
+              editType === 'delete'
+                ? { display: 'none' }
+                : { display: 'inherit' }
+            }>
             Please Fill Out The Field(s) Below:
           </DialogContentText>
 
@@ -113,6 +138,16 @@ const EditDialog = ({ isOpen, setClose, editType, updateUser }) => {
               />
             </div>
           )}
+
+          {editType === 'delete' && (
+            <div style={{ textAlign: 'center' }}>
+              <Warning style={{ width: 120, height: 120 }} />
+              <Typography>
+                Are you sure you wish to delete your account?
+              </Typography>
+              <Typography>This cannot be undone!</Typography>
+            </div>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={setClose} color='primary'>
@@ -128,7 +163,9 @@ const EditDialog = ({ isOpen, setClose, editType, updateUser }) => {
 };
 
 EditDialog.propTypes = {
-  updateUser: PropTypes.func.isRequired
+  updateUser: PropTypes.func.isRequired,
+  deleteUser: PropTypes.func.isRequired,
+  setAlert: PropTypes.func.isRequired
 };
 
-export default connect(null, { updateUser })(EditDialog);
+export default connect(null, { updateUser, deleteUser, setAlert })(EditDialog);

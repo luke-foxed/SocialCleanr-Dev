@@ -15,7 +15,14 @@ import {
   IconButton,
   Divider
 } from '@material-ui/core';
-import { Face, Mail, Today, Edit, Lock } from '@material-ui/icons';
+import {
+  Face,
+  Mail,
+  Today,
+  Edit,
+  Lock,
+  DeleteForever
+} from '@material-ui/icons';
 import * as colors from '../../../../helpers/colors';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -178,8 +185,24 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
         <Button
           size='large'
           onClick={() => handleOpenDialog('avatar')}
-          style={{ backgroundColor: colors.colorDarkPink, color: 'white' }}>
+          style={{
+            backgroundColor: colors.colorDarkPink,
+            width: 220,
+            color: 'white'
+          }}>
           Change Avatar
+        </Button>
+
+        <br />
+
+        <Button
+          variant='contained'
+          color='primary'
+          size='large'
+          style={{ backgroundColor: colors.colorDarkPink, width: 220 }}
+          onClick={() => handleOpenDialog('delete')}
+          endIcon={<DeleteForever />}>
+          Delete Profile
         </Button>
       </Paper>
 

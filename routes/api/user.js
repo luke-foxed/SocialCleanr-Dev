@@ -6,21 +6,13 @@ const { check, validationResult, oneOf, body } = require('express-validator');
 const User = require('../../models/User');
 
 router.post(
-  '/update',
+  '/update-basic',
   auth,
   [
     oneOf([
-      check('email', 'Please include a valid email').isEmail(),
-
-      check('password')
-        .isLength({ min: 8, max: 24 })
-        .withMessage(
-          'Please enter a password between 8 to 24 characters containing  at least one letter, special character and number'
-        )
-        .matches(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{0,}$/)
-        .withMessage(
-          'Password must contain at least one letter, special character and number'
-        ),
+      check('email')
+        .isEmail()
+        .withMessage('Please enter a valid email'),
 
       check('avatar')
         .isURL()
@@ -28,25 +20,18 @@ router.post(
     ])
   ],
   async (req, res) => {
-    console.log(req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      //
       let { nestedErrors } = errors.errors[0];
+
       if (req.body.updateType === 'email') {
         return res.status(400).json({ errors: [nestedErrors[0]] });
-      }
-
-      if (req.body.updateType === 'password') {
+      } else if (req.body.updateType === 'avatar') {
         return res.status(400).json({ errors: [nestedErrors[1]] });
-      }
-
-      if (req.body.updateType === 'avatar') {
-        return res.status(400).json({ errors: [nestedErrors[2]] });
       }
     }
 
-    const { email, currentPassword, password, avatar } = req.body;
+    const { email, avatar } = req.body;
 
     try {
       let user = await User.findById(req.user.id);
@@ -57,50 +42,82 @@ router.post(
         });
       }
 
-      switch (req.body.updateType) {
-        case 'password':
-          const isMatch = await bcrypt.compare(password, user.password);
-          if (!isMatch) {
-            return res.status(400).json({
-              errors: [{ msg: 'Current Password Is Incorrect' }]
-            });
+      if (req.body.updateType === 'email') {
+        await user.update({
+          $set: {
+            email: email
           }
-
-          const salt = await bcrypt.genSalt(10);
-          const newPassword = await bcrypt.hash(password, salt);
-
-          await user.update({
-            $set: {
-              password: newPassword
-            }
-          });
-
-          break;
-
-        case 'email':
-          await user.update({
-            $set: {
-              email: email
-            }
-          });
-
-          break;
-
-        case 'avatar':
-          await user.update({
-            $set: {
-              avatar: avatar
-            }
-          });
-
-          break;
+        });
+      } else if (req.body.updateType === 'avatar') {
+        await user.update({
+          $set: {
+            avatar: avatar
+          }
+        });
       }
-      res.send(200);
+      res.status(200).json({ msg: 'Account Updated' });
     } catch (err) {
-      console.error(err.message);
-      res.status(500).send('Server error');
+      res.status(200).json({ msg: 'Error Updating Account' });
     }
   }
 );
+
+router.post(
+  '/update-password',
+  auth,
+  [
+    check(
+      'password',
+      'Please enter a password between 8 to 24 characters'
+    ).isLength({ min: 8, max: 24 }),
+    check(
+      'password',
+      'Password must contain at least one letter, special character and number'
+    ).matches(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{0,}$/)
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { current_password, password } = req.body;
+
+    try {
+      let user = await User.findById(req.user.id);
+
+      const isMatch = await bcrypt.compare(current_password, user.password);
+      if (!isMatch) {
+        return res.status(400).json({
+          errors: [{ msg: 'Current Password Is Incorrect' }]
+        });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const newPassword = await bcrypt.hash(password, salt);
+
+      await user.update({
+        $set: {
+          password: newPassword
+        }
+      });
+
+      res.status(200).json({ msg: 'Password Updated' });
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).json({ msg: 'Update Error' });
+    }
+  }
+);
+
+router.delete('/delete', auth, async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.user.id);
+    res.status(200).json({ msg: 'Account Deleted' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: 'Delete Error' });
+  }
+});
 
 module.exports = router;
