@@ -15,6 +15,7 @@ import {
 } from '@material-ui/core';
 import { Menu, ChevronLeft, Notifications } from '@material-ui/icons';
 import { Route, HashRouter, Redirect } from 'react-router-dom';
+import { MiniDivider } from '../layout/MiniDivider';
 import SidebarItems from './SidebarItems';
 import Profile from './pages/Profile/Profile';
 import Home from './pages/Home/Home';
@@ -168,14 +169,17 @@ const Dashboard = ({ auth, logout }) => {
           open={open}>
           <div className={classes.toolbarIcon}>
             <Collapse in={open} style={{ textAlign: 'center' }} timeout={500}>
-              <br />
-              <img
-                src='https://i.ya-webdesign.com/images/raccoon-face-png.png'
-                height={100}
-                width={100}
-              />
-              {auth.user && (
-                <Typography variant='h5'>{auth.user.name}</Typography>
+              {auth.user !== null && (
+                <div>
+                  <img
+                    src={auth.user.avatar}
+                    height={120}
+                    width={120}
+                    style={{ marginTop: '10px', borderRadius: '50%' }}
+                  />
+                  <MiniDivider color={colors.colorDarkOrange} />
+                  <Typography variant='h5'>{auth.user.name}</Typography>
+                </div>
               )}
             </Collapse>
           </div>

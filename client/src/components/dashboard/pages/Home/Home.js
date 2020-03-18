@@ -16,14 +16,17 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
+
+    '& p, h3, h4, h5, h6': {
+      fontFamily: 'Raleway'
+    }
   },
   divider: {
     width: '40px',
     border: 0
   },
   paperHeader: {
-    fontFamily: 'Raleway',
     textTransform: 'uppercase'
   }
 }));
@@ -51,8 +54,8 @@ const Home = ({ user, profile }) => {
             variant='h6'
             className={classes.paperHeader}
             style={{ display: 'flex' }}>
-            To View Your Social Media Content, Select A Website From The
-            'Profile' Page!
+            To View Your Social Media Content, Select A Social Media Profile
+            From The 'Profile' Page!
           </Typography>
         </Paper>
       )}

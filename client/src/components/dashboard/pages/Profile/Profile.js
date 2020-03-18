@@ -1,27 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Container,
   Typography,
   Paper,
   makeStyles,
+  Table,
+  TableBody,
+  TableRow,
+  TableCell,
   Grid,
-  Divider,
   Button,
-  Avatar
+  Avatar,
+  withStyles,
+  IconButton,
+  Divider
 } from '@material-ui/core';
 import {
-  Twitter,
   Face,
-  Language,
-  Facebook,
-  CheckCircle,
-  Cancel
+  Mail,
+  Today,
+  Edit,
+  Lock,
+  DeleteForever
 } from '@material-ui/icons';
 import * as colors from '../../../../helpers/colors';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { removeSite, getSocialMediaProfile } from '../../../../actions/profile';
 import { IconHeader } from '../../../layout/IconHeader';
+import { ProfileSocialMedia } from './ProfileSocialMedia';
+import { MiniDivider } from '../../../layout/MiniDivider';
+import EditDialog from './EditDialog';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -31,68 +40,53 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
+    alignItems: 'center',
+
+    '& p, h3, h4, h5, h6': {
+      fontFamily: 'Raleway'
+    }
+  },
+  avatarFrame: {
+    width: 210,
+    height: 210,
+    borderRadius: '50%',
+    background:
+      'linear-gradient(0deg, rgba(214,93,177,1) 0%, rgba(132,94,194,1) 100%)',
+    display: ' flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
     alignItems: 'center'
   },
-  divider: {
-    paddingBottom: theme.spacing(2),
-    width: '40px',
-    border: 0
+  avatar: {
+    padding: '10px',
+    borderRadius: '50%',
+    width: 190,
+    height: 190,
+    backgroundColor: 'white'
   },
-  paperHeader: {
-    fontFamily: 'Raleway',
-    textTransform: 'uppercase'
-  },
-  authenticatedText: {
-    fontFamily: 'Raleway',
+  name: {
     textTransform: 'uppercase',
-    justifyContent: 'center',
-    display: 'flex'
+    padding: '10px'
   },
-  actionButtonContainer: {
+  gridCell: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'
-  },
-  actionButton: {
-    margin: '10px',
-    width: '220px',
-    color: 'white'
-  },
-  siteAvatar: {
-    background:
-      'linear-gradient(0deg, rgba(214,93,177,1) 0%, rgba(132,94,194,1) 100%)',
-    boxShadow: '0px 0px 22px -2px rgba(0,0,0,0.55)',
-    height: 150,
-    width: 150,
-    margin: '0 auto'
   }
 }));
 
 const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
   const classes = useStyles();
-  const { is_connected_facebook, is_connected_twitter } = user;
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogType, setDialogType] = useState('');
 
-  const handleRemoveClick = async website => {
-    removeSite(website);
+  const handleOpenDialog = dialogType => {
+    setDialogType(dialogType);
+    setDialogOpen(true);
   };
 
-  const handleSetActive = async site => {
-    getSocialMediaProfile(site);
-  };
-
-  const ProfileAuthenticationText = ({ website }) => {
-    let connected =
-      website === 'facebook' ? is_connected_facebook : is_connected_twitter;
-    return (
-      <Typography className={classes.authenticatedText}>
-        {website} is {connected ? '' : 'not '}authenticated
-        {connected ? (
-          <CheckCircle style={{ marginLeft: '5px', color: 'green' }} />
-        ) : (
-          <Cancel style={{ marginLeft: '5px', color: 'red' }} />
-        )}
-      </Typography>
-    );
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
   };
 
   return (
@@ -107,148 +101,124 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
       </Paper>
 
       <Paper elevation={2} className={classes.paper}>
-        <IconHeader icon={Language} text='App Access' subheader={true} />
+        <div className={classes.avatarFrame}>
+          <img className={classes.avatar} variant='circle' src={user.avatar} />
+        </div>
 
-        <Typography style={{ fontFamily: 'Raleway', fontSize: '18px' }}>
-          Active site:{' '}
-          <b
-            style={{
-              color: colors.colorDarkOrange,
-              textTransform: 'uppercase'
-            }}>
-            {!profile.site ? 'not set' : profile.site}
-          </b>
+        <Typography variant='h3' className={classes.name}>
+          {user.name}
         </Typography>
 
-        <Grid container direction='row' justify='center'>
-          <Grid item xs style={{ textAlign: 'center' }}>
-            <br />
-            <Avatar className={classes.siteAvatar}>
-              <Facebook fontSize='large' style={{ height: 130, width: 130 }} />
-            </Avatar>
-            <br />
+        <MiniDivider color={'#4a4a4a'} />
 
-            <ProfileAuthenticationText website={'facebook'} />
+        <div style={{ flexGrow: 1, width: '40%' }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4}>
+              <div
+                className={classes.gridCell}
+                style={{ flexDirection: 'row' }}>
+                <Mail style={{ marginRight: '10px' }} />
+                <Typography variant='h6'>Email</Typography>
+              </div>
+            </Grid>
 
-            <hr
-              className={classes.divider}
-              style={{ borderTop: '2px solid #4a4a4a' }}
-            />
+            <Grid item xs={12} sm={4}>
+              <div className={classes.gridCell}>
+                <Typography variant='h6'>{user.email}</Typography>
+              </div>
+            </Grid>
 
-            <div className={classes.actionButtonContainer}>
-              <Button
-                className={classes.actionButton}
-                disabled={profile.site === 'facebook' || !is_connected_facebook}
-                variant='contained'
-                onClick={() => handleSetActive('facebook')}
-                style={
-                  !is_connected_facebook || profile.site === 'facebook'
-                    ? { backgroundColor: '#c8c8c8', color: '#8a8a8a' }
-                    : { backgroundColor: colors.colorDarkPink }
-                }>
-                Set as Active
-              </Button>
+            <Grid item xs={12} sm={4}>
+              <div className={classes.gridCell}>
+                <IconButton
+                  size='small'
+                  onClick={() => handleOpenDialog('email')}>
+                  <Edit style={{ color: colors.colorDarkPink }} />
+                </IconButton>
+              </div>
+            </Grid>
 
-              <Button
-                className={classes.actionButton}
-                variant='contained'
-                style={
-                  is_connected_facebook
-                    ? { backgroundColor: '#c8c8c8' }
-                    : { backgroundColor: colors.colorDarkPink }
-                }
-                disabled={is_connected_facebook}>
-                <a
-                  href={`http://localhost:5000/api/passport-auth/login-facebook/${user._id}`}
-                  target='_self'
-                  style={
-                    is_connected_facebook
-                      ? { textDecoration: 'none', color: '#8a8a8a' }
-                      : { textDecoration: 'none', color: 'white' }
-                  }>
-                  Connect with Facebook
-                </a>
-              </Button>
-              <Button
-                className={classes.actionButton}
-                disabled={!is_connected_facebook}
-                variant='contained'
-                style={
-                  is_connected_facebook
-                    ? { backgroundColor: colors.colorPurple }
-                    : { backgroundColor: '#c8c8c8', color: '#8a8a8a' }
-                }
-                onClick={() => handleRemoveClick('facebook')}>
-                Remove Site Access
-              </Button>
-            </div>
+            <Grid item xs={12} sm={4}>
+              <div
+                className={classes.gridCell}
+                style={{ flexDirection: 'row' }}>
+                <Lock style={{ marginRight: '10px' }} />
+                <Typography variant='h6'>Pasword</Typography>
+              </div>
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <div className={classes.gridCell}>
+                <Typography variant='h6'>*************</Typography>
+              </div>
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <div className={classes.gridCell}>
+                <IconButton
+                  size='small'
+                  onClick={() => handleOpenDialog('password')}>
+                  <Edit style={{ color: colors.colorDarkPink }} />
+                </IconButton>
+              </div>
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <div
+                className={classes.gridCell}
+                style={{ flexDirection: 'row' }}>
+                <Today style={{ marginRight: '10px' }} />
+                <Typography variant='h6'>Created</Typography>
+              </div>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <div className={classes.gridCell}>
+                <Typography variant='h6'>{user.date.split('T')[0]}</Typography>
+              </div>
+            </Grid>
+            <Grid item xs={12} sm={4} />
           </Grid>
-          <Grid item>
-            <Divider orientation='vertical' style={{ marginTop: '12px' }} />
-          </Grid>
-          <Grid item xs style={{ textAlign: 'center' }}>
-            <br />
-            <Avatar className={classes.siteAvatar}>
-              <Twitter fontSize='large' style={{ height: 130, width: 130 }} />
-            </Avatar>
-            <br />
+        </div>
 
-            <ProfileAuthenticationText website={'twitter'} />
+        <MiniDivider color={'#4a4a4a'} />
 
-            <hr
-              className={classes.divider}
-              style={{ borderTop: '2px solid #4a4a4a' }}
-            />
-            <div className={classes.actionButtonContainer}>
-              <Button
-                className={classes.actionButton}
-                disabled={profile.site === 'twitter' || !is_connected_twitter}
-                variant='contained'
-                onClick={() => handleSetActive('twitter')}
-                style={
-                  !is_connected_twitter || profile.site === 'twitter'
-                    ? { backgroundColor: '#c8c8c8', color: '#8a8a8a' }
-                    : { backgroundColor: colors.colorDarkPink }
-                }>
-                Set as Active
-              </Button>
+        <Button
+          size='large'
+          onClick={() => handleOpenDialog('avatar')}
+          style={{
+            backgroundColor: colors.colorDarkPink,
+            width: 220,
+            color: 'white'
+          }}>
+          Change Avatar
+        </Button>
 
-              <Button
-                className={classes.actionButton}
-                variant='contained'
-                style={
-                  is_connected_twitter
-                    ? { backgroundColor: '#c8c8c8', color: '#8a8a8a' }
-                    : { backgroundColor: colors.colorDarkPink }
-                }
-                disabled={is_connected_twitter}>
-                <a
-                  href={`http://localhost:5000/api/passport-auth/login-twitter/${user._id}`}
-                  target='_self'
-                  style={
-                    is_connected_twitter
-                      ? { textDecoration: 'none', color: '#8a8a8a' }
-                      : { textDecoration: 'none', color: 'white' }
-                  }>
-                  Connect with Twitter
-                </a>
-              </Button>
-              <Button
-                className={classes.actionButton}
-                disabled={!is_connected_twitter}
-                variant='contained'
-                style={
-                  is_connected_twitter
-                    ? { backgroundColor: colors.colorPurple }
-                    : { backgroundColor: '#c8c8c8', color: '#8a8a8a' }
-                }
-                onClick={() => handleRemoveClick('twitter')}>
-                Remove Site Access
-              </Button>
-            </div>
-          </Grid>
-        </Grid>
+        <br />
+
+        <Button
+          variant='contained'
+          color='primary'
+          size='large'
+          style={{ backgroundColor: colors.colorDarkPink, width: 220 }}
+          onClick={() => handleOpenDialog('delete')}
+          endIcon={<DeleteForever />}>
+          Delete Profile
+        </Button>
       </Paper>
+
+      <ProfileSocialMedia
+        user={user}
+        profile={profile}
+        onRemoveClick={website => removeSite(website)}
+        onSetActiveClick={website => getSocialMediaProfile(website)}
+      />
+
+      <EditDialog
+        isOpen={dialogOpen}
+        setOpen={handleOpenDialog}
+        setClose={handleCloseDialog}
+        editType={dialogType}
+      />
     </Container>
   );
 };

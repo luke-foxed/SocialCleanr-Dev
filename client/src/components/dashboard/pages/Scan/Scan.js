@@ -32,6 +32,7 @@ import {
   drawBoundingBoxURL
 } from '../../../../helpers/classificationHelper';
 import { IconHeader } from '../../../layout/IconHeader';
+import { MiniDivider } from '../../../layout/MiniDivider';
 
 const StyledToggleButtonGroup = withStyles(theme => ({
   grouped: {
@@ -61,25 +62,21 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
-  },
-  divider: {
-    width: '40px',
-    border: 0
+    alignItems: 'center',
+    '& p, h3, h4, h5, h6': {
+      fontFamily: 'Raleway'
+    }
   },
   paperHeader: {
-    fontFamily: 'Raleway',
     textTransform: 'uppercase'
   },
   infoGrid: {
     width: '40%'
   },
   infoTextHeader: {
-    color: '#808080',
-    fontFamily: 'Raleway'
+    color: '#808080'
   },
   infoText: {
-    fontFamily: 'Raleway',
     textTransform: 'uppercase',
     color: colors.colorDarkPink,
     fontSize: '18px',
@@ -196,10 +193,7 @@ const Scan = ({ user, profile }) => {
               </StyledToggleButton>
             </StyledToggleButtonGroup>
 
-            <hr
-              className={classes.divider}
-              style={{ borderTop: '2px solid #4a4a4a', padding: '10px' }}
-            />
+            <MiniDivider color={'#4a4a4a'} />
 
             <Grid
               container
@@ -240,10 +234,7 @@ const Scan = ({ user, profile }) => {
               **Calculated time based off a stable internet collection.
             </Typography>
 
-            <hr
-              className={classes.divider}
-              style={{ borderTop: '2px solid #4a4a4a', padding: '10px' }}
-            />
+            <MiniDivider color={'#4a4a4a'} />
 
             <Button
               variant='contained'
@@ -289,13 +280,15 @@ const Scan = ({ user, profile }) => {
           )}
         </div>
       ) : (
-        <Typography
-          variant='h6'
-          className={classes.paperHeader}
-          style={{ display: 'flex', textAlign: 'center' }}>
-          To View Your Social Media Content, Select A Website From The 'Profile'
-          Page!
-        </Typography>
+        <Paper elevation={2} className={classes.paper}>
+          <Typography
+            variant='h6'
+            className={classes.paperHeader}
+            style={{ display: 'flex' }}>
+            To Start Scanning, Select A Social Media Profile From The 'Profile'
+            Page!
+          </Typography>
+        </Paper>
       )}
 
       {boxImage !== '' && (
