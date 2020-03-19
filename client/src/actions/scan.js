@@ -4,6 +4,15 @@ import { asyncForEach } from '../helpers/generalHelpers';
 
 export const runAutomatedScan = async (type, data) => {
   let results = [];
+  let count = [];
+
+  let totalCount = {
+    flagged_text: 0,
+    flagged_clothing: 0,
+    flagged_gesture: 0,
+    flagged_age: 0,
+    automated_scans: 1
+  };
 
   await asyncForEach(data, async content => {
     let response = await axios({
@@ -15,13 +24,24 @@ export const runAutomatedScan = async (type, data) => {
       }
     });
 
-    let flaggedContent = cleanResults(response.data, content);
-    results.push(flaggedContent);
+    let filteredResults = cleanResults(response.data, content);
+    results.push(filteredResults.flaggedContent);
+    count.push(filteredResults.count);
   });
 
-  var flattened = [].concat.apply([], results);
+  const resultsFlattened = [].concat.apply([], results);
+  const countFlattened = [].concat.apply([], count);
 
-  return flattened;
+  // add each count for every scan together
+  countFlattened.forEach(count => {
+    for (let [key, val] of Object.entries(count)) {
+      totalCount[key] += val;
+    }
+  });
+
+  await axios.post('/api/classifier/write-statistics', totalCount);
+
+  return resultsFlattened;
 };
 
 export const getImageAsBase64 = async image => {

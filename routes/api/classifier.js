@@ -53,10 +53,6 @@ router.post('/custom-scan', auth, async (req, res) => {
     results.text = textResults.text || [];
     results.age = ageResults.age || [];
 
-    await User.findByIdAndUpdate(req.user.id, {
-      $inc: { 'statistics.0.custom_scans': 1 }
-    });
-
     res.status(200).send(results);
   } catch (err) {
     console.error(err.message);
@@ -67,11 +63,11 @@ router.post('/custom-scan', auth, async (req, res) => {
 });
 
 router.post('/automated-scan', async (req, res) => {
-  await classification.loadModels();
-  let results = {};
-  let gestureResults = (ageResults = clothingResults = textResults = []);
-
   try {
+    await classification.loadModels();
+    let results = {};
+    let gestureResults = (ageResults = clothingResults = textResults = []);
+
     if (req.body.type === 'photos') {
       gestureResults = await classification.detectGesture(req.body.data);
       clothingResults = await classification.detectClothing(req.body.data);
@@ -88,7 +84,10 @@ router.post('/automated-scan', async (req, res) => {
 
     res.send(results);
   } catch (err) {
-    console.error(err);
+    console.error(err.message);
+    res
+      .status(500)
+      .json({ msg: 'There was an error while performing this scan' });
   }
 });
 
@@ -96,14 +95,15 @@ router.post('/write-statistics', auth, async (req, res) => {
   try {
     let count = req.body;
 
-    console.log(count);
-
+    // update any value passed in from request
     await User.findByIdAndUpdate(req.user.id, {
       $inc: {
-        'statistics.0.flagged_text': count['flagged_text'],
-        'statistics.0.flagged_age': count['flagged_age'],
-        'statistics.0.flagged_gesture': count['flagged_gesture'],
-        'statistics.0.flagged_clothing': count['flagged_clothing']
+        'statistics.0.flagged_text': count['flagged_text'] || 0,
+        'statistics.0.flagged_age': count['flagged_age'] || 0,
+        'statistics.0.flagged_gesture': count['flagged_gesture'] || 0,
+        'statistics.0.flagged_clothing': count['flagged_clothing'] || 0,
+        'statistics.0.automated_scans': count['automated_scans'] || 0,
+        'statistics.0.custom_scans': count['custom_scans'] || 0
       }
     });
 

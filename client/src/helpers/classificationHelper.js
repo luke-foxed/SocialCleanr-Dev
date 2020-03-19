@@ -58,8 +58,8 @@ export const cleanResults = (results, content) => {
 
   if (results['age'].length !== 0) {
     results['age'].forEach(item => {
-      count.flagged_age++;
       if (item.age < 5) {
+        count.flagged_age++;
         flaggedContent.push({
           type: 'Child Detected',
           message: `A child below the age of 5 (aged ${item.age}) has been detected`,
