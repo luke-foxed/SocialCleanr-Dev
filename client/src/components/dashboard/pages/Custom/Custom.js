@@ -22,7 +22,7 @@ import {
   ChildCare,
   Palette
 } from '@material-ui/icons';
-import { runManualScan } from '../../../../actions/upload.js';
+import { runCustomScan } from '../../../../actions/customScan.js';
 import {
   drawBoundingBox,
   drawBlurringBox,
@@ -113,7 +113,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Upload = ({ setAlert }) => {
+const Upload = ({ setAlert, runCustomScan }) => {
   const classes = useStyles();
   const [image, setImage] = useState('');
   const [boxImage, setBoxImage] = useState('');
@@ -147,7 +147,7 @@ const Upload = ({ setAlert }) => {
       setAlert('No Image Uploaded', 'error');
     } else {
       setSpinnerVisible(true);
-      let response = await runManualScan(models, image);
+      let response = await runCustomScan(models, image);
       setFlaggedContent(response);
       setSpinnerVisible(false);
       setResultsVisible(true);
@@ -362,7 +362,8 @@ const Upload = ({ setAlert }) => {
 };
 
 Upload.propTypes = {
-  setAlert: PropTypes.func.isRequired
+  setAlert: PropTypes.func.isRequired,
+  runCustomScan: PropTypes.func.isRequired
 };
 
-export default connect(null, { setAlert })(Upload);
+export default connect(null, { setAlert, runCustomScan })(Upload);
