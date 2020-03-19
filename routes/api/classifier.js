@@ -67,7 +67,6 @@ router.post('/automated-scan', async (req, res) => {
     await classification.loadModels();
     let results = {};
     let gestureResults = (ageResults = clothingResults = textResults = []);
-
     if (req.body.type === 'photos') {
       gestureResults = await classification.detectGesture(req.body.data);
       clothingResults = await classification.detectClothing(req.body.data);
@@ -95,7 +94,7 @@ router.post('/write-statistics', auth, async (req, res) => {
   try {
     let count = req.body;
 
-    // update any value passed in from request
+    // update whichever value is passed from requestg
     await User.findByIdAndUpdate(req.user.id, {
       $inc: {
         'statistics.0.flagged_text': count['flagged_text'] || 0,
@@ -103,7 +102,8 @@ router.post('/write-statistics', auth, async (req, res) => {
         'statistics.0.flagged_gesture': count['flagged_gesture'] || 0,
         'statistics.0.flagged_clothing': count['flagged_clothing'] || 0,
         'statistics.0.automated_scans': count['automated_scans'] || 0,
-        'statistics.0.custom_scans': count['custom_scans'] || 0
+        'statistics.0.custom_scans': count['custom_scans'] || 0,
+        'statistics.0.images_cleaned': count['images_cleaned'] || 0
       }
     });
 

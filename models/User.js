@@ -44,11 +44,6 @@ const UserSchema = new mongoose.Schema({
         required: false
       },
 
-      text_cleaned: {
-        type: Number,
-        required: false
-      },
-
       flagged_text: {
         type: Number,
         required: false
