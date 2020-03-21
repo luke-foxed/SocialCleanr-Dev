@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Paper, Typography, Container, Grid } from '@material-ui/core';
-import * as colors from '../../../../helpers/colors';
-import { Dashboard } from '@material-ui/icons';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import ProfileContent from './ProfileContent';
-import { IconHeader } from '../../../layout/IconHeader';
+import { Paper, Typography, Grid } from '@material-ui/core';
 import { MiniDivider } from '../../../layout/MiniDivider';
-import { VictoryPie, VictoryAxis, VictoryChart, VictoryBar } from 'victory';
+import {
+  VictoryPie,
+  VictoryAxis,
+  VictoryChart,
+  VictoryBar,
+  VictoryLabel
+} from 'victory';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -26,45 +26,15 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const events = [
-  {
-    target: 'data',
-    eventHandlers: {
-      onMouseOver: () => {
-        return [
-          {
-            target: 'data',
-            mutation: () => ({
-              style: {
-                fill: 'grey',
-                transition: 'all .2s ease-in-out'
-              }
-            })
-          }
-        ];
-      },
-      onMouseOut: () => {
-        return [
-          {
-            target: 'data',
-            mutation: () => ({
-              style: {
-                fill: 'white',
-                transition: 'all .2s ease-in-out'
-              }
-            })
-          }
-        ];
-      }
-    }
-  }
-];
-
-export const UsageCharts = ({ stats }) => {
+export const UsageCharts = ({ stats, socialMediaStats }) => {
   const classes = useStyles();
 
   // needed due to animation bug --> https://github.com/FormidableLabs/victory-native/issues/144
   const [angle, setAngle] = useState(0);
+  const [pieText, setPieValue] = useState({
+    scanText: '',
+    socialMedia: ''
+  });
 
   useEffect(() => {
     setTimeout(() => {
@@ -72,16 +42,73 @@ export const UsageCharts = ({ stats }) => {
     }, 500);
   }, []);
 
-  const pieData = [
+  const { photos, text } = socialMediaStats;
+
+  const scanData = [
     { x: 'Automated Scans', y: stats.automated_scans },
     { x: 'Custom Scans', y: stats === null ? 100 : stats.custom_scans }
   ];
 
-  const barData = [
+  const contentData = [
     { type: 'Age', count: stats.flagged_age },
     { type: 'Text', count: stats.flagged_text },
     { type: 'Gesture', count: stats.flagged_gesture },
     { type: 'Clothing', count: stats.flagged_clothing }
+  ];
+
+  const socialMedia = [
+    { x: 'Photos', y: photos },
+    { x: 'Posts', y: text }
+  ];
+
+  const events = [
+    {
+      target: 'data',
+      eventHandlers: {
+        onMouseOver: () => {
+          return [
+            {
+              target: 'data',
+              mutation: props => {
+                // if event has slice data
+                if (props.slice) {
+                  // identify by label name
+                  if (props.slice.data.x.includes('Scans')) {
+                    setPieValue({ scanText: Math.round(props.slice.data.y) });
+                  } else {
+                    setPieValue({
+                      socialMedia: Math.round(props.slice.data.y)
+                    });
+                  }
+                }
+                return {
+                  style: {
+                    fill: 'rgb(220,220,220)',
+                    transition: 'all .2s ease-in-out'
+                  }
+                };
+              }
+            }
+          ];
+        },
+        onMouseOut: () => {
+          return [
+            {
+              target: 'data',
+              mutation: () => {
+                setPieValue('');
+                return {
+                  style: {
+                    fill: 'white',
+                    transition: 'all .2s ease-in-out'
+                  }
+                };
+              }
+            }
+          ];
+        }
+      }
+    }
   ];
 
   return (
@@ -97,27 +124,34 @@ export const UsageCharts = ({ stats }) => {
           <Typography variant='h5'>Scanning Stats</Typography>
           <MiniDivider color='white' />
 
-          <VictoryPie
-            height={400}
-            width={400}
-            animate={{
-              duration: 800,
-              easing: 'exp'
-            }}
-            style={{
-              data: { fill: 'white' },
-              labels: { fill: 'white' }
-            }}
-            labels={({ datum }) =>
-              angle === 0 ? '' : `${datum.x} (${datum.y})`
-            }
-            labelRadius={180}
-            endAngle={angle}
-            padAngle={8}
-            innerRadius={90}
-            data={pieData}
-            events={events}
-          />
+          <svg viewBox='0 0 400 400'>
+            <VictoryPie
+              height={400}
+              width={400}
+              animate={{
+                duration: 800,
+                easing: 'exp'
+              }}
+              style={{
+                data: { fill: 'white' },
+                labels: { fill: 'white' }
+              }}
+              labelRadius={180}
+              endAngle={angle}
+              padAngle={8}
+              innerRadius={90}
+              data={scanData}
+              events={events}
+              standalone={false}
+            />
+            <VictoryLabel
+              textAnchor='middle'
+              style={{ fontSize: 30, fill: 'white' }}
+              x={200}
+              y={200}
+              text={pieText.scanText}
+            />
+          </svg>
         </Paper>
       </Grid>
       <Grid item xs={12} sm={4}>
@@ -128,7 +162,7 @@ export const UsageCharts = ({ stats }) => {
             background:
               'linear-gradient(52deg, rgba(76,140,60,1) 13%, rgba(105,190,83,1) 64%)'
           }}>
-          <Typography variant='h5'>Content Stats</Typography>
+          <Typography variant='h5'>Flagged Content Stats</Typography>
           <MiniDivider color='white' />
 
           <VictoryChart
@@ -156,7 +190,7 @@ export const UsageCharts = ({ stats }) => {
               }}
             />
             <VictoryBar
-              data={barData}
+              data={contentData}
               events={events}
               x='type'
               y='count'
@@ -177,6 +211,40 @@ export const UsageCharts = ({ stats }) => {
           }}>
           <Typography variant='h5'>Social Media Stats</Typography>
           <MiniDivider color='white' />
+          {text === 0 && photos === 0 ? (
+            <Typography style={{ height: 360 }}>
+              Please Set An Active Social Media Profile First
+            </Typography>
+          ) : (
+            <svg viewBox='0 0 400 400'>
+              <VictoryPie
+                height={400}
+                width={400}
+                animate={{
+                  duration: 800,
+                  easing: 'exp'
+                }}
+                style={{
+                  data: { fill: 'white' },
+                  labels: { fill: 'white' }
+                }}
+                labelRadius={180}
+                endAngle={angle}
+                padAngle={8}
+                innerRadius={90}
+                data={socialMedia}
+                events={events}
+                standalone={false}
+              />
+              <VictoryLabel
+                textAnchor='middle'
+                style={{ fontSize: 30, fill: 'white' }}
+                x={200}
+                y={200}
+                text={pieText.socialMedia}
+              />
+            </svg>
+          )}
         </Paper>
       </Grid>
     </Grid>

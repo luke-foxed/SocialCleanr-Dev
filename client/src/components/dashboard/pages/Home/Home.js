@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Paper,
   Typography,
   Container,
-  Grid,
   CircularProgress
 } from '@material-ui/core';
 import * as colors from '../../../../helpers/colors';
@@ -13,8 +12,6 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ProfileContent from './ProfileContent';
 import { IconHeader } from '../../../layout/IconHeader';
-import { MiniDivider } from '../../../layout/MiniDivider';
-import { VictoryPie, VictoryAxis, VictoryChart, VictoryBar } from 'victory';
 import { UsageCharts } from './UsageCharts';
 
 const useStyles = makeStyles(theme => ({
@@ -57,7 +54,13 @@ const Home = ({ user, profile }) => {
       </Paper>
 
       {user !== null ? (
-        <UsageCharts stats={user.statistics[0]} />
+        <UsageCharts
+          stats={user.statistics[0]}
+          socialMediaStats={{
+            photos: photos.length || 0,
+            text: text.length || 0
+          }}
+        />
       ) : (
         <CircularProgress className={classes.paper} />
       )}
