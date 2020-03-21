@@ -43,7 +43,7 @@ const events = [
             target: 'data',
             mutation: () => ({
               style: {
-                fill: 'white',
+                fill: 'grey',
                 transition: 'all .2s ease-in-out'
               }
             })
@@ -56,7 +56,7 @@ const events = [
             target: 'data',
             mutation: () => ({
               style: {
-                fill: 'grey',
+                fill: 'white',
                 transition: 'all .2s ease-in-out'
               }
             })
@@ -70,21 +70,43 @@ const events = [
 const Home = ({ user, profile }) => {
   const classes = useStyles();
 
-  const pieData =
-    user === null
-      ? [
-          { x: 'Automated Scans', y: 0 },
-          { x: 'Custom Scans', y: 100 }
-        ]
-      : [
-          {
-            x: 'Automated Scans',
-            y: user.statistics[0].automated_scans
-          },
-          { x: 'Custom Scans', y: user.statistics[0].custom_scans }
-        ];
+  // needed due to animation bug --> https://github.com/FormidableLabs/victory-native/issues/144
+  const [angle, setAngle] = useState(0);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setAngle(360);
+    }, 500);
+  }, []);
 
   const { photos, text } = profile;
+
+  const pieData = [
+    {
+      x: 'Automated Scans',
+      y: user === null ? 0 : user.statistics[0].automated_scans
+    },
+    {
+      x: 'Custom Scans',
+      y: user === null ? 100 : user.statistics[0].custom_scans
+    }
+  ];
+
+  const barData = [
+    { type: 'Age', count: user === null ? 0 : user.statistics[0].flagged_age },
+    {
+      type: 'Text',
+      count: user === null ? 0 : user.statistics[0].flagged_text
+    },
+    {
+      type: 'Gesture',
+      count: user === null ? 0 : user.statistics[0].flagged_gesture
+    },
+    {
+      type: 'Clothing',
+      count: user === null ? 0 : user.statistics[0].flagged_clothing
+    }
+  ];
 
   return (
     <Container component='main' maxWidth='lg'>
@@ -98,7 +120,7 @@ const Home = ({ user, profile }) => {
       </Paper>
 
       <Grid container spacing={3}>
-        <Grid item xs={6} sm={4}>
+        <Grid item xs={12} sm={4}>
           <Paper
             className={classes.paper}
             style={{
@@ -112,7 +134,19 @@ const Home = ({ user, profile }) => {
             <VictoryPie
               height={400}
               width={400}
-              animate={{ easing: 'exp' }}
+              animate={{
+                duration: 800,
+                easing: 'exp'
+              }}
+              style={{
+                data: { fill: 'white' },
+                labels: { fill: 'white' }
+              }}
+              labels={({ datum }) =>
+                angle === 0 ? '' : `${datum.x} (${datum.y})`
+              }
+              labelRadius={180}
+              endAngle={angle}
               padAngle={8}
               innerRadius={90}
               data={pieData}
@@ -120,7 +154,7 @@ const Home = ({ user, profile }) => {
             />
           </Paper>
         </Grid>
-        <Grid item xs={6} sm={4}>
+        <Grid item xs={12} sm={4}>
           <Paper
             className={classes.paper}
             style={{
@@ -131,26 +165,43 @@ const Home = ({ user, profile }) => {
             <Typography variant='h5'>Content Stats</Typography>
             <MiniDivider color='white' />
 
-            <VictoryChart domainPadding={15} height={400} width={400}>
-              <VictoryAxis dependentAxis tickFormat={x => x} />
+            <VictoryChart
+              domainPadding={15}
+              height={400}
+              width={400}
+              animate={{
+                duration: 800,
+                easing: 'exp'
+              }}>
+              <VictoryAxis
+                dependentAxis
+                tickFormat={x => x}
+                style={{
+                  tickLabels: { fill: 'white' },
+                  axis: { stroke: 'white' }
+                }}
+              />
               <VictoryAxis
                 tickValues={[1, 2, 3, 4]}
                 tickFormat={['Age', 'Text', 'Gesture', 'Clothing']}
+                style={{
+                  tickLabels: { fill: 'white' },
+                  axis: { stroke: 'white' }
+                }}
               />
               <VictoryBar
-                data={[
-                  { type: 'Age', count: 5 },
-                  { type: 'Text', count: 16 },
-                  { type: 'Gesture', count: 2 },
-                  { type: 'Clothing', count: 24 }
-                ]}
+                data={barData}
+                events={events}
                 x='type'
                 y='count'
+                style={{
+                  data: { fill: 'white' }
+                }}
               />
             </VictoryChart>
           </Paper>
         </Grid>
-        <Grid item xs={6} sm={4}>
+        <Grid item xs={12} sm={4}>
           <Paper
             className={classes.paper}
             style={{
