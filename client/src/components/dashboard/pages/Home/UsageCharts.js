@@ -9,12 +9,12 @@ import {
   VictoryBar,
   VictoryLabel
 } from 'victory';
+import * as colors from '../../../../helpers/colors';
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
-    paddingTop: theme.spacing(2),
+
     paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
@@ -35,6 +35,7 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
     scanText: '',
     socialMedia: ''
   });
+  const [prevColor, setPrevColor] = useState('');
 
   useEffect(() => {
     setTimeout(() => {
@@ -56,7 +57,7 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
     { type: 'Clothing', count: stats.flagged_clothing }
   ];
 
-  const socialMedia = [
+  const socialMediaData = [
     { x: 'Photos', y: photos },
     { x: 'Posts', y: text }
   ];
@@ -70,6 +71,7 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
             {
               target: 'data',
               mutation: props => {
+                setPrevColor(props.style.fill);
                 // if event has slice data
                 if (props.slice) {
                   // identify by label name
@@ -99,7 +101,7 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
                 setPieValue('');
                 return {
                   style: {
-                    fill: 'white',
+                    fill: prevColor,
                     transition: 'all .2s ease-in-out'
                   }
                 };
@@ -111,30 +113,40 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
     }
   ];
 
+  console.log(prevColor);
+
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} sm={4}>
         <Paper
+          elevation={2}
           className={classes.paper}
           style={{
-            color: 'white',
-            background:
-              'linear-gradient(52deg, rgba(27,98,153,1) 13%, rgba(49,135,201,1) 64%)'
+            color: 'white'
           }}>
-          <Typography variant='h5'>Scanning Stats</Typography>
-          <MiniDivider color='white' />
+          <div
+            style={{
+              width: '100%',
+              paddingTop: '10px',
+              backgroundColor: colors.colorPurple,
+              textAlign: 'center',
+              boxShadow: 'inset 0 -10px 10px -10px #000000'
+            }}>
+            <Typography variant='h5'>Scanning Stats</Typography>
+            <MiniDivider color='white' />
+          </div>
 
           <svg viewBox='0 0 400 400'>
             <VictoryPie
               height={400}
               width={400}
+              colorScale={['#D65DB1', '#783664']}
               animate={{
                 duration: 800,
                 easing: 'exp'
               }}
               style={{
-                data: { fill: 'white' },
-                labels: { fill: 'white' }
+                labels: { fill: colors.colorDarkPink }
               }}
               labelRadius={180}
               endAngle={angle}
@@ -146,7 +158,7 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
             />
             <VictoryLabel
               textAnchor='middle'
-              style={{ fontSize: 30, fill: 'white' }}
+              style={{ fontSize: 30, fill: colors.colorDarkPink }}
               x={200}
               y={200}
               text={pieText.scanText}
@@ -156,14 +168,22 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
       </Grid>
       <Grid item xs={12} sm={4}>
         <Paper
+          elevation={2}
           className={classes.paper}
           style={{
-            color: 'white',
-            background:
-              'linear-gradient(52deg, rgba(76,140,60,1) 13%, rgba(105,190,83,1) 64%)'
+            color: 'white'
           }}>
-          <Typography variant='h5'>Flagged Content Stats</Typography>
-          <MiniDivider color='white' />
+          <div
+            style={{
+              width: '100%',
+              paddingTop: '10px',
+              backgroundColor: colors.colorPurple,
+              textAlign: 'center',
+              boxShadow: 'inset 0 -10px 10px -10px #000000'
+            }}>
+            <Typography variant='h5'>Flagged Content Stats</Typography>
+            <MiniDivider color='white' />
+          </div>
 
           <VictoryChart
             domainPadding={15}
@@ -177,25 +197,26 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
               dependentAxis
               tickFormat={x => x}
               style={{
-                tickLabels: { fill: 'white' },
-                axis: { stroke: 'white' }
+                tickLabels: { fill: colors.colorDarkPink },
+                axis: { stroke: colors.colorDarkPink }
               }}
             />
             <VictoryAxis
               tickValues={[1, 2, 3, 4]}
               tickFormat={['Age', 'Text', 'Gesture', 'Clothing']}
               style={{
-                tickLabels: { fill: 'white' },
-                axis: { stroke: 'white' }
+                tickLabels: { fill: colors.colorDarkPink },
+                axis: { stroke: colors.colorDarkPink }
               }}
             />
             <VictoryBar
               data={contentData}
-              events={events}
               x='type'
               y='count'
               style={{
-                data: { fill: 'white' }
+                data: {
+                  fill: ({ index }) => (index % 2 === 0 ? '#D65DB1' : '#783664')
+                }
               }}
             />
           </VictoryChart>
@@ -203,16 +224,24 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
       </Grid>
       <Grid item xs={12} sm={4}>
         <Paper
+          elevation={2}
           className={classes.paper}
           style={{
-            color: 'white',
-            background:
-              'linear-gradient(52deg, rgba(162,35,18,1) 13%, rgba(205,65,46,1) 64%)'
+            color: 'white'
           }}>
-          <Typography variant='h5'>Social Media Stats</Typography>
-          <MiniDivider color='white' />
+          <div
+            style={{
+              width: '100%',
+              paddingTop: '10px',
+              backgroundColor: colors.colorPurple,
+              textAlign: 'center',
+              boxShadow: 'inset 0 -10px 10px -10px #000000'
+            }}>
+            <Typography variant='h5'>Scanning Stats</Typography>
+            <MiniDivider color='white' />
+          </div>
           {text === 0 && photos === 0 ? (
-            <Typography style={{ height: 360 }}>
+            <Typography style={{ height: 360, color: 'black' }}>
               Please Set An Active Social Media Profile First
             </Typography>
           ) : (
@@ -220,25 +249,25 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
               <VictoryPie
                 height={400}
                 width={400}
+                colorScale={['#D65DB1', '#783664']}
                 animate={{
                   duration: 800,
                   easing: 'exp'
                 }}
                 style={{
-                  data: { fill: 'white' },
-                  labels: { fill: 'white' }
+                  labels: { fill: colors.colorDarkPink }
                 }}
                 labelRadius={180}
                 endAngle={angle}
                 padAngle={8}
                 innerRadius={90}
-                data={socialMedia}
+                data={socialMediaData}
                 events={events}
                 standalone={false}
               />
               <VictoryLabel
                 textAnchor='middle'
-                style={{ fontSize: 30, fill: 'white' }}
+                style={{ fontSize: 30, fill: colors.colorDarkPink }}
                 x={200}
                 y={200}
                 text={pieText.socialMedia}
