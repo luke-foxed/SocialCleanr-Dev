@@ -143,7 +143,7 @@ const Dashboard = ({ auth, logout }) => {
             </IconButton>
           ) : (
             <IconButton onClick={handleDrawerClose}>
-              <ChevronLeft style={{ color: 'white' }} />
+              <ChevronLeft fontSize='medium' style={{ color: 'white' }} />
             </IconButton>
           )}
           <Typography
