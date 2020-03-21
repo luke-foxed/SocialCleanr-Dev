@@ -27,20 +27,44 @@ const UserSchema = new mongoose.Schema({
     default: Date.now
   },
 
-  scans: {
-    type: Number,
-    required: false
-  },
+  statistics: [
+    {
+      custom_scans: {
+        type: Number,
+        required: false
+      },
 
-  images_cleaned: {
-    type: Number,
-    required: false
-  },
+      automated_scans: {
+        type: Number,
+        required: false
+      },
 
-  text_cleaned: {
-    type: String,
-    required: false
-  },
+      images_cleaned: {
+        type: Number,
+        required: false
+      },
+
+      flagged_text: {
+        type: Number,
+        required: false
+      },
+
+      flagged_age: {
+        type: Number,
+        required: false
+      },
+
+      flagged_clothing: {
+        type: Number,
+        required: false
+      },
+
+      flagged_gesture: {
+        type: Number,
+        required: false
+      }
+    }
+  ],
 
   is_connected_facebook: {
     type: Boolean,

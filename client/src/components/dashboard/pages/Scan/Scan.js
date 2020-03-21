@@ -109,7 +109,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Scan = ({ user, profile }) => {
+const Scan = ({ user, profile, runAutomatedScan }) => {
   const classes = useStyles();
   const [boxImage, setBoxImage] = useState('');
   const [scanType, setScanType] = useState('photos');
@@ -124,6 +124,7 @@ const Scan = ({ user, profile }) => {
     scanType === 'photos' ? photos.length * 6 + 10 : text.length * 4 + 10;
 
   const handleScanStart = async () => {
+    setBoxImage('');
     setSpinnerVisible(true);
     let clean = await runAutomatedScan(
       scanType,
@@ -313,7 +314,8 @@ const Scan = ({ user, profile }) => {
 
 Scan.propTypes = {
   user: PropTypes.object.isRequired,
-  profile: PropTypes.object.isRequired
+  profile: PropTypes.object.isRequired,
+  runAutomatedScan: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -321,4 +323,4 @@ const mapStateToProps = state => ({
   profile: state.profile
 });
 
-export default connect(mapStateToProps)(Scan);
+export default connect(mapStateToProps, { runAutomatedScan })(Scan);

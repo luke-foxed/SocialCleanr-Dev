@@ -10,7 +10,6 @@ import {
   DialogActions,
   DialogContentText,
   Avatar,
-  Grid,
   Typography,
   Dialog
 } from '@material-ui/core';
@@ -40,7 +39,7 @@ export const ResultsTable = ({
   };
 
   return (
-    <Grid container xs={12}>
+    <div>
       <Table>
         <TableHead>
           <TableRow>
@@ -119,6 +118,6 @@ export const ResultsTable = ({
           </DialogActions>
         </Dialog>
       )}
-    </Grid>
+    </div>
   );
 };
