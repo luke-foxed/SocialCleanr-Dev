@@ -11,7 +11,8 @@ import {
   Badge,
   CssBaseline,
   Container,
-  Collapse
+  Collapse,
+  Avatar
 } from '@material-ui/core';
 import { Menu, ChevronLeft, Notifications } from '@material-ui/icons';
 import { Route, HashRouter, Redirect } from 'react-router-dom';
@@ -147,17 +148,31 @@ const Dashboard = ({ auth, logout }) => {
           )}
           <Typography
             component='h1'
-            variant='h6'
+            variant='h4'
             color='inherit'
             noWrap
             className={classes.title}>
             SocialCleanr
           </Typography>
+
           <IconButton color='inherit'>
             <Badge badgeContent={4} color='secondary'>
               <Notifications />
             </Badge>
           </IconButton>
+
+          {auth.user !== null && (
+            <img
+              src={auth.user.avatar}
+              height={70}
+              width={70}
+              style={{
+                margin: '10px',
+                borderRadius: '50%',
+                boxShadow: '0px 0px 22px -2px rgba(0,0,0,0.3)'
+              }}
+            />
+          )}
         </Toolbar>
       </AppBar>
       <HashRouter>
@@ -172,19 +187,19 @@ const Dashboard = ({ auth, logout }) => {
               {auth.user !== null && (
                 <div>
                   <img
-                    src={auth.user.avatar}
-                    height={120}
-                    width={120}
+                    src={require('../../assets/logo.png')}
+                    height={140}
+                    width={140}
                     style={{ marginTop: '10px', borderRadius: '50%' }}
                   />
-                  <MiniDivider color={colors.colorDarkOrange} />
+
                   <Typography variant='h5'>{auth.user.name}</Typography>
                 </div>
               )}
             </Collapse>
           </div>
 
-          <List>
+          <List style={{ marginTop: '20px' }}>
             <SidebarItems onLogoutClick={() => logout()} />
           </List>
         </Drawer>

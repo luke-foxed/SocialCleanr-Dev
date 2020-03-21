@@ -38,6 +38,7 @@ const Home = ({ user, profile }) => {
 
   return (
     <Container component='main' maxWidth='lg'>
+
       <Paper
         elevation={4}
         className={classes.paper}
