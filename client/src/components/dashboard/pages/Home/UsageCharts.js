@@ -14,7 +14,6 @@ import * as colors from '../../../../helpers/colors';
 const useStyles = makeStyles(theme => ({
   paper: {
     marginBottom: theme.spacing(2),
-
     paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
@@ -23,6 +22,14 @@ const useStyles = makeStyles(theme => ({
     '& p, h3, h4, h5, h6': {
       fontFamily: 'Raleway'
     }
+  },
+  chartHeader: {
+    width: '95%',
+    marginTop: '5px',
+    paddingTop: '15px',
+    backgroundColor: colors.colorPurple,
+    textAlign: 'center',
+    boxShadow: 'inset 0 0 10px rgba(0,0,0,0.4)'
   }
 }));
 
@@ -124,14 +131,7 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
           style={{
             color: 'white'
           }}>
-          <div
-            style={{
-              width: '100%',
-              paddingTop: '10px',
-              backgroundColor: colors.colorPurple,
-              textAlign: 'center',
-              boxShadow: 'inset 0 -10px 10px -10px #000000'
-            }}>
+          <div className={classes.chartHeader}>
             <Typography variant='h5'>Scanning Stats</Typography>
             <MiniDivider color='white' />
           </div>
@@ -140,13 +140,13 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
             <VictoryPie
               height={400}
               width={400}
-              colorScale={['#D65DB1', '#783664']}
+              colorScale={[colors.colorDarkPink, '#783664']}
               animate={{
                 duration: 800,
                 easing: 'exp'
               }}
               style={{
-                labels: { fill: colors.colorDarkPink }
+                labels: { fill: 'black' }
               }}
               labelRadius={180}
               endAngle={angle}
@@ -173,14 +173,7 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
           style={{
             color: 'white'
           }}>
-          <div
-            style={{
-              width: '100%',
-              paddingTop: '10px',
-              backgroundColor: colors.colorPurple,
-              textAlign: 'center',
-              boxShadow: 'inset 0 -10px 10px -10px #000000'
-            }}>
+          <div className={classes.chartHeader}>
             <Typography variant='h5'>Flagged Content Stats</Typography>
             <MiniDivider color='white' />
           </div>
@@ -193,21 +186,10 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
               duration: 800,
               easing: 'exp'
             }}>
-            <VictoryAxis
-              dependentAxis
-              tickFormat={x => x}
-              style={{
-                tickLabels: { fill: colors.colorDarkPink },
-                axis: { stroke: colors.colorDarkPink }
-              }}
-            />
+            <VictoryAxis dependentAxis tickFormat={x => x} />
             <VictoryAxis
               tickValues={[1, 2, 3, 4]}
               tickFormat={['Age', 'Text', 'Gesture', 'Clothing']}
-              style={{
-                tickLabels: { fill: colors.colorDarkPink },
-                axis: { stroke: colors.colorDarkPink }
-              }}
             />
             <VictoryBar
               data={contentData}
@@ -215,7 +197,8 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
               y='count'
               style={{
                 data: {
-                  fill: ({ index }) => (index % 2 === 0 ? '#D65DB1' : '#783664')
+                  fill: ({ index }) =>
+                    index % 2 === 0 ? colors.colorDarkPink : '#783664'
                 }
               }}
             />
@@ -229,19 +212,17 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
           style={{
             color: 'white'
           }}>
-          <div
-            style={{
-              width: '100%',
-              paddingTop: '10px',
-              backgroundColor: colors.colorPurple,
-              textAlign: 'center',
-              boxShadow: 'inset 0 -10px 10px -10px #000000'
-            }}>
+          <div className={classes.chartHeader}>
             <Typography variant='h5'>Scanning Stats</Typography>
             <MiniDivider color='white' />
           </div>
           {text === 0 && photos === 0 ? (
-            <Typography style={{ height: 360, color: 'black' }}>
+            <Typography
+              style={{
+                marginTop: 200,
+                height: 185,
+                color: 'grey'
+              }}>
               Please Set An Active Social Media Profile First
             </Typography>
           ) : (
@@ -249,13 +230,13 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
               <VictoryPie
                 height={400}
                 width={400}
-                colorScale={['#D65DB1', '#783664']}
+                colorScale={[colors.colorDarkPink, '#783664']}
                 animate={{
                   duration: 800,
                   easing: 'exp'
                 }}
                 style={{
-                  labels: { fill: colors.colorDarkPink }
+                  labels: { fill: 'black' }
                 }}
                 labelRadius={180}
                 endAngle={angle}
