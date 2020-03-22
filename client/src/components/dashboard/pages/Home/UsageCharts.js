@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Paper, Typography, Grid } from '@material-ui/core';
+import { Paper, Typography, Grid, Tooltip } from '@material-ui/core';
 import { MiniDivider } from '../../../layout/MiniDivider';
 import {
   VictoryPie,
@@ -47,7 +47,7 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
   useEffect(() => {
     setTimeout(() => {
       setAngle(360);
-    }, 500);
+    }, 100);
   }, []);
 
   const { photos, text } = socialMediaStats;
@@ -129,14 +129,15 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
           elevation={2}
           className={classes.paper}
           style={{
-            color: 'white'
+            color: 'white',
+            height: 500
           }}>
           <div className={classes.chartHeader}>
             <Typography variant='h5'>Scanning Stats</Typography>
             <MiniDivider color='white' />
           </div>
 
-          <svg viewBox='0 0 400 400'>
+          <svg viewBox='0 0 400 400' style={{ marginTop: '15px' }}>
             <VictoryPie
               height={400}
               width={400}
@@ -171,7 +172,8 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
           elevation={2}
           className={classes.paper}
           style={{
-            color: 'white'
+            color: 'white',
+            height: 500
           }}>
           <div className={classes.chartHeader}>
             <Typography variant='h5'>Flagged Content Stats</Typography>
@@ -203,6 +205,15 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
               }}
             />
           </VictoryChart>
+
+          <Tooltip title='Only Counts Automated Scan Cleaned Images' arrow>
+            <Typography style={{ color: 'black' }}>
+              Cleaned Images:{' '}
+              <span style={{ fontWeight: 'bold', color: colors.colorDarkPink }}>
+                {stats.images_cleaned}
+              </span>
+            </Typography>
+          </Tooltip>
         </Paper>
       </Grid>
       <Grid item xs={12} sm={4}>
@@ -210,23 +221,23 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
           elevation={2}
           className={classes.paper}
           style={{
-            color: 'white'
+            color: 'white',
+            height: 500
           }}>
           <div className={classes.chartHeader}>
-            <Typography variant='h5'>Scanning Stats</Typography>
+            <Typography variant='h5'>Social Media Stats</Typography>
             <MiniDivider color='white' />
           </div>
           {text === 0 && photos === 0 ? (
             <Typography
               style={{
                 marginTop: 200,
-                height: 185,
                 color: 'grey'
               }}>
               Please Set An Active Social Media Profile First
             </Typography>
           ) : (
-            <svg viewBox='0 0 400 400'>
+            <svg viewBox='0 0 400 400' style={{ marginTop: '15px' }}>
               <VictoryPie
                 height={400}
                 width={400}
