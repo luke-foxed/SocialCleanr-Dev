@@ -10,6 +10,12 @@ import {
 import { setAlert } from './alert';
 import setAuthToken from '../helpers/tokenHelper';
 
+
+/**
+ * Load User via their JWT token
+ * @returns {object} User object
+ */
+
 export const loadUser = () => async dispatch => {
   if (localStorage.token) {
     setAuthToken(localStorage.token);
@@ -29,6 +35,13 @@ export const loadUser = () => async dispatch => {
     });
   }
 };
+
+/**
+ * Register User
+ * @param {string} name - First and second name combined
+ * @param {string} email - User email
+ * @param {string} password - User password
+ */
 
 export const register = ({ name, email, password }) => async dispatch => {
   const config = {
@@ -62,7 +75,12 @@ export const register = ({ name, email, password }) => async dispatch => {
   }
 };
 
-// Login User
+/**
+ * Log User in
+ * @param {string} email - User email
+ * @param {string} password - User password
+ */
+
 export const login = (email, password) => async dispatch => {
   const config = {
     headers: {

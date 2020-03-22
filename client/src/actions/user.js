@@ -2,6 +2,14 @@ import axios from 'axios';
 import { setAlert } from './alert';
 import { logout } from './auth';
 
+/**
+ * Update User's account info
+ * @param {string} email - New email to replace with old
+ * @param {string} current_password - Current password, needed to verify User when changing password
+ * @param {string} password - New password to replace with old
+ * @param {string} avatar - URL of new avatar image
+ */
+
 export const updateUser = (
   { email, current_password, password, avatar },
   updateType
@@ -41,6 +49,10 @@ export const updateUser = (
     }
   }
 };
+
+/**
+ * Delete User
+ */
 
 export const deleteUser = () => async dispatch => {
   try {

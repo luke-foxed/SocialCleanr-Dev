@@ -3,6 +3,14 @@ import { cleanResults } from '../helpers/classificationHelper';
 import { setAlert } from './alert';
 import { loadUser } from './auth';
 
+/**
+ * Run scan based off User input
+ * @param {array} modelSelection - List of models selected
+ * @param {string} image - Base64 string of uploaded image
+ * @param {string} password - User password
+ * @returns {array} A list of each flagged item
+ */
+
 export const runCustomScan = (modelSelection, image) => async dispatch => {
   try {
     let response = await axios({
@@ -19,7 +27,6 @@ export const runCustomScan = (modelSelection, image) => async dispatch => {
     await axios.post('/api/classifier/write-statistics', parsedResults.count);
 
     dispatch(setAlert('Scan Complete', 'success'));
-
     dispatch(loadUser());
 
     return parsedResults.flaggedContent;

@@ -8,6 +8,11 @@ import {
   parseTwitterResults
 } from '../helpers/profilePageHelpers';
 
+/**
+ * Remove DB values for selected site
+ * @param {string} website - Name of site to remove from DB (facebook/twitter)
+ */
+
 export const removeSite = website => async dispatch => {
   try {
     await axios.post('/api/passport-auth/remove-site', { site: website });
@@ -22,13 +27,20 @@ export const removeSite = website => async dispatch => {
   }
 };
 
-export const getSocialMediaProfile = site => async dispatch => {
+/**
+ * Connect to website, adding access token to DB and returning social media content
+ * @param {string} password - User password
+ * @returns {array} A list of User's photos and posts
+ */
+
+export const getSocialMediaProfile = website => async dispatch => {
   let cleanedResponse = null;
   try {
-    // disabled for debugging to avoid rate limiting
-    const res = await axios.get(`/api/passport-auth/my-${site}`);
+    
+  
+    const res = await axios.get(`/api/passport-auth/my-${website}`);
 
-    if (site === 'facebook') {
+    if (website === 'facebook') {
       cleanedResponse = parseFacebookResults(res.data);
     } else {
       cleanedResponse = parseTwitterResults(res.data);
@@ -41,7 +53,7 @@ export const getSocialMediaProfile = site => async dispatch => {
 
     dispatch(
       setAlert(
-        `${site.toUpperCase()} has been set! You can now start a scan!`,
+        `${website.toUpperCase()} has been set! You can now start a scan!`,
         'success'
       )
     );
@@ -49,7 +61,7 @@ export const getSocialMediaProfile = site => async dispatch => {
     console.error(err);
 
     dispatch(
-      setAlert(`Error Retrieving data from ${site.toUpperCase()}`, 'error')
+      setAlert(`Error Retrieving data from ${website.toUpperCase()}`, 'error')
     );
 
     dispatch({
