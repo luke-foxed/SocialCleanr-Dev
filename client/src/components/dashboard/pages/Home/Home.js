@@ -1,12 +1,18 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Paper, Typography, Container, Grid } from '@material-ui/core';
+import {
+  Paper,
+  Typography,
+  Container,
+  CircularProgress
+} from '@material-ui/core';
 import * as colors from '../../../../helpers/colors';
 import { Dashboard } from '@material-ui/icons';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ProfileContent from './ProfileContent';
 import { IconHeader } from '../../../layout/IconHeader';
+import { UsageCharts } from './UsageCharts';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -46,6 +52,19 @@ const Home = ({ user, profile }) => {
         }}>
         <IconHeader icon={Dashboard} text='Dashboard' subheader={false} />
       </Paper>
+
+      {user !== null ? (
+        <UsageCharts
+          stats={user.statistics[0]}
+          socialMediaStats={{
+            photos: photos.length || 0,
+            text: text.length || 0
+          }}
+        />
+      ) : (
+        <CircularProgress className={classes.paper} />
+      )}
+
       {photos.length > 0 || text.length > 0 ? (
         <ProfileContent photos={photos} text={text} />
       ) : (

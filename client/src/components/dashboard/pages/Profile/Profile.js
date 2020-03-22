@@ -143,7 +143,7 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
                 className={classes.gridCell}
                 style={{ flexDirection: 'row' }}>
                 <Lock style={{ marginRight: '10px' }} />
-                <Typography variant='h6'>Pasword</Typography>
+                <Typography variant='h6'>Password</Typography>
               </div>
             </Grid>
 

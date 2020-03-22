@@ -2,6 +2,7 @@ import { cleanResults } from '../helpers/classificationHelper';
 import axios from 'axios';
 import { asyncForEach } from '../helpers/generalHelpers';
 import { setAlert } from './alert';
+import { loadUser } from './auth';
 
 export const runAutomatedScan = (type, data) => async dispatch => {
   try {
@@ -45,6 +46,8 @@ export const runAutomatedScan = (type, data) => async dispatch => {
     await axios.post('/api/classifier/write-statistics', totalCount);
 
     dispatch(setAlert('Scan Complete', 'success'));
+
+    dispatch(loadUser());
 
     return resultsFlattened;
   } catch (err) {
