@@ -24,7 +24,7 @@ export const runCustomScan = (modelSelection, image) => async dispatch => {
 
     let parsedResults = cleanResults(response.data, image);
 
-    await axios.post('/api/classifier/write-statistics', parsedResults.count);
+    await axios.post('/api/user/write-statistics', parsedResults.count);
 
     dispatch(setAlert('Scan Complete', 'success'));
     dispatch(loadUser());

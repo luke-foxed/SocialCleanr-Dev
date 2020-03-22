@@ -50,7 +50,7 @@ export const runAutomatedScan = (type, data) => async dispatch => {
       }
     });
 
-    await axios.post('/api/classifier/write-statistics', totalCount);
+    await axios.post('/api/user/write-statistics', totalCount);
 
     dispatch(setAlert('Scan Complete', 'success'));
     dispatch(loadUser());
@@ -79,7 +79,7 @@ export const getImageAsBase64 = async image => {
   // add header to image
   let base64 = 'data:image/jpeg;base64,' + response.data.toString();
 
-  await axios.post('/api/classifier/write-statistics', { images_cleaned: 1 });
+  await axios.post('/api/user/write-statistics', { images_cleaned: 1 });
 
   return base64;
 };

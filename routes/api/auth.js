@@ -7,7 +7,12 @@ const config = require('config');
 const { check, validationResult } = require('express-validator');
 const User = require('../../models/User');
 
-// authenticate
+ /**
+  * @route    GET api/auth/
+  * @desc     Authenticates user and returns selected DB values
+  * @access   Private
+ */
+
 router.get('/', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id)
@@ -23,7 +28,12 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-// login
+ /**
+  * @route    POST api/auth-passport/login
+  * @desc     Finds matching user in DB and returns JWT on success
+  * @access   Public
+ */
+
 router.post(
   '/login',
   [
@@ -78,6 +88,12 @@ router.post(
     }
   }
 );
+
+ /**
+  * @route    POST api/auth-passport/register
+  * @desc     Creates new user and generates JWT on success
+  * @access   Public
+ */
 
 router.post(
   '/register',
