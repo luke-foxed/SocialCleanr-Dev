@@ -36,14 +36,14 @@ const useStyles = makeStyles(theme => ({
 export const UsageCharts = ({ stats, socialMediaStats }) => {
   const classes = useStyles();
 
-  // needed due to animation bug --> https://github.com/FormidableLabs/victory-native/issues/144
   const [angle, setAngle] = useState(0);
+  const [prevColor, setPrevColor] = useState('');
   const [pieText, setPieValue] = useState({
     scanText: '',
     socialMedia: ''
   });
-  const [prevColor, setPrevColor] = useState('');
 
+  // needed due to animation bug --> https://github.com/FormidableLabs/victory-native/issues/144
   useEffect(() => {
     setTimeout(() => {
       setAngle(360);
