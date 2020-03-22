@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { setAlert } from './alert';
 import { loadUser } from './auth';
-import { CollectionsOutlined } from '@material-ui/icons';
 import { PROFILE_ERROR, GET_PROFILE } from '../actions/types';
 import {
   parseFacebookResults,

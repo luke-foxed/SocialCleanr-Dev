@@ -10,7 +10,7 @@ import * as colors from '../../../../helpers/colors';
 import { Dashboard } from '@material-ui/icons';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import ProfileContent from './ProfileContent';
+import ProfileContent from './SocialMediaContent';
 import { IconHeader } from '../../../layout/IconHeader';
 import { UsageCharts } from './UsageCharts';
 
