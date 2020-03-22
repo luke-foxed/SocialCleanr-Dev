@@ -12,7 +12,8 @@ import {
   CssBaseline,
   Container,
   Collapse,
-  Avatar
+  Avatar,
+  Grid
 } from '@material-ui/core';
 import { Menu, ChevronLeft, Notifications } from '@material-ui/icons';
 import { Route, HashRouter, Redirect } from 'react-router-dom';
@@ -34,7 +35,8 @@ const useStyles = makeStyles(theme => ({
     display: 'flex'
   },
   toolbar: {
-    paddingRight: 24 // keep right padding when drawer closed
+    paddingRight: 24, // keep right padding when drawer closed
+    height: 80
   },
   toolbarIcon: {
     display: 'flex',
@@ -107,6 +109,16 @@ const useStyles = makeStyles(theme => ({
   },
   fixedHeight: {
     height: 240
+  },
+  centerIcon: {
+    marginTop: '5px',
+    borderRadius: '50%',
+    zIndex: 99999,
+    height: 120,
+    width: 120,
+    backgroundColor: 'white',
+    paddingBottom: '5px',
+    border: '5px solid ' + colors.colorPurple
   }
 }));
 
@@ -127,52 +139,63 @@ const Dashboard = ({ auth, logout }) => {
         style={{ backgroundColor: colors.colorPurple }}
         position='absolute'
         className={clsx(classes.appBar, open && classes.appBarShift)}>
+        {/* TOOLBAR */}
         <Toolbar className={classes.toolbar}>
-          {!open ? (
-            <IconButton
-              edge='start'
-              color='inherit'
-              aria-label='open drawer'
-              onClick={handleDrawerOpen}
-              className={clsx(
-                classes.menuButton,
-                open && classes.menuButtonHidden
-              )}>
-              <Menu />
-            </IconButton>
-          ) : (
-            <IconButton onClick={handleDrawerClose}>
-              <ChevronLeft fontSize='medium' style={{ color: 'white' }} />
-            </IconButton>
-          )}
-          <Typography
-            component='h1'
-            variant='h4'
-            color='inherit'
-            noWrap
-            className={classes.title}>
-            SocialCleanr
-          </Typography>
+          <Grid container alignItems='center'>
+            <Grid container item xs={4} sm={4} justify='flex-start'>
+              {!open ? (
+                <IconButton
+                  edge='start'
+                  color='inherit'
+                  aria-label='open drawer'
+                  onClick={handleDrawerOpen}
+                  className={clsx(
+                    classes.menuButton,
+                    open && classes.menuButtonHidden
+                  )}>
+                  <Menu />
+                </IconButton>
+              ) : (
+                <IconButton onClick={handleDrawerClose}>
+                  <ChevronLeft fontSize='medium' style={{ color: 'white' }} />
+                </IconButton>
+              )}
+            </Grid>
 
-          <IconButton color='inherit'>
-            <Badge badgeContent={4} color='secondary'>
-              <Notifications />
-            </Badge>
-          </IconButton>
+            <Grid
+              container
+              item
+              xs={4}
+              sm={4}
+              justify='center'
+              style={{ textAlign: 'center' }}>
+              <div className={classes.centerIcon}>
+                <img
+                  src={require('../../assets/logo.png')}
+                  height={105}
+                  width={105}
+                />
+              </div>
+            </Grid>
 
-          {auth.user !== null && (
-            <img
-              src={auth.user.avatar}
-              height={70}
-              width={70}
-              style={{
-                margin: '10px',
-                borderRadius: '50%',
-                boxShadow: '0px 0px 22px -2px rgba(0,0,0,0.3)'
-              }}
-            />
-          )}
+            <Grid container item xs={4} sm={4} justify='flex-end'>
+              {auth.user !== null && (
+                <img
+                  src={auth.user.avatar}
+                  height={70}
+                  width={70}
+                  style={{
+                    margin: '10px',
+                    borderRadius: '50%',
+                    boxShadow: '0px 0px 22px -2px rgba(0,0,0,0.3)'
+                  }}
+                />
+              )}
+            </Grid>
+          </Grid>
         </Toolbar>
+
+        {/*  */}
       </AppBar>
       <HashRouter>
         <Drawer
