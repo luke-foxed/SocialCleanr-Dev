@@ -13,10 +13,11 @@ import {
   Container,
   Collapse,
   Avatar,
-  Grid
+  Grid,
+  Button
 } from '@material-ui/core';
-import { Menu, ChevronLeft, Notifications } from '@material-ui/icons';
-import { Route, HashRouter, Redirect } from 'react-router-dom';
+import { Menu, ChevronLeft } from '@material-ui/icons';
+import { Route, HashRouter, Redirect, Link } from 'react-router-dom';
 import SidebarItems from './SidebarItems';
 import Profile from './pages/Profile/Profile';
 import Home from './pages/Home/Home';
@@ -27,6 +28,7 @@ import { logout } from '../../actions/auth';
 import * as colors from '../../helpers/colors';
 import 'react-image-lightbox/style.css';
 import Custom from './pages/Custom/Custom';
+import { MiniDivider } from '../layout/MiniDivider';
 
 const drawerWidth = 240;
 
@@ -139,7 +141,6 @@ const Dashboard = ({ auth, logout }) => {
         style={{ backgroundColor: colors.colorPurple }}
         position='absolute'
         className={clsx(classes.appBar, open && classes.appBarShift)}>
-        {/* TOOLBAR */}
         <Toolbar className={classes.toolbar}>
           <Grid container alignItems='center'>
             <Grid container item xs={4} sm={4} justify='flex-start'>
@@ -180,22 +181,22 @@ const Dashboard = ({ auth, logout }) => {
 
             <Grid container item xs={4} sm={4} justify='flex-end'>
               {auth.user !== null && (
-                <img
-                  src={auth.user.avatar}
-                  height={70}
-                  width={70}
-                  style={{
-                    margin: '10px',
-                    borderRadius: '50%',
-                    boxShadow: '0px 0px 22px -2px rgba(0,0,0,0.3)'
-                  }}
-                />
+               
+                  <img
+                    src={auth.user.avatar}
+                    height={70}
+                    width={70}
+                    style={{
+                      margin: '10px',
+                      borderRadius: '50%',
+                      boxShadow: '0px 0px 22px -2px rgba(0,0,0,0.3)'
+                    }}
+                  />
+               
               )}
             </Grid>
           </Grid>
         </Toolbar>
-
-        {/*  */}
       </AppBar>
       <HashRouter>
         <Drawer
@@ -215,7 +216,8 @@ const Dashboard = ({ auth, logout }) => {
                     style={{ marginTop: '10px', borderRadius: '50%' }}
                   />
 
-                  <Typography variant='h5'>{auth.user.name}</Typography>
+                  <Typography variant='h4'>{auth.user.name}</Typography>
+                  <MiniDivider color={colors.colorPurple} />
                 </div>
               )}
             </Collapse>

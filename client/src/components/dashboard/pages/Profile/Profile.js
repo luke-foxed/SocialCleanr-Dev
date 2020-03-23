@@ -83,7 +83,7 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
   };
 
   return (
-    <Container component='main' maxWidth='lg'>
+    <Container component='main' maxWidth='lg' style={{ marginTop: '40px' }}>
       <Paper
         elevation={4}
         className={classes.paper}
