@@ -1,12 +1,13 @@
 const maleModel = {
   metadata:
-    'https://teachablemachine.withgoogle.com/models/_LEWFdms/metadata.json',
-  model: 'https://teachablemachine.withgoogle.com/models/_LEWFdms/model.json'
+    'https://teachablemachine.withgoogle.com/models/Vsxm6TmFf/metadata.json',
+  model: 'https://teachablemachine.withgoogle.com/models/Vsxm6TmFf/model.json'
 };
 
-const maleModelLocal = {
-  metadata: 'file://classification/clothing/male/metadata.json',
-  model: 'file://classification/clothing/male/model.json'
+const maleModelOld = {
+  metadata:
+    'https://teachablemachine.withgoogle.com/models/_LEWFdms/metadata.json',
+  model: 'https://teachablemachine.withgoogle.com/models/_LEWFdms/model.json'
 };
 
 const femaleModel = {
