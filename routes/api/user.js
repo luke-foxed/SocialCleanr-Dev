@@ -2,8 +2,15 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const auth = require('../../middleware/auth');
-const { check, validationResult, oneOf, body } = require('express-validator');
+const { check, validationResult, oneOf } = require('express-validator');
 const User = require('../../models/User');
+
+
+ /**
+  * @route    POST api/user/update-basic
+  * @desc     Update either user's email or avatar
+  * @access   Private
+ */
 
 router.post(
   '/update-basic',
@@ -62,6 +69,12 @@ router.post(
   }
 );
 
+ /**
+  * @route    POST api/user/update-password
+  * @desc     Update user password
+  * @access   Private
+ */
+
 router.post(
   '/update-password',
   auth,
@@ -110,6 +123,12 @@ router.post(
   }
 );
 
+ /**
+  * @route    DELETE api/user/delete
+  * @desc     Delete user from DB
+  * @access   Private
+ */
+
 router.delete('/delete', auth, async (req, res) => {
   try {
     await User.findByIdAndDelete(req.user.id);
@@ -117,6 +136,35 @@ router.delete('/delete', auth, async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ msg: 'Delete Error' });
+  }
+});
+
+ /**
+  * @route    POST api/user/write-statistics
+  * @desc     Write various usage stats to DB
+  * @access   Private
+ */
+
+router.post('/write-statistics', auth, async (req, res) => {
+  try {
+    let count = req.body;
+
+    // update whichever value is passed from requestg
+    await User.findByIdAndUpdate(req.user.id, {
+      $inc: {
+        'statistics.0.flagged_text': count['flagged_text'] || 0,
+        'statistics.0.flagged_age': count['flagged_age'] || 0,
+        'statistics.0.flagged_gesture': count['flagged_gesture'] || 0,
+        'statistics.0.flagged_clothing': count['flagged_clothing'] || 0,
+        'statistics.0.automated_scans': count['automated_scans'] || 0,
+        'statistics.0.custom_scans': count['custom_scans'] || 0,
+        'statistics.0.images_cleaned': count['images_cleaned'] || 0
+      }
+    });
+
+    res.status(200).json({ msg: 'Stats written to DB' });
+  } catch (err) {
+    console.log(err);
   }
 });
 

@@ -1,5 +1,10 @@
 import axios from 'axios';
 
+ /**
+ * Set custom header containing JWT. If token exists, assign, else delete the header
+ * @param {string} token - JWT value
+ */
+
 const setAuthToken = token => {
   if (token) {
     console.log('TOKEN SET');

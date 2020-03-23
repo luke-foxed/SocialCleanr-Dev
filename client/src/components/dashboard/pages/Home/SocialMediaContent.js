@@ -3,7 +3,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import {
   Paper,
   Button,
-  Typography,
   Grid,
   GridList,
   GridListTile,
@@ -16,7 +15,6 @@ import {
   DialogContent,
   DialogContentText
 } from '@material-ui/core';
-import * as colors from '../../../../helpers/colors';
 import { Image, ArrowForward, Chat } from '@material-ui/icons';
 import Lightbox from 'react-image-lightbox';
 import { IconHeader } from '../../../layout/IconHeader';

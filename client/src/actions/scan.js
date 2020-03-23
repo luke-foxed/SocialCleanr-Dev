@@ -4,6 +4,13 @@ import { asyncForEach } from '../helpers/generalHelpers';
 import { setAlert } from './alert';
 import { loadUser } from './auth';
 
+/**
+ * Run automated scan of all photos or posts
+ * @param {string} type - Specify type of scan (text/image)
+ * @param {array} data - List of all content (texts/images)
+ * @returns {array} A list of each flagged item
+ */
+
 export const runAutomatedScan = (type, data) => async dispatch => {
   try {
     let results = [];
@@ -43,10 +50,9 @@ export const runAutomatedScan = (type, data) => async dispatch => {
       }
     });
 
-    await axios.post('/api/classifier/write-statistics', totalCount);
+    await axios.post('/api/user/write-statistics', totalCount);
 
     dispatch(setAlert('Scan Complete', 'success'));
-
     dispatch(loadUser());
 
     return resultsFlattened;
@@ -56,7 +62,12 @@ export const runAutomatedScan = (type, data) => async dispatch => {
   }
 };
 
-// cors error when retrieving from frontend
+/**
+ * Retrieve image from API (to avoid CORS) and return as base64 which can be drawn on with canvas
+ * @param {string} image - URL of image to be retrieved
+ * @returns {string} Base64 version of image
+ */
+
 export const getImageAsBase64 = async image => {
   let response = await axios({
     method: 'post',
@@ -68,7 +79,7 @@ export const getImageAsBase64 = async image => {
   // add header to image
   let base64 = 'data:image/jpeg;base64,' + response.data.toString();
 
-  await axios.post('/api/classifier/write-statistics', { images_cleaned: 1 });
+  await axios.post('/api/user/write-statistics', { images_cleaned: 1 });
 
   return base64;
 };

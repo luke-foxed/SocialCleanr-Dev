@@ -19,9 +19,13 @@ var twitterConfig = {
   access_token_secret: ''
 };
 
-// AUTHENTICATION //
+ /**
+  * @route    GET api/auth-passport/login-facebook/:id
+  * @desc     Connect to user's Facebook account
+  * @access   Private
+ */
 
-router.get('/login-facebook/:id', function(req, res, next) {
+router.get('/login-facebook/:id', auth, function(req, res, next) {
   // create temp cookie to store user ID
   res.cookie('userID', req.params.id, {
     maxAge: 20000,
@@ -29,6 +33,12 @@ router.get('/login-facebook/:id', function(req, res, next) {
   });
   passport.authenticate('facebook')(req, res, next);
 });
+
+ /**
+  * @route    GET api/auth-passport/auth/facebook/callback
+  * @desc     Facebook callback, exposes access token which is written to DB
+  * @access   Private
+ */
 
 router.get(
   '/auth/facebook/callback',
@@ -63,6 +73,12 @@ router.get(
   }
 );
 
+ /**
+  * @route    GET api/auth-passport/login-twitter/:id
+  * @desc     Connect to user's Twitter account
+  * @access   Private
+ */
+
 router.get('/login-twitter/:id', function(req, res, next) {
   // log user ID to cookie to be used in callback
   res.cookie('userID', req.params.id, {
@@ -71,6 +87,12 @@ router.get('/login-twitter/:id', function(req, res, next) {
   });
   passport.authenticate('twitter')(req, res, next);
 });
+
+ /**
+  * @route    GET api/auth-passport/auth/twitter/callback
+  * @desc     Twitter callback, exposes access token & secret token which is written to DB
+  * @access   Private
+ */
 
 router.get(
   '/auth/twitter/callback',
@@ -108,6 +130,12 @@ router.get(
   }
 );
 
+ /**
+  * @route    POST api/auth-passport/remove-site
+  * @desc     Remove user's connection to specified site, clearing DB values
+  * @access   Private
+ */
+
 router.post('/remove-site', auth, async (req, res) => {
   let site = req.body.site;
   try {
@@ -127,6 +155,12 @@ router.post('/remove-site', auth, async (req, res) => {
     res.status(500).send('Server Error');
   }
 });
+
+ /**
+  * @route    GET api/auth-passport/my-facebook
+  * @desc     Returns user's Facebook posts and photos
+  * @access   Private
+ */
 
 router.get('/my-facebook', auth, async (req, res) => {
   const user = await User.findById(req.user.id);
@@ -150,6 +184,12 @@ router.get('/my-facebook', auth, async (req, res) => {
     res.status(500).send(err);
   }
 });
+
+ /**
+  * @route    GET api/auth-passport/my-twitter
+  * @desc     Returns user's Twitter posts and photos
+  * @access   Private
+ */
 
 router.get('/my-twitter', auth, async (req, res) => {
   try {

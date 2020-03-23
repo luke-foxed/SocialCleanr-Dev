@@ -1,3 +1,9 @@
+ /**
+ * Extract all photos and posts from Facebook API response
+ * @param {object} response - Output from API call
+ * @return {object} Object containing array of photos and texts
+ */
+
 export const parseFacebookResults = response => {
   let cleanedResults = { photos: [], text: [], site: 'facebook' };
 
@@ -17,6 +23,12 @@ export const parseFacebookResults = response => {
 
   return cleanedResults;
 };
+
+ /**
+ * Extract all photos and posts from Twitter API response
+ * @param {object} response - Output from API call
+ * @return {object} Object containing array of photos and texts
+ */
 
 export const parseTwitterResults = response => {
   let cleanedResults = { photos: [], text: [], site: 'twitter' };

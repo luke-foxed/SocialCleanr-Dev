@@ -4,16 +4,9 @@ import {
   Typography,
   Paper,
   makeStyles,
-  Table,
-  TableBody,
-  TableRow,
-  TableCell,
   Grid,
   Button,
-  Avatar,
-  withStyles,
-  IconButton,
-  Divider
+  IconButton
 } from '@material-ui/core';
 import {
   Face,
@@ -102,7 +95,12 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
 
       <Paper elevation={2} className={classes.paper}>
         <div className={classes.avatarFrame}>
-          <img className={classes.avatar} variant='circle' src={user.avatar} />
+          <img
+            className={classes.avatar}
+            variant='circle'
+            src={user.avatar}
+            alt='avatar'
+          />
         </div>
 
         <Typography variant='h3' className={classes.name}>

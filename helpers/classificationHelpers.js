@@ -6,7 +6,12 @@ const client = new vision.ImageAnnotatorClient();
 const helpers = require('./generalHelpers');
 const fs = require('fs');
 
-// for converting URLs into tensor objects
+/**
+ * Convert imageURL into tensor which Tensorflow recognises
+ * @param {string} imageURL - URL of image to convert
+ * @return {object} Tensor object
+ */
+
 const getTensor3dObject = async imageURL => {
   let req = await axios.get(imageURL, {
     responseType: 'arraybuffer'
@@ -15,7 +20,12 @@ const getTensor3dObject = async imageURL => {
   return tf.node.decodeJpeg(req.data, 3);
 };
 
-// for creating HTMLElements from base64 image (to then be converted to tensor)
+/**
+ * Create canvas element with image drawn on
+ * @param {string} base64Image - Base64 string of image to draw on
+ * @return {Canvas} Canvas element that can be used to draw bbox on
+ */
+
 const createCanvasImage = async base64Image => {
   let image = await loadImage(base64Image);
   const canvas = createCanvas(image.width, image.height);
@@ -24,7 +34,14 @@ const createCanvasImage = async base64Image => {
   return canvas;
 };
 
-// takes the max scores from inputted scores tensor object
+/**
+ * Calculate highest scores via list of scores from gesture detection response
+ * @param {array} scores - List of scores from prediction
+ * @param {integer} numBoxes - Max number of boxes to return from prediction
+ * @param {integer} numClasses - Number of classes (labels of gestures)
+ * @returns {array} Array containing max scores and indexes of classes
+ */
+
 const calculateMaxScores = (scores, numBoxes, numClasses) => {
   const maxes = [];
   const classes = [];
@@ -43,21 +60,32 @@ const calculateMaxScores = (scores, numBoxes, numClasses) => {
   return [maxes, classes];
 };
 
-// returns score, bbox coordinates and labels
+/**
+ * Build detected object with its bounding box, score and class
+ * @param {integer} width - Width of tensor object created from image
+ * @param {integer} height - Height of tensor object created from image
+ * @param {array} boxes - List of bounding boxes to be drawn onto image
+ * @param {array} scores - List of scores (prediction estimates) to assign to each bounding box
+ * @param {array} indexes - A Tensor array of image representing the selected indices from the boxes tensor
+ * @param {array} boxes - List of bounding boxes to be drawn onto image
+ * @param {array} classes - Labels of each class to assign
+ * @returns {object} Object containing prediction score, class and bbox coordinates
+ */
+
 const buildDetectedObjects = (
   width,
   height,
   boxes,
   scores,
-  indexes,
+  indices,
   classes
 ) => {
-  const count = indexes.length;
+  const count = indices.length;
   const objects = [];
   for (let i = 0; i < count; i++) {
     const bbox = [];
     for (let j = 0; j < 4; j++) {
-      bbox[j] = boxes[indexes[i] * 4 + j];
+      bbox[j] = boxes[indices[i] * 4 + j];
     }
     const minY = bbox[0] * height;
     const minX = bbox[1] * width;
@@ -70,33 +98,18 @@ const buildDetectedObjects = (
     objects.push({
       bbox: bbox,
       class: 'middle_finger',
-      score: scores[indexes[i]]
+      score: scores[indices[i]]
     });
   }
   return objects;
 };
 
-const drawBoundingBox = (canvas, coordinates) => {
-  let bboxCanvas = canvas;
-  const ctx = bboxCanvas.getContext('2d');
-
-  coordinates.forEach(coord => {
-    ctx.beginPath();
-    ctx.rect(coord.bbox[0], coord.bbox[1], coord.bbox[2], coord.bbox[3]);
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = 'red';
-    ctx.stroke();
-    ctx.font = '20px serif';
-    ctx.fillStyle = 'red';
-    ctx.fillText(
-      Math.round(coord.score) * 100 + '% Middle Finger',
-      coord.bbox[0],
-      coord.bbox[1] - 10
-    );
-  });
-
-  return bboxCanvas.toDataURL();
-};
+/**
+ * Create multiple images from list bounding boxes by extracting regions using box coordinates
+ * @param {array} boxArray - Array of bounding boxes, each with 4 coordinates
+ * @param {string} image - Base64 string of image to be broken into sub images
+ * @returns {array} images - List of extracted images as base64 strings
+ */
 
 const boundingBoxesToImage = async (boxArray, image) => {
   let images = [];
@@ -140,6 +153,12 @@ const boundingBoxesToImage = async (boxArray, image) => {
 
   return images;
 };
+
+/**
+ * Extract text from images using Google Cloud Vision's OCR
+ * @param {string} image - Base64 or URL of image to be converted to text
+ * @returns {array} List of extracted words and their bounding boxes
+ */
 
 const convertToText = async image => {
   let text = [];
@@ -194,7 +213,6 @@ module.exports = {
   createCanvasImage,
   calculateMaxScores,
   buildDetectedObjects,
-  drawBoundingBox,
   boundingBoxesToImage,
   convertToText
 };
