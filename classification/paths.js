@@ -18,6 +18,6 @@ const femaleModel = {
 
 module.exports = {
   maleModel,
-  maleModelLocal,
+  maleModelOld,
   femaleModel
 };

@@ -8,20 +8,18 @@ import {
   List,
   Typography,
   IconButton,
-  Badge,
   CssBaseline,
   Container,
   Collapse,
-  Avatar,
-  Grid,
-  Button
+  Grid
 } from '@material-ui/core';
 import { Menu, ChevronLeft } from '@material-ui/icons';
-import { Route, HashRouter, Redirect, Link } from 'react-router-dom';
+import { Route, HashRouter, Redirect } from 'react-router-dom';
 import SidebarItems from './SidebarItems';
 import Profile from './pages/Profile/Profile';
 import Home from './pages/Home/Home';
 import Scan from './pages/Scan/Scan';
+import Guide from './pages/Guide/Guide';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { logout } from '../../actions/auth';
@@ -34,7 +32,11 @@ const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
   root: {
-    display: 'flex'
+    display: 'flex',
+    height: '100vh',
+    backgroundImage: 'url(' + require('../../assets/pattern.png') + ')',
+    backgroundRepeat: 'repeat',
+    width: '100%'
   },
   toolbar: {
     paddingRight: 24, // keep right padding when drawer closed
@@ -181,18 +183,16 @@ const Dashboard = ({ auth, logout }) => {
 
             <Grid container item xs={4} sm={4} justify='flex-end'>
               {auth.user !== null && (
-               
-                  <img
-                    src={auth.user.avatar}
-                    height={70}
-                    width={70}
-                    style={{
-                      margin: '10px',
-                      borderRadius: '50%',
-                      boxShadow: '0px 0px 22px -2px rgba(0,0,0,0.3)'
-                    }}
-                  />
-               
+                <img
+                  src={auth.user.avatar}
+                  height={70}
+                  width={70}
+                  style={{
+                    margin: '10px',
+                    borderRadius: '50%',
+                    boxShadow: '0px 0px 22px -2px rgba(0,0,0,0.3)'
+                  }}
+                />
               )}
             </Grid>
           </Grid>
@@ -236,6 +236,7 @@ const Dashboard = ({ auth, logout }) => {
             <Route exact path='/scan' component={Scan} />
             <Route exact path='/profile' component={Profile} />
             <Route exact path='/custom' component={Custom} />
+            <Route exact path='/guide' component={Guide} />
           </Container>
         </main>
       </HashRouter>
