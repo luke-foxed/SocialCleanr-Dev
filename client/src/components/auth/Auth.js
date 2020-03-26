@@ -27,27 +27,33 @@ import {
   VisibilityOff
 } from '@material-ui/icons';
 import { Redirect } from 'react-router-dom';
+import { MiniDivider } from '../layout/MiniDivider';
+import { IconHeader } from '../layout/IconHeader';
 
 const useStyles = makeStyles(theme => ({
   container: {
     height: '100vh',
     backgroundImage: 'url(' + require('../../assets/pattern.png') + ')',
-    backgroundRepeat: 'repeat',
-    padding: theme.spacing(10)
+    backgroundRepeat: 'repeat'
   },
   paper: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
+    '& p, h3, h4, h5, h6': {
+      fontFamily: 'Raleway'
+    }
   },
   authAction: {
     margin: theme.spacing(4)
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: colors.colorPurple,
+    backgroundColor: colors.colorDarkOrange,
     width: 80,
     height: 80
   },
@@ -56,15 +62,10 @@ const useStyles = makeStyles(theme => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
-    backgroundColor: colors.colorPurple,
+    backgroundColor: colors.colorDarkPink,
     '&:hover': {
-      background: 'rgb(110,72,167)'
+      background: colors.colorDarkPink
     }
-  },
-
-  authenticateButton: {
-    margin: theme.spacing(2),
-    backgroundColor: colors.colorLightPink
   },
   divider: {
     paddingBottom: theme.spacing(2),
@@ -128,25 +129,23 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
   return (
     <div className={classes.container}>
       <Container component='main' maxWidth='md'>
-        <Paper elevation={2} className={classes.paper}>
-          <CssBaseline />
-          <Avatar className={classes.avatar} style={{ marginTop: '20px' }}>
-            <VerifiedUser fontSize='large' />
-          </Avatar>
-          <Typography
-            component='h1'
-            variant='h3'
-            style={{ textTransform: 'uppercase', fontFamily: 'Raleway' }}>
-            {authAction}
-          </Typography>
-
-          <hr
-            className={classes.divider}
-            style={{ borderTop: '2px solid' + colors.colorPurple }}
+        <div style={{ textAlign: 'center' }}>
+          <img
+            src={require('../../assets/logo.png')}
+            width={250}
+            height={250}
           />
+        </div>
+        <Paper
+          elevation={4}
+          className={classes.paper}
+          style={{ backgroundColor: colors.colorPurple }}>
+          <IconHeader icon={VerifiedUser} text={authAction} subheader={false} />
+        </Paper>
 
+        <Paper elevation={4} className={classes.paper}>
           <Typography style={{ color: 'rgb(180,180,180)' }}>
-            Would you like to:{' '}
+            Would you like to:
           </Typography>
 
           <ButtonGroup size='large' className={classes.authAction}>
@@ -157,7 +156,7 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
               style={
                 authAction === 'login'
                   ? {
-                      backgroundColor: colors.colorBlue,
+                      backgroundColor: colors.colorPurple,
                       color: 'white',
                       width: '250px'
                     }
@@ -173,7 +172,7 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
               style={
                 authAction === 'register'
                   ? {
-                      backgroundColor: colors.colorDarkPink,
+                      backgroundColor: colors.colorPurple,
                       color: 'white',
                       width: '250px'
                     }
