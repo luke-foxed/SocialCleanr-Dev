@@ -6,8 +6,10 @@ import { MiniDivider } from './MiniDivider';
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    margin: theme.spacing(2),
-    padding: theme.spacing(2),
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'
