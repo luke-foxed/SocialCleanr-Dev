@@ -120,8 +120,6 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
     }
   ];
 
-  console.log(prevColor);
-
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} sm={4}>

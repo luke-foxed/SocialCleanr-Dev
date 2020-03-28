@@ -7,10 +7,10 @@ const config = require('config');
 const { check, validationResult } = require('express-validator');
 const User = require('../../models/User');
 
- /**
-  * @route    GET api/auth/
-  * @desc     Authenticates user and returns selected DB values
-  * @access   Private
+/**
+ * @route    GET api/auth/
+ * @desc     Authenticates user and returns selected DB values
+ * @access   Private
  */
 
 router.get('/', auth, async (req, res) => {
@@ -28,10 +28,10 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
- /**
-  * @route    POST api/auth-passport/login
-  * @desc     Finds matching user in DB and returns JWT on success
-  * @access   Public
+/**
+ * @route    POST api/auth-passport/login
+ * @desc     Finds matching user in DB and returns JWT on success
+ * @access   Public
  */
 
 router.post(
@@ -89,10 +89,10 @@ router.post(
   }
 );
 
- /**
-  * @route    POST api/auth-passport/register
-  * @desc     Creates new user and generates JWT on success
-  * @access   Public
+/**
+ * @route    POST api/auth-passport/register
+ * @desc     Creates new user and generates JWT on success
+ * @access   Public
  */
 
 router.post(
@@ -139,7 +139,18 @@ router.post(
         name,
         email,
         password,
-        avatar
+        avatar,
+        statistics: [
+          {
+            custom_scans: 0,
+            automated_scans: 0,
+            images_cleaned: 0,
+            flagged_text: 0,
+            flagged_age: 0,
+            flagged_clothing: 0,
+            flagged_gesture: 0
+          }
+        ]
       });
 
       const salt = await bcrypt.genSalt(10);

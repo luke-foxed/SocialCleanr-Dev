@@ -24,6 +24,8 @@ export const runCustomScan = (modelSelection, image) => async dispatch => {
 
     let parsedResults = cleanResults(response.data, image);
 
+    // add custom scan increment
+    parsedResults.count['custom_scans'] = 1;
     await axios.post('/api/user/write-statistics', parsedResults.count);
 
     dispatch(setAlert('Scan Complete', 'success'));
