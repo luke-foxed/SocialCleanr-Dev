@@ -36,6 +36,7 @@ import { connect } from 'react-redux';
 import { setAlert } from '../../../../actions/alert';
 import PropTypes from 'prop-types';
 import { IconHeader } from '../../../layout/IconHeader';
+import { isMobile } from 'react-device-detect';
 
 const StyledToggleButtonGroup = withStyles(theme => ({
   grouped: {
@@ -76,23 +77,29 @@ const useStyles = makeStyles(theme => ({
     textTransform: 'uppercase'
   },
   imageBox: {
-    margin: theme.spacing(2),
-    border: '4px solid' + colors.colorPurple
+    textAlign: 'center',
+    margin: theme.spacing(2)
   },
   image: {
-    padding: theme.spacing(1),
+    padding: '5px',
     height: 600,
-    width: '100%',
-    objectFit: 'cover'
+    width: '80%',
+    objectFit: 'cover',
+    border: '3px solid' + colors.colorPurple
   },
   toggleButtons: {
-    // FOR MOBILE
+    '& button': {
+      width: '140px',
+      transition: 'all .2s ease-in-out'
+    }
+  },
 
-    // display: 'flex',
-    // flexDirection: 'column',
-    // width: 250,
-    // alignItems: 'center',
-    // margin: '0 auto',
+  toggleButtonsMobile: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: 250,
+    alignItems: 'center',
+    margin: '0 auto',
     '& button': {
       width: '140px',
       transition: 'all .2s ease-in-out'
@@ -241,7 +248,9 @@ const Upload = ({ setAlert, runCustomScan }) => {
           <StyledToggleButtonGroup
             orientation='vertical'
             size='small'
-            className={classes.toggleButtons}
+            className={
+              isMobile ? classes.toggleButtonsMobile : classes.toggleButtons
+            }
             value={models}
             onChange={handleModelSelect}>
             <StyledToggleButton
