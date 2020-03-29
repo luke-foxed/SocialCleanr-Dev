@@ -333,7 +333,7 @@ const Upload = ({ setAlert, runCustomScan }) => {
                   color='primary'
                   size='medium'
                   style={{
-                    backgroundColor: colors.colorLightOrange,
+                    backgroundColor: colors.colorDarkPink,
                     margin: '5px',
                     width: '200px'
                   }}
