@@ -18,18 +18,19 @@ import {
 import { Image, ArrowForward, Chat } from '@material-ui/icons';
 import Lightbox from 'react-image-lightbox';
 import { IconHeader } from '../../../layout/IconHeader';
+import { isMobile } from 'react-device-detect';
 
 const modalStyle = {
   content: {
-    left: 100,
-    right: 100
+    left: isMobile ? 0 : 70,
+    right: isMobile ? 0 : 70
   }
 };
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    margin: theme.spacing(2),
-    padding: theme.spacing(4),
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'
@@ -73,15 +74,14 @@ const ProfileContent = ({ text, photos }) => {
 
   return (
     <div>
-      <Grid container spacing={1}>
+      <Grid container spacing={3}>
         <Grid item xs={12} sm={6}>
           <Paper elevation={2} className={classes.paper}>
             <IconHeader icon={Image} text='Photos' subheader={true} />
-
             <GridList
               cellHeight={200}
               cols={3}
-              style={{ height: 500, overflow: 'auto' }}>
+              style={{ height: 500, overflow: 'auto', width: '95%' }}>
               {photos.map((tile, index) => (
                 <GridListTile key={index} cols={1}>
                   <img
@@ -122,7 +122,8 @@ const ProfileContent = ({ text, photos }) => {
               style={{
                 textAlign: 'center',
                 height: 500,
-                overflow: 'auto'
+                overflow: 'auto',
+                width: '95%'
               }}>
               {text.map((tile, index) => (
                 <ListItem key={index} button onClick={() => showText(tile)}>

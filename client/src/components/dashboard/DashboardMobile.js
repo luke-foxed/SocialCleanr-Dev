@@ -11,8 +11,9 @@ import PropTypes from 'prop-types';
 import { logout } from '../../actions/auth';
 import 'react-image-lightbox/style.css';
 import Custom from './pages/Custom/Custom';
-import { List, makeStyles } from '@material-ui/core';
+import { List, makeStyles, Typography } from '@material-ui/core';
 import * as colors from '../../helpers/colors';
+import { MiniDivider } from '../layout/MiniDivider';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -32,7 +33,6 @@ const useStyles = makeStyles(theme => ({
 const DashboardMobile = ({ auth, logout }) => {
   const classes = useStyles();
   const [isOpen, setMenuOpen] = useState(false);
-  const [active, setActive] = useState(false);
 
   const burgerStyle = {
     bmBurgerButton: {
@@ -61,7 +61,7 @@ const DashboardMobile = ({ auth, logout }) => {
       left: 0
     },
     bmMenu: {
-      background: 'black',
+      background: '#333333',
       fontSize: '1.15em'
     },
     bmMorphShape: {
@@ -71,7 +71,7 @@ const DashboardMobile = ({ auth, logout }) => {
       color: '#b8b7ad'
     },
     bmItem: {
-      paddingTop: '60px',
+      margin: '0 auto',
       outline: 'none'
     },
     bmOverlay: {
@@ -87,6 +87,29 @@ const DashboardMobile = ({ auth, logout }) => {
     <div className={classes.root}>
       <HashRouter>
         <Menu styles={burgerStyle} isOpen={isOpen} onStateChange={handleMenu}>
+          {auth.user !== null && (
+            <div style={{ textAlign: 'center' }}>
+              <img
+                src={auth.user.avatar}
+                height={150}
+                width={150}
+                style={{
+                  padding: '12px',
+                  borderRadius: '50%'
+                }}
+              />
+
+              <Typography
+                variant='h4'
+                style={{
+                  fontFamily: 'Raleway',
+                  textTransform: 'uppercase'
+                }}>
+                {auth.user.name}
+              </Typography>
+            </div>
+          )}
+          <MiniDivider color={colors.colorPurple} />
           <List>
             <SidebarItems onLogoutClick={() => logout()} />
           </List>
