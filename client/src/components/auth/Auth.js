@@ -27,8 +27,9 @@ import {
   VisibilityOff
 } from '@material-ui/icons';
 import { Redirect } from 'react-router-dom';
-import { MiniDivider } from '../layout/MiniDivider';
 import { IconHeader } from '../layout/IconHeader';
+import { MiniDivider } from '../layout/MiniDivider';
+import { isMobile } from 'react-device-detect';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -48,8 +49,13 @@ const useStyles = makeStyles(theme => ({
       fontFamily: 'Raleway'
     }
   },
-  authAction: {
-    margin: theme.spacing(4)
+
+  authActionMobile: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: 250,
+    alignItems: 'center',
+    margin: '0 auto'
   },
   avatar: {
     margin: theme.spacing(1),
@@ -58,7 +64,7 @@ const useStyles = makeStyles(theme => ({
     height: 80
   },
   input: {
-    width: '300px'
+    width: '100%'
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
@@ -148,7 +154,11 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
             Would you like to:
           </Typography>
 
-          <ButtonGroup size='large' className={classes.authAction}>
+          <MiniDivider color={'#4a4a4a'} />
+
+          <ButtonGroup
+            size='large'
+            className={isMobile ? classes.authActionMobile : ''}>
             <Button
               onClick={toggleAuthAction}
               variant='outlined'
@@ -185,8 +195,8 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
           </ButtonGroup>
 
           {/* LOGIN */}
-          <Collapse in={authAction === 'login'}>
-            <FormGroup onSubmit={e => e.preventDefault()}>
+          <Collapse in={authAction === 'login'} style={{ width: '50%' }}>
+            <FormGroup fullWidth onSubmit={e => e.preventDefault()}>
               <TextField
                 className={classes.input}
                 margin='normal'
@@ -236,7 +246,7 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
           </Collapse>
 
           {/* REGISTER */}
-          <Collapse in={authAction === 'register'}>
+          <Collapse in={authAction === 'register'} style={{ width: '50%' }}>
             <FormGroup onSubmit={e => e.preventDefault()}>
               <TextField
                 className={classes.input}

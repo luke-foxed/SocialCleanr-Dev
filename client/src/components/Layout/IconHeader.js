@@ -17,7 +17,8 @@ const useStyles = makeStyles(theme => ({
 
   paperHeader: {
     fontFamily: 'Raleway',
-    textTransform: 'uppercase'
+    textTransform: 'uppercase',
+    textAlign: 'center'
   }
 }));
 
