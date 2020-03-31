@@ -4,8 +4,6 @@ import * as colors from '../../helpers/colors';
 import {
   ButtonGroup,
   Container,
-  CssBaseline,
-  Avatar,
   Typography,
   TextField,
   Button,
@@ -49,19 +47,12 @@ const useStyles = makeStyles(theme => ({
       fontFamily: 'Raleway'
     }
   },
-
   authActionMobile: {
     display: 'flex',
     flexDirection: 'column',
     width: 250,
     alignItems: 'center',
     margin: '0 auto'
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: colors.colorDarkOrange,
-    width: 80,
-    height: 80
   },
   input: {
     width: '100%'
@@ -72,11 +63,6 @@ const useStyles = makeStyles(theme => ({
     '&:hover': {
       background: colors.colorDarkPink
     }
-  },
-  divider: {
-    paddingBottom: theme.spacing(2),
-    width: '40px',
-    border: 0
   }
 }));
 

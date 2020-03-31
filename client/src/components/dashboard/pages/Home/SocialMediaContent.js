@@ -35,15 +35,6 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     alignItems: 'center'
   },
-  divider: {
-    paddingBottom: theme.spacing(2),
-    width: '40px',
-    border: 0
-  },
-  paperHeader: {
-    fontFamily: 'Raleway',
-    textTransform: 'uppercase'
-  },
 
   photoTile: {
     transition: 'all .1s ease-in-out',
