@@ -135,34 +135,45 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
             <MiniDivider color='white' />
           </div>
 
-          <svg viewBox='0 0 400 400' style={{ marginTop: '15px' }}>
-            <VictoryPie
-              height={400}
-              width={400}
-              colorScale={[colors.colorDarkPink, '#783664']}
-              animate={{
-                duration: 800,
-                easing: 'exp'
-              }}
+          {stats.automated_scans === 0 && stats.custom_scans === 0 ? (
+            <Typography
               style={{
-                labels: { fill: 'black' }
-              }}
-              labelRadius={180}
-              endAngle={angle}
-              padAngle={8}
-              innerRadius={90}
-              data={scanData}
-              events={events}
-              standalone={false}
-            />
-            <VictoryLabel
-              textAnchor='middle'
-              style={{ fontSize: 30, fill: colors.colorDarkPink }}
-              x={200}
-              y={200}
-              text={pieText.scanText}
-            />
-          </svg>
+                marginTop: 200,
+                color: 'grey',
+                textAlign: 'center'
+              }}>
+              No Scans Recorded!
+            </Typography>
+          ) : (
+            <svg viewBox='0 0 400 400' style={{ marginTop: '15px' }}>
+              <VictoryPie
+                height={400}
+                width={400}
+                colorScale={[colors.colorDarkPink, '#783664']}
+                animate={{
+                  duration: 800,
+                  easing: 'exp'
+                }}
+                style={{
+                  labels: { fill: 'black' }
+                }}
+                labelRadius={180}
+                endAngle={angle}
+                padAngle={8}
+                innerRadius={90}
+                data={scanData}
+                events={events}
+                standalone={false}
+              />
+              <VictoryLabel
+                textAnchor='middle'
+                style={{ fontSize: 30, fill: colors.colorDarkPink }}
+                x={200}
+                y={200}
+                text={pieText.scanText}
+              />
+            </svg>
+          )}
         </Paper>
       </Grid>
       <Grid item xs={12} sm={4}>
@@ -230,7 +241,8 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
             <Typography
               style={{
                 marginTop: 200,
-                color: 'grey'
+                color: 'grey',
+                textAlign: 'center'
               }}>
               Please Set An Active Social Media Profile First
             </Typography>
