@@ -20,12 +20,12 @@ import Profile from './pages/Profile/Profile';
 import Home from './pages/Home/Home';
 import Scan from './pages/Scan/Scan';
 import Guide from './pages/Guide/Guide';
+import CustomScan from './pages/CustomScan/CustomScan';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { logout } from '../../actions/auth';
 import * as colors from '../../helpers/colors';
 import 'react-image-lightbox/style.css';
-import Custom from './pages/Custom/Custom';
 import { MiniDivider } from '../layout/MiniDivider';
 
 const drawerWidth = 240;
@@ -71,10 +71,6 @@ const useStyles = makeStyles(theme => ({
   menuButtonHidden: {
     display: 'none'
   },
-  title: {
-    flexGrow: 1,
-    textTransform: 'uppercase'
-  },
   drawerPaper: {
     position: 'relative',
     whiteSpace: 'nowrap',
@@ -110,9 +106,6 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     overflow: 'auto',
     flexDirection: 'column'
-  },
-  fixedHeight: {
-    height: 240
   },
   centerIcon: {
     marginTop: '5px',
@@ -235,7 +228,7 @@ const Dashboard = ({ auth, logout }) => {
             <Route exact path='/' component={Home} />
             <Route exact path='/scan' component={Scan} />
             <Route exact path='/profile' component={Profile} />
-            <Route exact path='/custom' component={Custom} />
+            <Route exact path='/custom' component={CustomScan} />
             <Route exact path='/guide' component={Guide} />
           </Container>
         </main>

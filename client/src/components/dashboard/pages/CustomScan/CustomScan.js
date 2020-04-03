@@ -37,6 +37,7 @@ import { setAlert } from '../../../../actions/alert';
 import PropTypes from 'prop-types';
 import { IconHeader } from '../../../layout/IconHeader';
 import { isMobile } from 'react-device-detect';
+import { MiniDivider } from '../../../layout/MiniDivider';
 
 const StyledToggleButtonGroup = withStyles(theme => ({
   grouped: {
@@ -68,14 +69,6 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     alignItems: 'center'
   },
-  divider: {
-    width: '40px',
-    border: 0
-  },
-  paperHeader: {
-    fontFamily: 'Raleway',
-    textTransform: 'uppercase'
-  },
   imageBox: {
     textAlign: 'center',
     margin: theme.spacing(2)
@@ -93,7 +86,6 @@ const useStyles = makeStyles(theme => ({
       transition: 'all .2s ease-in-out'
     }
   },
-
   toggleButtonsMobile: {
     display: 'flex',
     flexDirection: 'column',
@@ -104,9 +96,6 @@ const useStyles = makeStyles(theme => ({
       width: '140px',
       transition: 'all .2s ease-in-out'
     }
-  },
-  progress: {
-    margin: '0 auto'
   },
   subtext: {
     color: '#4a4a4a',
@@ -208,10 +197,7 @@ const Upload = ({ setAlert, runCustomScan }) => {
           submit!
         </Typography>
 
-        <hr
-          className={classes.divider}
-          style={{ borderTop: '2px solid #4a4a4a', padding: '10px' }}
-        />
+        <MiniDivider color={'#4a4a4a'} />
 
         <input
           accept='image/*'
@@ -277,10 +263,7 @@ const Upload = ({ setAlert, runCustomScan }) => {
           </StyledToggleButtonGroup>
         </Container>
 
-        <hr
-          className={classes.divider}
-          style={{ borderTop: '2px solid #4a4a4a', padding: '10px' }}
-        />
+        <MiniDivider color={'#4a4a4a'} />
 
         <Button
           variant='contained'
@@ -317,10 +300,7 @@ const Upload = ({ setAlert, runCustomScan }) => {
                 resultsType={scanType}
               />
 
-              <hr
-                className={classes.divider}
-                style={{ borderTop: '2px solid #4a4a4a' }}
-              />
+              <MiniDivider color={'#4a4a4a'} />
 
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <Button

@@ -28,10 +28,6 @@ const useStyles = makeStyles(theme => ({
       fontFamily: 'Raleway'
     }
   },
-  divider: {
-    width: '40px',
-    border: 0
-  },
   paperHeader: {
     textTransform: 'uppercase'
   }
@@ -71,8 +67,11 @@ const Home = ({ user, profile }) => {
         <Paper elevation={2} className={classes.paper}>
           <Typography
             variant='h6'
-            className={classes.paperHeader}
-            style={{ display: 'flex' }}>
+            style={{
+              display: 'flex',
+              textAlign: 'center',
+              textTransform: 'uppercase'
+            }}>
             To View Your Social Media Content, Select A Social Media Profile
             From The 'Profile' Page!
           </Typography>

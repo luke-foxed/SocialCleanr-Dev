@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { logout } from '../../actions/auth';
 import 'react-image-lightbox/style.css';
-import Custom from './pages/Custom/Custom';
+import CustomScan from './pages/CustomScan/CustomScan';
 import { List, makeStyles, Typography } from '@material-ui/core';
 import * as colors from '../../helpers/colors';
 import { MiniDivider } from '../layout/MiniDivider';
@@ -20,7 +20,6 @@ const useStyles = makeStyles(theme => ({
     backgroundImage: 'url(' + require('../../assets/pattern.png') + ')',
     backgroundRepeat: 'repeat'
   },
-
   content: {
     flexGrow: 1
   },
@@ -121,7 +120,7 @@ const DashboardMobile = ({ auth, logout }) => {
             <Route exact path='/' component={Home} />
             <Route exact path='/scan' component={Scan} />
             <Route exact path='/profile' component={Profile} />
-            <Route exact path='/custom' component={Custom} />
+            <Route exact path='/custom' component={CustomScan} />
             <Route exact path='/guide' component={Guide} />
           </div>
         </main>

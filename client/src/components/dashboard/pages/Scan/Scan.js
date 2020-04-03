@@ -67,9 +67,6 @@ const useStyles = makeStyles(theme => ({
       fontFamily: 'Raleway'
     }
   },
-  paperHeader: {
-    textTransform: 'uppercase'
-  },
   infoGrid: {
     width: '40%'
   },
@@ -284,8 +281,11 @@ const Scan = ({ user, profile, runAutomatedScan }) => {
         <Paper elevation={2} className={classes.paper}>
           <Typography
             variant='h6'
-            className={classes.paperHeader}
-            style={{ display: 'flex' }}>
+            style={{
+              display: 'flex',
+              textAlign: 'center',
+              textTransform: 'uppercase'
+            }}>
             To Start Scanning, Select A Social Media Profile From The 'Profile'
             Page!
           </Typography>

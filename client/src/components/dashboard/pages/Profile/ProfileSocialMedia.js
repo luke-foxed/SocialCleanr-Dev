@@ -29,11 +29,6 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     alignItems: 'center'
   },
-
-  paperHeader: {
-    fontFamily: 'Raleway',
-    textTransform: 'uppercase'
-  },
   authenticatedText: {
     fontFamily: 'Raleway',
     textTransform: 'uppercase',
