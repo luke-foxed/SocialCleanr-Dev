@@ -44,8 +44,8 @@ const loadModels = async () => {
     console.log('\nMODELS ALREADY LOADED\n');
   } else {
     maleClothingModel = await tfImage.load(
-      modelPaths.maleModel.model,
-      modelPaths.maleModel.metadata
+      modelPaths.maleModelOld.model,
+      modelPaths.maleModelOld.metadata
     );
 
     console.log('\nLoaded Male Model...\n');

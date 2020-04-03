@@ -4,6 +4,12 @@ const validAccount = {
   password: '!iubdfiubeDD22'
 };
 
+const validAccount2 = {
+  name: 'Luke Doe',
+  email: 'luke@doe.com',
+  password: '!iubdfiubeDD22'
+};
+
 const duplicateEmailAccount = {
   name: 'John Doe',
   email: 'jane@doe.com',
@@ -26,6 +32,7 @@ const weakPasswordAccount = {
 
 module.exports = {
   validAccount,
+  validAccount2,
   duplicateEmailAccount,
   failAllAccount,
   weakPasswordAccount

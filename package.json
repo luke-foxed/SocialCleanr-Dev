@@ -8,7 +8,7 @@
     "server": "nodemon server",
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "test": "mocha --timeout 10000"
+    "test": "mocha --timeout 180000"
   },
   "repository": {
     "type": "git",

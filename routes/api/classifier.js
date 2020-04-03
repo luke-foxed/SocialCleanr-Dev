@@ -7,11 +7,10 @@ const helpers = require('../../helpers/generalHelpers');
 const User = require('../../models/User');
 require('@tensorflow/tfjs-node');
 
-
- /**
-  * @route    POST api/classifier/get-image
-  * @desc     Fetches image and returns base64 string. Needed due CORS errors on frontend
-  * @access   Public
+/**
+ * @route    POST api/classifier/get-image
+ * @desc     Fetches image and returns base64 string. Needed due CORS errors on frontend
+ * @access   Public
  */
 
 router.post('/get-image', async (req, res) => {
@@ -23,10 +22,10 @@ router.post('/get-image', async (req, res) => {
   res.end(base64);
 });
 
- /**
-  * @route    POST api/classifier/custom-scan
-  * @desc     Carry out scanning of content using selected models
-  * @access   Private
+/**
+ * @route    POST api/classifier/custom-scan
+ * @desc     Carry out scanning of content using selected models
+ * @access   Private
  */
 
 router.post('/custom-scan', auth, async (req, res) => {
@@ -75,10 +74,10 @@ router.post('/custom-scan', auth, async (req, res) => {
   }
 });
 
- /**
-  * @route    POST api/classifier/automated-scan
-  * @desc     Carry out automated scanning of content using all models
-  * @access   Private
+/**
+ * @route    POST api/classifier/automated-scan
+ * @desc     Carry out automated scanning of content using all models
+ * @access   Private
  */
 
 router.post('/automated-scan', async (req, res) => {

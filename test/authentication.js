@@ -2,7 +2,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../server');
 const should = chai.should();
-const dummyAccounts = require('./dummyAccounts');
+const dummyAccounts = require('./testHelpers/dummyAccounts');
 chai.use(chaiHttp);
 
 // store token for deletion
