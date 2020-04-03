@@ -65,7 +65,7 @@ describe('Text Detection', () => {
       });
   });
 
-  it.only('Should detect offensive words in a string', done => {
+  it('Should detect offensive words in a string', done => {
     chai
       .request(server)
       .post('/api/classifier/custom-scan')
