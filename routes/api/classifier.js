@@ -33,32 +33,40 @@ router.post('/custom-scan', auth, async (req, res) => {
     await classification.loadModels();
     let results = {};
     let gestureResults = (ageResults = clothingResults = textResults = []);
-    let selection = req.body.models;
 
-    await helpers.asyncForEach(selection, async model => {
-      switch (model) {
-        case 'age':
-          console.log('\nSELECTED AGE\n');
-          ageResults = await classification.detectMultipleAgeGender(
-            req.body.image
-          );
-          break;
-        case 'text':
-          console.log('\nSELECTED TEXT\n');
-          textResults = await classification.detectTextFromImage(
-            req.body.image
-          );
-          break;
-        case 'clothing':
-          console.log('\nSELECTED CLOTHING\n');
-          clothingResults = await classification.detectClothing(req.body.image);
-          break;
-        case 'gestures':
-          console.log('\nSELECTED GESTURE\n');
-          gestureResults = await classification.detectGesture(req.body.image);
-          break;
-      }
-    });
+    if (req.body.type === 'image') {
+      let selection = req.body.models;
+
+      await helpers.asyncForEach(selection, async model => {
+        switch (model) {
+          case 'age':
+            console.log('\nSELECTED AGE\n');
+            ageResults = await classification.detectMultipleAgeGender(
+              req.body.image
+            );
+            break;
+          case 'text':
+            console.log('\nSELECTED TEXT\n');
+            textResults = await classification.detectTextFromImage(
+              req.body.image
+            );
+            break;
+          case 'clothing':
+            console.log('\nSELECTED CLOTHING\n');
+            clothingResults = await classification.detectClothing(
+              req.body.image
+            );
+            break;
+          case 'gestures':
+            console.log('\nSELECTED GESTURE\n');
+            gestureResults = await classification.detectGesture(req.body.image);
+            break;
+        }
+      });
+    } else if (req.body.type === 'text') {
+      console.log('\nSELECTED TEXT (STRING)\n');
+      textResults = await classification.detectText(req.body.data);
+    }
 
     results.people = clothingResults.people || [];
     results.gestures = gestureResults.gestures || [];
