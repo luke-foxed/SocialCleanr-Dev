@@ -74,6 +74,34 @@ describe('Registration', () => {
         done();
       });
   });
+});
+
+describe('Login', () => {
+  it('Should log in to an existing account', done => {
+    let { email, password } = dummyAccounts.validAccount;
+    chai
+      .request(server)
+      .post('/api/auth/login')
+      .send({ email, password })
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('string');
+        done();
+      });
+  });
+
+  it('Should reject an invalid login attempt', done => {
+    chai
+      .request(server)
+      .post('/api/auth/login')
+      .send({ email: 'test@test.com', password: 'ddada' })
+      .end((err, res) => {
+        res.should.have.status(400);
+        res.body.should.be.a('object');
+        res.body.errors[0].msg.should.equal('Invalid Credentials');
+        done();
+      });
+  });
 
   it('Should delete an account', done => {
     chai
