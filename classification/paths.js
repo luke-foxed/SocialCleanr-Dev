@@ -1,23 +1,30 @@
 const maleModel = {
   metadata:
     'https://teachablemachine.withgoogle.com/models/Vsxm6TmFf/metadata.json',
-  model: 'https://teachablemachine.withgoogle.com/models/Vsxm6TmFf/model.json'
+  model: 'https://teachablemachine.withgoogle.com/models/Vsxm6TmFf/model.json',
 };
 
 const maleModelOld = {
   metadata:
     'https://teachablemachine.withgoogle.com/models/_LEWFdms/metadata.json',
-  model: 'https://teachablemachine.withgoogle.com/models/_LEWFdms/model.json'
+  model: 'https://teachablemachine.withgoogle.com/models/_LEWFdms/model.json',
 };
+
+// const femaleModel = {
+//   metadata:
+//     'https://teachablemachine.withgoogle.com/models/Ls1hpvG4a/metadata.json',
+//   model: 'https://teachablemachine.withgoogle.com/models/Ls1hpvG4a/model.json',
+// };
 
 const femaleModel = {
   metadata:
     'https://teachablemachine.withgoogle.com/models/aWzTCdCP/metadata.json',
-  model: 'https://teachablemachine.withgoogle.com/models/aWzTCdCP/model.json'
+  model: 'https://teachablemachine.withgoogle.com/models/aWzTCdCP/model.json',
 };
 
 module.exports = {
   maleModel,
   maleModelOld,
-  femaleModel
+  femaleModel,
+  // femaleModelOld,
 };
