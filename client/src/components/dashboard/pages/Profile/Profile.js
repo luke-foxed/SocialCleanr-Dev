@@ -6,7 +6,7 @@ import {
   makeStyles,
   Grid,
   Button,
-  IconButton
+  IconButton,
 } from '@material-ui/core';
 import {
   Face,
@@ -14,7 +14,8 @@ import {
   Today,
   Edit,
   Lock,
-  DeleteForever
+  DeleteForever,
+  VideogameAsset,
 } from '@material-ui/icons';
 import * as colors from '../../../../helpers/colors';
 import { connect } from 'react-redux';
@@ -24,8 +25,9 @@ import { IconHeader } from '../../../layout/IconHeader';
 import { ProfileSocialMedia } from './ProfileSocialMedia';
 import { MiniDivider } from '../../../layout/MiniDivider';
 import EditDialog from './EditDialog';
+import { toggleGamification } from '../../../../actions/user';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
@@ -36,8 +38,8 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
 
     '& p, h3, h4, h5, h6': {
-      fontFamily: 'Raleway'
-    }
+      fontFamily: 'Raleway',
+    },
   },
   avatarFrame: {
     width: 210,
@@ -48,32 +50,38 @@ const useStyles = makeStyles(theme => ({
     display: ' flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   avatar: {
     padding: '10px',
     borderRadius: '50%',
     width: 190,
     height: 190,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
   name: {
     textTransform: 'uppercase',
-    padding: '10px'
+    padding: '10px',
   },
   gridCell: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
-  }
+    alignItems: 'center',
+  },
 }));
 
-const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
+const Profile = ({
+  user,
+  removeSite,
+  profile,
+  getSocialMediaProfile,
+  toggleGamification,
+}) => {
   const classes = useStyles();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogType, setDialogType] = useState('');
 
-  const handleOpenDialog = dialogType => {
+  const handleOpenDialog = (dialogType) => {
     setDialogType(dialogType);
     setDialogOpen(true);
   };
@@ -88,7 +96,7 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
         elevation={4}
         className={classes.paper}
         style={{
-          background: colors.colorDarkOrange
+          background: colors.colorDarkOrange,
         }}>
         <IconHeader icon={Face} text='Profile' subheader={false} />
       </Paper>
@@ -181,12 +189,13 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
         <MiniDivider color={'#4a4a4a'} />
 
         <Button
+          variant='contained'
           size='large'
           onClick={() => handleOpenDialog('avatar')}
           style={{
             backgroundColor: colors.colorDarkPink,
             width: 220,
-            color: 'white'
+            color: 'white',
           }}>
           Change Avatar
         </Button>
@@ -204,11 +213,60 @@ const Profile = ({ user, removeSite, profile, getSocialMediaProfile }) => {
         </Button>
       </Paper>
 
+      <Paper elevation={2} className={classes.paper}>
+        <IconHeader
+          icon={VideogameAsset}
+          text='Gamification'
+          subheader={true}
+        />
+
+        <Typography style={{ width: '70%', textAlign: 'center' }}>
+          SocialCleanr's Gamification System allows for your profile to be
+          'scored' based off the results of your automated scans. Flagged
+          content <b>will be stored</b> after each scan and will contribute to
+          your profile score. This will also enable notification reminders to
+          action this stored flagged content.
+          <br /> <br />
+          This option can be disabled at any time. When done so, any stored
+          images/posts will be deleted from the database.
+        </Typography>
+
+        <br />
+
+        <Button
+          disabled={user.is_gamification_enabled}
+          variant='contained'
+          size='large'
+          onClick={() => toggleGamification(true)}
+          style={
+            user.is_gamification_enabled
+              ? { backgroundColor: '#c8c8c8', color: '#8a8a8a' }
+              : { backgroundColor: colors.colorDarkPink, color: 'white' }
+          }>
+          Enable
+        </Button>
+
+        <br />
+
+        <Button
+          disabled={!user.is_gamification_enabled}
+          variant='contained'
+          size='large'
+          onClick={() => toggleGamification(false)}
+          style={
+            !user.is_gamification_enabled
+              ? { backgroundColor: '#c8c8c8', color: '#8a8a8a' }
+              : { backgroundColor: colors.colorDarkPink, color: 'white' }
+          }>
+          Disable
+        </Button>
+      </Paper>
+
       <ProfileSocialMedia
         user={user}
         profile={profile}
-        onRemoveClick={website => removeSite(website)}
-        onSetActiveClick={website => getSocialMediaProfile(website)}
+        onRemoveClick={(website) => removeSite(website)}
+        onSetActiveClick={(website) => getSocialMediaProfile(website)}
       />
 
       <EditDialog
@@ -225,14 +283,17 @@ Profile.propTypes = {
   user: PropTypes.object.isRequired,
   profile: PropTypes.object.isRequired,
   removeSite: PropTypes.func.isRequired,
-  getSocialMediaProfile: PropTypes.func.isRequired
+  getSocialMediaProfile: PropTypes.func.isRequired,
+  toggleGamification: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   user: state.auth.user,
-  profile: state.profile
+  profile: state.profile,
 });
 
-export default connect(mapStateToProps, { removeSite, getSocialMediaProfile })(
-  Profile
-);
+export default connect(mapStateToProps, {
+  removeSite,
+  getSocialMediaProfile,
+  toggleGamification,
+})(Profile);

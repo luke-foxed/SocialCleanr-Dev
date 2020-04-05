@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { setAlert } from './alert';
-import { logout } from './auth';
+import { logout, loadUser } from './auth';
 
 /**
  * Update User's account info
@@ -13,7 +13,7 @@ import { logout } from './auth';
 export const updateUser = (
   { email, current_password, password, avatar },
   updateType
-) => async dispatch => {
+) => async (dispatch) => {
   const endPoint =
     updateType === 'password'
       ? '/api/user/update-password'
@@ -21,8 +21,8 @@ export const updateUser = (
 
   const config = {
     headers: {
-      'Content-Type': 'application/json'
-    }
+      'Content-Type': 'application/json',
+    },
   };
 
   const body = JSON.stringify({
@@ -30,7 +30,7 @@ export const updateUser = (
     current_password,
     password,
     avatar,
-    updateType
+    updateType,
   });
 
   try {
@@ -43,9 +43,29 @@ export const updateUser = (
     console.log(err);
     const errors = err.response.data.errors;
     if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'error')));
+      errors.forEach((error) => dispatch(setAlert(error.msg, 'error')));
     } else {
       dispatch(setAlert(err.response.data.msg, 'error'));
+    }
+  }
+};
+
+/**
+ * Toggle gamification system
+ * @param {boolean} toggle - Enable/Disable system
+ */
+
+export const toggleGamification = (toggle) => async (dispatch) => {
+  try {
+    await axios.post('/api/user/game', { enabled: toggle });
+    dispatch(setAlert('Done!', 'success'));
+    await dispatch(loadUser());
+  } catch (err) {
+    console.log(err);
+    const errors = err.response.data.errors;
+    if (errors) {
+      console.log(err);
+      errors.forEach((error) => dispatch(setAlert(error.msg, 'warning')));
     }
   }
 };
@@ -54,7 +74,7 @@ export const updateUser = (
  * Delete User
  */
 
-export const deleteUser = () => async dispatch => {
+export const deleteUser = () => async (dispatch) => {
   try {
     const res = await axios.delete('/api/user/delete');
     if (res.status === 200) {

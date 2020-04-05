@@ -11,7 +11,9 @@ import { loadUser } from './auth';
  * @returns {array} A list of each flagged item
  */
 
-export const runAutomatedScan = (type, data) => async dispatch => {
+export const runAutomatedScan = (type, data, storeResults) => async (
+  dispatch
+) => {
   try {
     let results = [];
     let count = [];
@@ -22,17 +24,18 @@ export const runAutomatedScan = (type, data) => async dispatch => {
       flagged_clothing: 0,
       flagged_gesture: 0,
       flagged_age: 0,
-      automated_scans: 1
+      automated_scans: 1,
     };
 
-    await asyncForEach(data, async content => {
+    await asyncForEach(data, async (content) => {
       let response = await axios({
         method: 'post',
         url: '/api/classifier/automated-scan',
         data: {
           type: type,
-          data: content
-        }
+          data: content,
+          store: storeResults,
+        },
       });
 
       let filteredResults = cleanResults(response.data, content);
@@ -44,7 +47,7 @@ export const runAutomatedScan = (type, data) => async dispatch => {
     const countFlattened = [].concat.apply([], count);
 
     // add each count for every scan together
-    countFlattened.forEach(count => {
+    countFlattened.forEach((count) => {
       for (let [key, val] of Object.entries(count)) {
         totalCount[key] += val;
       }
@@ -68,13 +71,13 @@ export const runAutomatedScan = (type, data) => async dispatch => {
  * @returns {string} Base64 version of image
  */
 
-export const getImageAsBase64 = async image => {
+export const getImageAsBase64 = async (image) => {
   let response = await axios({
     method: 'post',
     url: '/api/classifier/get-image',
     data: {
-      image: image
-    }
+      image: image,
+    },
   });
   // add header to image
   let base64 = 'data:image/jpeg;base64,' + response.data.toString();

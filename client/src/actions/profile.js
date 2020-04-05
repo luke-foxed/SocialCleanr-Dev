@@ -4,7 +4,7 @@ import { loadUser } from './auth';
 import { PROFILE_ERROR, GET_PROFILE } from '../actions/types';
 import {
   parseFacebookResults,
-  parseTwitterResults
+  parseTwitterResults,
 } from '../helpers/profilePageHelpers';
 
 /**
@@ -12,7 +12,7 @@ import {
  * @param {string} website - Name of site to remove from DB (facebook/twitter)
  */
 
-export const removeSite = website => async dispatch => {
+export const removeSite = (website) => async (dispatch) => {
   try {
     await axios.post('/api/passport-auth/remove-site', { site: website });
     dispatch(setAlert('Done!', 'success'));
@@ -21,7 +21,7 @@ export const removeSite = website => async dispatch => {
     const errors = err.response.data.errors;
     if (errors) {
       console.log(err);
-      errors.forEach(error => dispatch(setAlert(error.msg, 'warning')));
+      errors.forEach((error) => dispatch(setAlert(error.msg, 'warning')));
     }
   }
 };
@@ -32,11 +32,9 @@ export const removeSite = website => async dispatch => {
  * @returns {array} A list of User's photos and posts
  */
 
-export const getSocialMediaProfile = website => async dispatch => {
+export const getSocialMediaProfile = (website) => async (dispatch) => {
   let cleanedResponse = null;
   try {
-    
-  
     const res = await axios.get(`/api/passport-auth/my-${website}`);
 
     if (website === 'facebook') {
@@ -47,7 +45,7 @@ export const getSocialMediaProfile = website => async dispatch => {
 
     dispatch({
       type: GET_PROFILE,
-      payload: cleanedResponse
+      payload: cleanedResponse,
     });
 
     dispatch(
@@ -65,7 +63,7 @@ export const getSocialMediaProfile = website => async dispatch => {
 
     dispatch({
       type: PROFILE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: { msg: err.response.statusText, status: err.response.status },
     });
   }
 };

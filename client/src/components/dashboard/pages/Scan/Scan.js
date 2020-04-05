@@ -8,7 +8,7 @@ import {
   Button,
   withStyles,
   Backdrop,
-  CircularProgress
+  CircularProgress,
 } from '@material-ui/core';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
@@ -20,7 +20,7 @@ import {
   TextFormat,
   Image,
   Assessment,
-  CheckCircle
+  CheckCircle,
 } from '@material-ui/icons';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -29,32 +29,32 @@ import { useState } from 'react';
 import { ResultsTable } from '../../../layout/ResultsTable';
 import {
   drawBlurringBoxURL,
-  drawBoundingBoxURL
+  drawBoundingBoxURL,
 } from '../../../../helpers/classificationHelper';
 import { IconHeader } from '../../../layout/IconHeader';
 import { MiniDivider } from '../../../layout/MiniDivider';
 
-const StyledToggleButtonGroup = withStyles(theme => ({
+const StyledToggleButtonGroup = withStyles((theme) => ({
   grouped: {
     margin: theme.spacing(0.5),
     border: 'none',
-    padding: theme.spacing(0, 1)
-  }
+    padding: theme.spacing(0, 1),
+  },
 }))(ToggleButtonGroup);
 
 const StyledToggleButton = withStyles({
   root: {
     '&$selected': {
       backgroundColor: colors.colorPurple,
-      color: 'white'
-    }
+      color: 'white',
+    },
   },
   selected: {
-    color: 'white'
-  }
+    color: 'white',
+  },
 })(ToggleButton);
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
@@ -64,46 +64,46 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     alignItems: 'center',
     '& p, h3, h4, h5, h6': {
-      fontFamily: 'Raleway'
-    }
+      fontFamily: 'Raleway',
+    },
   },
   infoGrid: {
-    width: '40%'
+    width: '40%',
   },
   infoTextHeader: {
-    color: '#808080'
+    color: '#808080',
   },
   infoText: {
     textTransform: 'uppercase',
     color: colors.colorDarkPink,
     fontSize: '18px',
     paddingBottom: '15px',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   toggleButtons: {
     margin: '10px',
     '& button': {
       width: '140px',
-      transition: 'all .2s ease-in-out'
-    }
+      transition: 'all .2s ease-in-out',
+    },
   },
   imageBox: {
     margin: theme.spacing(2),
-    border: '4px solid' + colors.colorPurple
+    border: '4px solid' + colors.colorPurple,
   },
   image: {
     padding: theme.spacing(1),
     height: 600,
     width: '100%',
-    objectFit: 'cover'
+    objectFit: 'cover',
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
-  }
+    alignItems: 'center',
+  },
 }));
 
 const Scan = ({ user, profile, runAutomatedScan }) => {
@@ -115,6 +115,7 @@ const Scan = ({ user, profile, runAutomatedScan }) => {
   const [spinnerVisible, setSpinnerVisible] = useState(false);
 
   const { photos, text } = profile;
+  const storeResults = user.is_gamification_enabled;
 
   // time per image + model loading time
   const estimatedTime =
@@ -125,7 +126,8 @@ const Scan = ({ user, profile, runAutomatedScan }) => {
     setSpinnerVisible(true);
     let clean = await runAutomatedScan(
       scanType,
-      scanType === 'photos' ? photos : text
+      scanType === 'photos' ? photos : text,
+      storeResults
     );
     setFlaggedContent(clean);
     setResultsLoaded(true);
@@ -154,7 +156,7 @@ const Scan = ({ user, profile, runAutomatedScan }) => {
         elevation={4}
         className={classes.paper}
         style={{
-          background: colors.colorDarkOrange
+          background: colors.colorDarkOrange,
         }}>
         <IconHeader icon={ImageSearch} text='New Scan' subheader={false} />
       </Paper>
@@ -284,7 +286,7 @@ const Scan = ({ user, profile, runAutomatedScan }) => {
             style={{
               display: 'flex',
               textAlign: 'center',
-              textTransform: 'uppercase'
+              textTransform: 'uppercase',
             }}>
             To Start Scanning, Select A Social Media Profile From The 'Profile'
             Page!
@@ -315,12 +317,12 @@ const Scan = ({ user, profile, runAutomatedScan }) => {
 Scan.propTypes = {
   user: PropTypes.object.isRequired,
   profile: PropTypes.object.isRequired,
-  runAutomatedScan: PropTypes.func.isRequired
+  runAutomatedScan: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   user: state.auth.user,
-  profile: state.profile
+  profile: state.profile,
 });
 
 export default connect(mapStateToProps, { runAutomatedScan })(Scan);

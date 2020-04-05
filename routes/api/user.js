@@ -5,11 +5,33 @@ const auth = require('../../middleware/auth');
 const { check, validationResult, oneOf } = require('express-validator');
 const User = require('../../models/User');
 
+/**
+ * @route    POST api/user/update-basic
+ * @desc     Update either user's email or avatar
+ * @access   Private
+ */
 
- /**
-  * @route    POST api/user/update-basic
-  * @desc     Update either user's email or avatar
-  * @access   Private
+router.post('/game', auth, async (req, res) => {
+  try {
+    let user = await User.findById(req.user.id);
+    let toggle = req.body.enabled;
+    await user.update({
+      $set: {
+        is_gamification_enabled: toggle,
+      },
+    });
+
+    res.status(200).json({ msg: 'Gamification updated' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: 'Update Error' });
+  }
+});
+
+/**
+ * @route    POST api/user/update-basic
+ * @desc     Update either user's email or avatar
+ * @access   Private
  */
 
 router.post(
@@ -17,14 +39,10 @@ router.post(
   auth,
   [
     oneOf([
-      check('email')
-        .isEmail()
-        .withMessage('Please enter a valid email'),
+      check('email').isEmail().withMessage('Please enter a valid email'),
 
-      check('avatar')
-        .isURL()
-        .withMessage('Avatar must be a valid URL')
-    ])
+      check('avatar').isURL().withMessage('Avatar must be a valid URL'),
+    ]),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -45,21 +63,21 @@ router.post(
 
       if (!user) {
         return res.status(400).json({
-          errors: [{ msg: 'No user found' }]
+          errors: [{ msg: 'No user found' }],
         });
       }
 
       if (req.body.updateType === 'email') {
         await user.update({
           $set: {
-            email: email
-          }
+            email: email,
+          },
         });
       } else if (req.body.updateType === 'avatar') {
         await user.update({
           $set: {
-            avatar: avatar
-          }
+            avatar: avatar,
+          },
         });
       }
       res.status(200).json({ msg: 'Account Updated' });
@@ -69,10 +87,10 @@ router.post(
   }
 );
 
- /**
-  * @route    POST api/user/update-password
-  * @desc     Update user password
-  * @access   Private
+/**
+ * @route    POST api/user/update-password
+ * @desc     Update user password
+ * @access   Private
  */
 
 router.post(
@@ -86,7 +104,7 @@ router.post(
     check(
       'password',
       'Password must contain at least one letter, special character and number'
-    ).matches(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{0,}$/)
+    ).matches(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{0,}$/),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -102,7 +120,7 @@ router.post(
       const isMatch = await bcrypt.compare(current_password, user.password);
       if (!isMatch) {
         return res.status(400).json({
-          errors: [{ msg: 'Current Password Is Incorrect' }]
+          errors: [{ msg: 'Current Password Is Incorrect' }],
         });
       }
 
@@ -111,8 +129,8 @@ router.post(
 
       await user.update({
         $set: {
-          password: newPassword
-        }
+          password: newPassword,
+        },
       });
 
       res.status(200).json({ msg: 'Password Updated' });
@@ -123,10 +141,10 @@ router.post(
   }
 );
 
- /**
-  * @route    DELETE api/user/delete
-  * @desc     Delete user from DB
-  * @access   Private
+/**
+ * @route    DELETE api/user/delete
+ * @desc     Delete user from DB
+ * @access   Private
  */
 
 router.delete('/delete', auth, async (req, res) => {
@@ -139,10 +157,10 @@ router.delete('/delete', auth, async (req, res) => {
   }
 });
 
- /**
-  * @route    POST api/user/write-statistics
-  * @desc     Write various usage stats to DB
-  * @access   Private
+/**
+ * @route    POST api/user/write-statistics
+ * @desc     Write various usage stats to DB
+ * @access   Private
  */
 
 router.post('/write-statistics', auth, async (req, res) => {
@@ -158,8 +176,8 @@ router.post('/write-statistics', auth, async (req, res) => {
         'statistics.0.flagged_clothing': count['flagged_clothing'] || 0,
         'statistics.0.automated_scans': count['automated_scans'] || 0,
         'statistics.0.custom_scans': count['custom_scans'] || 0,
-        'statistics.0.images_cleaned': count['images_cleaned'] || 0
-      }
+        'statistics.0.images_cleaned': count['images_cleaned'] || 0,
+      },
     });
 
     res.status(200).json({ msg: 'Stats written to DB' });
