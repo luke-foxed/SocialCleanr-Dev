@@ -7,11 +7,10 @@ const helpers = require('../../helpers/generalHelpers');
 const User = require('../../models/User');
 require('@tensorflow/tfjs-node');
 
-
- /**
-  * @route    POST api/classifier/get-image
-  * @desc     Fetches image and returns base64 string. Needed due CORS errors on frontend
-  * @access   Public
+/**
+ * @route    POST api/classifier/get-image
+ * @desc     Fetches image and returns base64 string. Needed due CORS errors on frontend
+ * @access   Public
  */
 
 router.post('/get-image', async (req, res) => {
@@ -23,10 +22,10 @@ router.post('/get-image', async (req, res) => {
   res.end(base64);
 });
 
- /**
-  * @route    POST api/classifier/custom-scan
-  * @desc     Carry out scanning of content using selected models
-  * @access   Private
+/**
+ * @route    POST api/classifier/custom-scan
+ * @desc     Carry out scanning of content using selected models
+ * @access   Private
  */
 
 router.post('/custom-scan', auth, async (req, res) => {
@@ -34,32 +33,40 @@ router.post('/custom-scan', auth, async (req, res) => {
     await classification.loadModels();
     let results = {};
     let gestureResults = (ageResults = clothingResults = textResults = []);
-    let selection = req.body.models;
 
-    await helpers.asyncForEach(selection, async model => {
-      switch (model) {
-        case 'age':
-          console.log('\nSELECTED AGE\n');
-          ageResults = await classification.detectMultipleAgeGender(
-            req.body.image
-          );
-          break;
-        case 'text':
-          console.log('\nSELECTED TEXT\n');
-          textResults = await classification.detectTextFromImage(
-            req.body.image
-          );
-          break;
-        case 'clothing':
-          console.log('\nSELECTED CLOTHING\n');
-          clothingResults = await classification.detectClothing(req.body.image);
-          break;
-        case 'gestures':
-          console.log('\nSELECTED GESTURE\n');
-          gestureResults = await classification.detectGesture(req.body.image);
-          break;
-      }
-    });
+    if (req.body.type === 'image') {
+      let selection = req.body.models;
+
+      await helpers.asyncForEach(selection, async model => {
+        switch (model) {
+          case 'age':
+            console.log('\nSELECTED AGE\n');
+            ageResults = await classification.detectMultipleAgeGender(
+              req.body.image
+            );
+            break;
+          case 'text':
+            console.log('\nSELECTED TEXT\n');
+            textResults = await classification.detectTextFromImage(
+              req.body.image
+            );
+            break;
+          case 'clothing':
+            console.log('\nSELECTED CLOTHING\n');
+            clothingResults = await classification.detectClothing(
+              req.body.image
+            );
+            break;
+          case 'gestures':
+            console.log('\nSELECTED GESTURE\n');
+            gestureResults = await classification.detectGesture(req.body.image);
+            break;
+        }
+      });
+    } else if (req.body.type === 'text') {
+      console.log('\nSELECTED TEXT (STRING)\n');
+      textResults = await classification.detectText(req.body.data);
+    }
 
     results.people = clothingResults.people || [];
     results.gestures = gestureResults.gestures || [];
@@ -75,10 +82,10 @@ router.post('/custom-scan', auth, async (req, res) => {
   }
 });
 
- /**
-  * @route    POST api/classifier/automated-scan
-  * @desc     Carry out automated scanning of content using all models
-  * @access   Private
+/**
+ * @route    POST api/classifier/automated-scan
+ * @desc     Carry out automated scanning of content using all models
+ * @access   Private
  */
 
 router.post('/automated-scan', async (req, res) => {

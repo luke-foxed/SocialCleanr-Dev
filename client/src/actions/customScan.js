@@ -18,7 +18,8 @@ export const runCustomScan = (modelSelection, image) => async dispatch => {
       url: '/api/classifier/custom-scan',
       data: {
         image: image,
-        models: modelSelection
+        models: modelSelection,
+        type: 'image'
       }
     });
 
