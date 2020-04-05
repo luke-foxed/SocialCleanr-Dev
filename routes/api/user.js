@@ -167,22 +167,36 @@ router.post('/write-statistics', auth, async (req, res) => {
   try {
     let count = req.body;
 
-    // update whichever value is passed from requestg
-    await User.findByIdAndUpdate(req.user.id, {
-      $inc: {
-        'statistics.0.flagged_text': count['flagged_text'] || 0,
-        'statistics.0.flagged_age': count['flagged_age'] || 0,
-        'statistics.0.flagged_gesture': count['flagged_gesture'] || 0,
-        'statistics.0.flagged_clothing': count['flagged_clothing'] || 0,
-        'statistics.0.automated_scans': count['automated_scans'] || 0,
-        'statistics.0.custom_scans': count['custom_scans'] || 0,
-        'statistics.0.images_cleaned': count['images_cleaned'] || 0,
-      },
+    Object.entries(count).forEach(async ([key, val]) => {
+      await User.findByIdAndUpdate(req.user.id, {
+        $inc: {
+          [`statistics.0.${key}`]: val || 0,
+        },
+      });
     });
 
     res.status(200).json({ msg: 'Stats written to DB' });
   } catch (err) {
-    console.log(err);
+    console.error(err.message);
+    res.status(500).json({ msg: 'Write Error' });
+  }
+});
+
+router.post('/store-results', auth, async (req, res) => {
+  try {
+    let results = req.body;
+    console.log(results);
+
+    await User.findByIdAndUpdate(req.user.id, {
+      $set: {
+        flagged_content: results,
+      },
+    });
+    
+    res.status(200).json({ msg: 'Stats written to DB' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: 'Write Error' });
   }
 });
 

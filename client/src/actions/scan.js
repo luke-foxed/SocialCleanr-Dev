@@ -16,19 +16,9 @@ export const runAutomatedScan = (type, data, storeResults) => async (
 ) => {
   try {
     let results = [];
-    let count = [];
-
-    // increment scan count by one, the rest will be determined from the scan
-    let totalCount = {
-      flagged_text: 0,
-      flagged_clothing: 0,
-      flagged_gesture: 0,
-      flagged_age: 0,
-      automated_scans: 1,
-    };
 
     await asyncForEach(data, async (content) => {
-      let response = await axios({
+      let { data } = await axios({
         method: 'post',
         url: '/api/classifier/automated-scan',
         data: {
@@ -38,28 +28,24 @@ export const runAutomatedScan = (type, data, storeResults) => async (
         },
       });
 
-      let filteredResults = cleanResults(response.data, content);
-      results.push(filteredResults.flaggedContent);
-      count.push(filteredResults.count);
+      results.push(data);
     });
 
     const resultsFlattened = [].concat.apply([], results);
-    const countFlattened = [].concat.apply([], count);
 
-    // add each count for every scan together
-    countFlattened.forEach((count) => {
-      for (let [key, val] of Object.entries(count)) {
-        totalCount[key] += val;
-      }
-    });
+    // increment automated scans
+    await axios.post('/api/user/write-statistics', { automated_scans: 1 });
 
-    await axios.post('/api/user/write-statistics', totalCount);
+    if (storeResults) {
+      await axios.post('/api/user/store-results', resultsFlattened);
+    }
 
     dispatch(setAlert('Scan Complete', 'success'));
     dispatch(loadUser());
 
     return resultsFlattened;
   } catch (err) {
+    console.error(err);
     dispatch(setAlert(err.response.data.msg, 'error'));
     return [];
   }

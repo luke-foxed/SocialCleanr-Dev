@@ -61,10 +61,9 @@ export const toggleGamification = (toggle) => async (dispatch) => {
     dispatch(setAlert('Done!', 'success'));
     await dispatch(loadUser());
   } catch (err) {
-    console.log(err);
     const errors = err.response.data.errors;
     if (errors) {
-      console.log(err);
+      console.error(err);
       errors.forEach((error) => dispatch(setAlert(error.msg, 'warning')));
     }
   }
@@ -82,7 +81,7 @@ export const deleteUser = () => async (dispatch) => {
       dispatch(logout());
     }
   } catch (err) {
-    console.log(err.response);
+    console.error(err.response);
     dispatch(setAlert(err.response.data.msg, 'error'));
   }
 };
