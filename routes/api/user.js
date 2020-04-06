@@ -18,6 +18,7 @@ router.post('/game', auth, async (req, res) => {
     await user.update({
       $set: {
         is_gamification_enabled: toggle,
+        flagged_content: [],
       },
     });
 

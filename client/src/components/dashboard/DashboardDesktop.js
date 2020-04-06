@@ -13,6 +13,8 @@ import {
   Collapse,
   Grid,
   Badge,
+  Tooltip,
+  withStyles,
 } from '@material-ui/core';
 import { Menu, ChevronLeft, Notifications } from '@material-ui/icons';
 import { Route, HashRouter, Redirect } from 'react-router-dom';
@@ -30,6 +32,12 @@ import 'react-image-lightbox/style.css';
 import { MiniDivider } from '../layout/MiniDivider';
 
 const drawerWidth = 240;
+
+const CustomTooltip = withStyles(() => ({
+  tooltip: {
+    fontSize: '16px',
+  },
+}))(Tooltip);
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -194,13 +202,20 @@ const Dashboard = ({ auth, logout }) => {
                     }}
                   />
 
-                  <IconButton color='inherit'>
-                    <Badge
-                      badgeContent={auth.user.flagged_content.length}
-                      color='secondary'>
-                      <Notifications fontSize={'large'} />
-                    </Badge>
-                  </IconButton>
+                  <CustomTooltip
+                    title={
+                      auth.user.flagged_content.length === 0
+                        ? ''
+                        : `You have ${auth.user.flagged_content.length} items from your last scan that have yet to be actioned`
+                    }>
+                    <IconButton color='inherit'>
+                      <Badge
+                        badgeContent={auth.user.flagged_content.length}
+                        color='secondary'>
+                        <Notifications fontSize={'large'} />
+                      </Badge>
+                    </IconButton>
+                  </CustomTooltip>
                 </div>
               )}
             </Grid>
@@ -258,6 +273,8 @@ Dashboard.propTypes = {
   logout: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => ({ auth: state.auth });
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
 
 export default connect(mapStateToProps, { logout })(Dashboard);
