@@ -6,44 +6,44 @@ import {
   Divider,
   Button,
   Avatar,
-  Paper
+  Paper,
 } from '@material-ui/core';
 import {
   Twitter,
   Language,
   Facebook,
   CheckCircle,
-  Cancel
+  Cancel,
 } from '@material-ui/icons';
 import * as colors from '../../../../helpers/colors';
 import { IconHeader } from '../../../layout/IconHeader';
 import { MiniDivider } from '../../../layout/MiniDivider';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
+    marginTop: theme.spacing(4),
+    marginBottom: theme.spacing(4),
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   authenticatedText: {
     fontFamily: 'Raleway',
     textTransform: 'uppercase',
     justifyContent: 'center',
-    display: 'flex'
+    display: 'flex',
   },
   actionButtonContainer: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   actionButton: {
     margin: '10px',
     width: '220px',
-    color: 'white'
+    color: 'white',
   },
   siteAvatar: {
     background:
@@ -51,15 +51,15 @@ const useStyles = makeStyles(theme => ({
     boxShadow: '0px 0px 22px -2px rgba(0,0,0,0.55)',
     height: 150,
     width: 150,
-    margin: '0 auto'
-  }
+    margin: '0 auto',
+  },
 }));
 
 export const ProfileSocialMedia = ({
   profile,
   user,
   onRemoveClick,
-  onSetActiveClick
+  onSetActiveClick,
 }) => {
   const classes = useStyles();
 
@@ -89,7 +89,7 @@ export const ProfileSocialMedia = ({
         <b
           style={{
             color: colors.colorDarkOrange,
-            textTransform: 'uppercase'
+            textTransform: 'uppercase',
           }}>
           {!profile.site ? 'not set' : profile.site}
         </b>
