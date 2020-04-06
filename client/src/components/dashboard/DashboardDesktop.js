@@ -11,9 +11,10 @@ import {
   CssBaseline,
   Container,
   Collapse,
-  Grid
+  Grid,
+  Badge,
 } from '@material-ui/core';
-import { Menu, ChevronLeft } from '@material-ui/icons';
+import { Menu, ChevronLeft, Notifications } from '@material-ui/icons';
 import { Route, HashRouter, Redirect } from 'react-router-dom';
 import SidebarItems from './SidebarItems';
 import Profile from './pages/Profile/Profile';
@@ -30,17 +31,17 @@ import { MiniDivider } from '../layout/MiniDivider';
 
 const drawerWidth = 240;
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     height: '100vh',
     backgroundImage: 'url(' + require('../../assets/pattern.png') + ')',
     backgroundRepeat: 'repeat',
-    width: '100%'
+    width: '100%',
   },
   toolbar: {
     paddingRight: 24, // keep right padding when drawer closed
-    height: 80
+    height: 80,
   },
   toolbarIcon: {
     display: 'flex',
@@ -48,28 +49,28 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     justifyContent: 'center',
     padding: '0 8px',
-    ...theme.mixins.toolbar
+    ...theme.mixins.toolbar,
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
-    })
+      duration: theme.transitions.duration.leavingScreen,
+    }),
   },
   appBarShift: {
     marginLeft: drawerWidth,
     width: `calc(100% - ${drawerWidth}px)`,
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen
-    })
+      duration: theme.transitions.duration.enteringScreen,
+    }),
   },
   menuButton: {
-    marginRight: 36
+    marginRight: 36,
   },
   menuButtonHidden: {
-    display: 'none'
+    display: 'none',
   },
   drawerPaper: {
     position: 'relative',
@@ -77,35 +78,35 @@ const useStyles = makeStyles(theme => ({
     width: drawerWidth,
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen
-    })
+      duration: theme.transitions.duration.enteringScreen,
+    }),
   },
   drawerPaperClose: {
     overflowX: 'hidden',
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
+      duration: theme.transitions.duration.leavingScreen,
     }),
     width: theme.spacing(7),
     [theme.breakpoints.up('sm')]: {
-      width: theme.spacing(9)
-    }
+      width: theme.spacing(9),
+    },
   },
   appBarSpacer: theme.mixins.toolbar,
   content: {
     flexGrow: 1,
     height: '100vh',
-    overflow: 'auto'
+    overflow: 'auto',
   },
   container: {
     paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4)
+    paddingBottom: theme.spacing(4),
   },
   paper: {
     padding: theme.spacing(2),
     display: 'flex',
     overflow: 'auto',
-    flexDirection: 'column'
+    flexDirection: 'column',
   },
   centerIcon: {
     marginTop: '5px',
@@ -115,8 +116,8 @@ const useStyles = makeStyles(theme => ({
     width: 120,
     backgroundColor: 'white',
     paddingBottom: '5px',
-    border: '5px solid ' + colors.colorPurple
-  }
+    border: '5px solid ' + colors.colorPurple,
+  },
 }));
 
 const Dashboard = ({ auth, logout }) => {
@@ -176,16 +177,31 @@ const Dashboard = ({ auth, logout }) => {
 
             <Grid container item xs={4} sm={4} justify='flex-end'>
               {auth.user !== null && (
-                <img
-                  src={auth.user.avatar}
-                  height={70}
-                  width={70}
+                <div
                   style={{
-                    margin: '10px',
-                    borderRadius: '50%',
-                    boxShadow: '0px 0px 22px -2px rgba(0,0,0,0.3)'
-                  }}
-                />
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}>
+                  <img
+                    src={auth.user.avatar}
+                    height={70}
+                    width={70}
+                    style={{
+                      margin: '10px',
+                      borderRadius: '50%',
+                      boxShadow: '0px 0px 22px -2px rgba(0,0,0,0.3)',
+                    }}
+                  />
+
+                  <IconButton color='inherit'>
+                    <Badge
+                      badgeContent={auth.user.flagged_content.length}
+                      color='secondary'>
+                      <Notifications fontSize={'large'} />
+                    </Badge>
+                  </IconButton>
+                </div>
               )}
             </Grid>
           </Grid>
@@ -195,7 +211,7 @@ const Dashboard = ({ auth, logout }) => {
         <Drawer
           variant='permanent'
           classes={{
-            paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose)
+            paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
           }}
           open={open}>
           <div className={classes.toolbarIcon}>
@@ -239,9 +255,9 @@ const Dashboard = ({ auth, logout }) => {
 
 Dashboard.propTypes = {
   auth: PropTypes.object.isRequired,
-  logout: PropTypes.func.isRequired
+  logout: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = state => ({ auth: state.auth });
+const mapStateToProps = (state) => ({ auth: state.auth });
 
 export default connect(mapStateToProps, { logout })(Dashboard);

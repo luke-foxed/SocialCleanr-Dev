@@ -21,6 +21,7 @@ import {
   Image,
   Assessment,
   CheckCircle,
+  History,
 } from '@material-ui/icons';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -116,6 +117,7 @@ const Scan = ({ user, profile, runAutomatedScan, removeItem }) => {
 
   const { photos, text } = profile;
   const storeResults = user.is_gamification_enabled;
+  const storeContent = user.flagged_content;
 
   // time per image + model loading time
   const estimatedTime =
@@ -299,6 +301,31 @@ const Scan = ({ user, profile, runAutomatedScan, removeItem }) => {
           </Typography>
         </Paper>
       )}
+
+      {user !== null &&
+        user.is_gamification_enabled &&
+        flaggedContent.length === 0 && (
+          <Paper elevation={2} className={classes.paper}>
+            <IconHeader
+              icon={History}
+              text='Previously Flagged Content'
+              subheader={true}
+            />
+            <Typography>
+              Here you will find flagged content from your last profile scan.
+            </Typography>
+
+            <MiniDivider color={'#4a4a4a'} />
+
+            <ResultsTable
+              flaggedContent={user.flagged_content}
+              onViewClick={(bbox, content) => showBox(bbox, content)}
+              onCleanClick={(bbox, content) => cleanImage(bbox, content)}
+              onRemoveClick={(id) => markFalsePositive(id)}
+              resultsType={scanType}
+            />
+          </Paper>
+        )}
 
       {boxImage !== '' && (
         <Paper elevation={2} className={classes.paper}>

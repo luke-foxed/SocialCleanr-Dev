@@ -79,8 +79,8 @@ export const getImageAsBase64 = async (image) => {
 
 export const removeItem = (id) => async (dispatch) => {
   try {
-    console.log(id);
     await axios.post('/api/user/remove-content', { content_id: id });
+    dispatch(setAlert('Content deleted', 'success'));
   } catch (err) {
     console.error(err);
     dispatch(setAlert(err.response.data.msg, 'error'));

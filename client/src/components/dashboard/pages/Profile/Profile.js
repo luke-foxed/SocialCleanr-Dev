@@ -26,6 +26,7 @@ import { ProfileSocialMedia } from './ProfileSocialMedia';
 import { MiniDivider } from '../../../layout/MiniDivider';
 import EditDialog from './EditDialog';
 import { toggleGamification } from '../../../../actions/user';
+import CountUp from 'react-countup';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -89,6 +90,8 @@ const Profile = ({
   const handleCloseDialog = () => {
     setDialogOpen(false);
   };
+
+  const percentage = 66;
 
   return (
     <Container component='main' maxWidth='lg' style={{ marginTop: '40px' }}>
@@ -219,7 +222,6 @@ const Profile = ({
           text='Gamification'
           subheader={true}
         />
-
         <Typography style={{ width: '70%', textAlign: 'center' }}>
           SocialCleanr's Gamification System allows for your profile to be
           'scored' based off the results of your automated scans. Flagged
@@ -227,12 +229,13 @@ const Profile = ({
           your profile score. This will also enable notification reminders to
           action this stored flagged content.
           <br /> <br />
+          Once enabled, content that has yet to be actioned can be found at the
+          bottom of the <b>'Scan'</b> section
+          <br /> <br />
           This option can be disabled at any time. When done so, any stored
           images/posts will be deleted from the database.
         </Typography>
-
         <br />
-
         <Button
           disabled={user.is_gamification_enabled}
           variant='contained'
@@ -245,9 +248,7 @@ const Profile = ({
           }>
           Enable
         </Button>
-
         <br />
-
         <Button
           disabled={!user.is_gamification_enabled}
           variant='contained'
@@ -260,6 +261,14 @@ const Profile = ({
           }>
           Disable
         </Button>
+        <MiniDivider color={'#4a4a4a'} />
+
+        <CountUp
+          end={100}
+          delay={2}
+          duration={5}
+          style={{ fontSize: '50px' }}
+        />
       </Paper>
 
       <ProfileSocialMedia
