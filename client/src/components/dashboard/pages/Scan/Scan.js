@@ -24,7 +24,7 @@ import {
 } from '@material-ui/icons';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { runAutomatedScan } from '../../../../actions/scan';
+import { runAutomatedScan, removeItem } from '../../../../actions/scan';
 import { useState } from 'react';
 import { ResultsTable } from '../../../layout/ResultsTable';
 import {
@@ -106,7 +106,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Scan = ({ user, profile, runAutomatedScan }) => {
+const Scan = ({ user, profile, runAutomatedScan, removeItem }) => {
   const classes = useStyles();
   const [boxImage, setBoxImage] = useState('');
   const [scanType, setScanType] = useState('photos');
@@ -148,6 +148,11 @@ const Scan = ({ user, profile, runAutomatedScan }) => {
   const cleanImage = async (box, image) => {
     let boxImage = await drawBlurringBoxURL(image, box);
     setBoxImage(boxImage);
+  };
+
+  const markFalsePositive = async (id) => {
+    setFlaggedContent(flaggedContent.filter((item) => item.content_id !== id));
+    removeItem(id);
   };
 
   return (
@@ -261,6 +266,7 @@ const Scan = ({ user, profile, runAutomatedScan }) => {
                     flaggedContent={flaggedContent}
                     onViewClick={(bbox, content) => showBox(bbox, content)}
                     onCleanClick={(bbox, content) => cleanImage(bbox, content)}
+                    onRemoveClick={(id) => markFalsePositive(id)}
                     resultsType={scanType}
                   />
                 </div>
@@ -318,6 +324,7 @@ Scan.propTypes = {
   user: PropTypes.object.isRequired,
   profile: PropTypes.object.isRequired,
   runAutomatedScan: PropTypes.func.isRequired,
+  removeItem: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
@@ -325,4 +332,4 @@ const mapStateToProps = (state) => ({
   profile: state.profile,
 });
 
-export default connect(mapStateToProps, { runAutomatedScan })(Scan);
+export default connect(mapStateToProps, { runAutomatedScan, removeItem })(Scan);

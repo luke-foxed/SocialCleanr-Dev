@@ -185,18 +185,32 @@ router.post('/write-statistics', auth, async (req, res) => {
 router.post('/store-results', auth, async (req, res) => {
   try {
     let results = req.body;
-    console.log(results);
 
     await User.findByIdAndUpdate(req.user.id, {
       $set: {
         flagged_content: results,
       },
     });
-    
+
     res.status(200).json({ msg: 'Stats written to DB' });
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ msg: 'Write Error' });
+  }
+});
+
+router.post('/remove-content', auth, async (req, res) => {
+  try {
+    let contentID = req.body.content_id;
+
+    await User.findByIdAndUpdate(req.user.id, {
+      $pull: { flagged_content: { content_id: contentID } },
+    });
+
+    res.status(200).json({ msg: 'Content Deleted' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: 'Delete Error' });
   }
 });
 

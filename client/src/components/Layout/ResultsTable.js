@@ -11,7 +11,7 @@ import {
   DialogContentText,
   Avatar,
   Typography,
-  Dialog
+  Dialog,
 } from '@material-ui/core';
 import React, { useState } from 'react';
 import { Warning, Visibility, DeleteForever, Brush } from '@material-ui/icons';
@@ -20,7 +20,8 @@ export const ResultsTable = ({
   flaggedContent,
   onViewClick,
   onCleanClick,
-  resultsType
+  onRemoveClick,
+  resultsType,
 }) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [modalText, setModalText] = useState('');
@@ -36,6 +37,10 @@ export const ResultsTable = ({
 
   const handleCleanContent = (bbox, content) => {
     onCleanClick(bbox, content);
+  };
+
+  const handleRemoveContent = (id) => {
+    onRemoveClick(id);
   };
 
   return (
@@ -55,7 +60,7 @@ export const ResultsTable = ({
         </TableHead>
         <TableBody>
           {flaggedContent.map((value, index) => (
-            <TableRow key={index}>
+            <TableRow key={value.content_id}>
               <TableCell>
                 <Warning
                   fontSize={'large'}
@@ -72,7 +77,7 @@ export const ResultsTable = ({
                     style={{
                       width: 100,
                       height: 100,
-                      margin: '0 auto'
+                      margin: '0 auto',
                     }}
                   />
                 ) : (
@@ -95,7 +100,8 @@ export const ResultsTable = ({
                   <Brush />
                 </IconButton>
 
-                <IconButton>
+                <IconButton
+                  onClick={() => handleRemoveContent(value.content_id)}>
                   <DeleteForever />
                 </IconButton>
               </TableCell>

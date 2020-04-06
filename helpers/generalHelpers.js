@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const config = require('config');
+const uuid = require('uuid');
 
 const ENCRYPTION_KEY = config.encryptionKey;
 const IV_LENGTH = 16;
@@ -89,6 +90,7 @@ const cleanResults = (results, content) => {
           probability: person.topless_prediction,
           box: person.bbox,
           content: content,
+          content_id: uuid.v4(),
         });
       }
     });
@@ -103,6 +105,7 @@ const cleanResults = (results, content) => {
         probability: gesture.score,
         box: gesture.bbox,
         content: content,
+        content_id: uuid.v4(),
       });
     });
   }
@@ -116,6 +119,7 @@ const cleanResults = (results, content) => {
         probability: '>80',
         box: item.bbox,
         content: content,
+        content_id: uuid.v4(),
       });
     });
   }
@@ -130,6 +134,7 @@ const cleanResults = (results, content) => {
           probability: item.probability,
           box: item.bbox,
           content: content,
+          content_id: uuid.v4(),
         });
       }
     });

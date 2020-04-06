@@ -6,7 +6,7 @@ import {
   Typography,
   CircularProgress,
   Container,
-  Backdrop
+  Backdrop,
 } from '@material-ui/core';
 import * as colors from '../../../../helpers/colors';
 import {
@@ -20,14 +20,14 @@ import {
   Brush,
   GetApp,
   ChildCare,
-  Palette
+  Palette,
 } from '@material-ui/icons';
 import { runCustomScan } from '../../../../actions/customScan.js';
 import {
   drawBoundingBox,
   drawBlurringBox,
   blurAllContent,
-  createDownloadImage
+  createDownloadImage,
 } from '../../../../helpers/classificationHelper';
 import { ResultsTable } from '../../../layout/ResultsTable';
 import ToggleButton from '@material-ui/lab/ToggleButton';
@@ -39,27 +39,27 @@ import { IconHeader } from '../../../layout/IconHeader';
 import { isMobile } from 'react-device-detect';
 import { MiniDivider } from '../../../layout/MiniDivider';
 
-const StyledToggleButtonGroup = withStyles(theme => ({
+const StyledToggleButtonGroup = withStyles((theme) => ({
   grouped: {
     margin: theme.spacing(0.5),
     border: 'none',
-    padding: theme.spacing(0, 1)
-  }
+    padding: theme.spacing(0, 1),
+  },
 }))(ToggleButtonGroup);
 
 const StyledToggleButton = withStyles({
   root: {
     '&$selected': {
       backgroundColor: colors.colorPurple,
-      color: 'white'
-    }
+      color: 'white',
+    },
   },
   selected: {
-    color: 'white'
-  }
+    color: 'white',
+  },
 })(ToggleButton);
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
@@ -67,24 +67,24 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   imageBox: {
     textAlign: 'center',
-    margin: theme.spacing(2)
+    margin: theme.spacing(2),
   },
   image: {
     padding: '5px',
     height: 600,
     width: '80%',
     objectFit: 'cover',
-    border: '3px solid' + colors.colorPurple
+    border: '3px solid' + colors.colorPurple,
   },
   toggleButtons: {
     '& button': {
       width: '140px',
-      transition: 'all .2s ease-in-out'
-    }
+      transition: 'all .2s ease-in-out',
+    },
   },
   toggleButtonsMobile: {
     display: 'flex',
@@ -94,19 +94,19 @@ const useStyles = makeStyles(theme => ({
     margin: '0 auto',
     '& button': {
       width: '140px',
-      transition: 'all .2s ease-in-out'
-    }
+      transition: 'all .2s ease-in-out',
+    },
   },
   subtext: {
     color: '#4a4a4a',
     width: '50%',
     textAlign: 'center',
-    fontFamily: 'Raleway'
+    fontFamily: 'Raleway',
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
-    color: '#fff'
-  }
+    color: '#fff',
+  },
 }));
 
 const Upload = ({ setAlert, runCustomScan }) => {
@@ -119,7 +119,7 @@ const Upload = ({ setAlert, runCustomScan }) => {
   const [scanType, setScanType] = useState('photos');
   const [models, setModels] = useState(() => []);
 
-  const handleInput = event => {
+  const handleInput = (event) => {
     setImage('');
     setBoxImage('');
     if (event.target.files && event.target.files[0]) {
@@ -150,19 +150,19 @@ const Upload = ({ setAlert, runCustomScan }) => {
     }
   };
 
-  const showBox = async box => {
+  const showBox = async (box) => {
     let boxImage = await drawBoundingBox(image, box);
     setBoxImage(boxImage);
   };
 
-  const cleanImage = async box => {
+  const cleanImage = async (box) => {
     let cleanImage = await drawBlurringBox(image, box);
     setBoxImage(cleanImage);
   };
 
   const handleCleanEntireImage = async () => {
     let boxes = [];
-    flaggedContent.forEach(content => {
+    flaggedContent.forEach((content) => {
       boxes.push(content.box);
     });
     let cleanImage = await blurAllContent(image, boxes);
@@ -173,13 +173,17 @@ const Upload = ({ setAlert, runCustomScan }) => {
     createDownloadImage(boxImage);
   };
 
+  const markFalsePositive = async (id) => {
+    setFlaggedContent(flaggedContent.filter((item) => item.content_id !== id));
+  };
+
   return (
     <Container component='main' maxWidth='lg' style={{ marginTop: '40px' }}>
       <Paper
         elevation={4}
         className={classes.paper}
         style={{
-          background: colors.colorDarkOrange
+          background: colors.colorDarkOrange,
         }}>
         <IconHeader icon={Palette} text='Custom Scan' subheader={false} />
       </Paper>
@@ -295,8 +299,9 @@ const Upload = ({ setAlert, runCustomScan }) => {
             <div>
               <ResultsTable
                 flaggedContent={flaggedContent}
-                onViewClick={bbox => showBox(bbox)}
-                onCleanClick={bbox => cleanImage(bbox)}
+                onViewClick={(bbox) => showBox(bbox)}
+                onCleanClick={(bbox) => cleanImage(bbox)}
+                onRemoveClick={(id) => markFalsePositive(id)}
                 resultsType={scanType}
               />
 
@@ -310,7 +315,7 @@ const Upload = ({ setAlert, runCustomScan }) => {
                   style={{
                     backgroundColor: colors.colorDarkPink,
                     margin: '5px',
-                    width: '200px'
+                    width: '200px',
                   }}
                   onClick={handleCleanEntireImage}
                   endIcon={<Brush />}>
@@ -324,7 +329,7 @@ const Upload = ({ setAlert, runCustomScan }) => {
                   style={{
                     backgroundColor: colors.colorDarkPink,
                     margin: '5px',
-                    width: '200px'
+                    width: '200px',
                   }}
                   onClick={handleDownloadImage}
                   endIcon={<GetApp />}>
@@ -352,7 +357,7 @@ const Upload = ({ setAlert, runCustomScan }) => {
 
 Upload.propTypes = {
   setAlert: PropTypes.func.isRequired,
-  runCustomScan: PropTypes.func.isRequired
+  runCustomScan: PropTypes.func.isRequired,
 };
 
 export default connect(null, { setAlert, runCustomScan })(Upload);

@@ -69,6 +69,20 @@ export const getImageAsBase64 = async (image) => {
   let base64 = 'data:image/jpeg;base64,' + response.data.toString();
 
   await axios.post('/api/user/write-statistics', { images_cleaned: 1 });
-
   return base64;
+};
+
+/**
+ * Remove flagged content from database (e.g. false positive)
+ * @param {string} image - URL of image to be retrieved
+ */
+
+export const removeItem = (id) => async (dispatch) => {
+  try {
+    console.log(id);
+    await axios.post('/api/user/remove-content', { content_id: id });
+  } catch (err) {
+    console.error(err);
+    dispatch(setAlert(err.response.data.msg, 'error'));
+  }
 };
