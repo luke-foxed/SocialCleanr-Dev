@@ -99,8 +99,19 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+
   twitter_token_secret: {
     type: String,
+    required: false,
+  },
+
+  total_images: {
+    type: Number,
+    required: false,
+  },
+
+  total_posts: {
+    type: Number,
     required: false,
   },
 });

@@ -7,6 +7,7 @@ import {
   Grid,
   Button,
   IconButton,
+  Avatar,
 } from '@material-ui/core';
 import {
   Face,
@@ -16,6 +17,7 @@ import {
   Lock,
   DeleteForever,
   VideogameAsset,
+  LocalHospital,
 } from '@material-ui/icons';
 import * as colors from '../../../../helpers/colors';
 import { connect } from 'react-redux';
@@ -91,7 +93,10 @@ const Profile = ({
     setDialogOpen(false);
   };
 
-  const percentage = 66;
+  const profileScore =
+    100 -
+    100 *
+      (user.flagged_content.length / (user.total_images + user.total_posts));
 
   return (
     <Container component='main' maxWidth='lg' style={{ marginTop: '40px' }}>
@@ -263,11 +268,30 @@ const Profile = ({
         </Button>
         <MiniDivider color={'#4a4a4a'} />
 
+        <Typography> Your profile's health score is:</Typography>
+        <br />
+        <Avatar
+          style={{
+            backgroundColor: colors.colorGreen,
+            width: 100,
+            height: 100,
+          }}>
+          <LocalHospital
+            fontSize='large'
+            style={{
+              color: 'white',
+              width: 60,
+              height: 60,
+            }}
+          />
+        </Avatar>
+
         <CountUp
-          end={100}
+          end={profileScore}
+          suffix='%'
           delay={2}
           duration={5}
-          style={{ fontSize: '50px' }}
+          style={{ fontSize: '50px', color: colors.colorGreen }}
         />
       </Paper>
 

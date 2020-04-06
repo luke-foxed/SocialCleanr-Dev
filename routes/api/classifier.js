@@ -3,7 +3,8 @@ const axios = require('axios');
 const router = express.Router();
 const auth = require('../../middleware/auth');
 const classification = require('../../classification/classification');
-const helpers = require('../../helpers/generalHelpers');
+const generalHelpers = require('../../helpers/generalHelpers');
+const parseHelpers = require('../../helpers/parseHelpers');
 const User = require('../../models/User');
 require('@tensorflow/tfjs-node');
 
@@ -37,7 +38,7 @@ router.post('/custom-scan', auth, async (req, res) => {
     if (req.body.type === 'image') {
       let selection = req.body.models;
 
-      await helpers.asyncForEach(selection, async (model) => {
+      await generalHelpers.asyncForEach(selection, async (model) => {
         switch (model) {
           case 'age':
             console.log('\nSELECTED AGE\n');
@@ -73,7 +74,7 @@ router.post('/custom-scan', auth, async (req, res) => {
     results.text = textResults.text || [];
     results.age = ageResults.age || [];
 
-    const { count, flaggedContent } = helpers.cleanResults(
+    const { count, flaggedContent } = parseHelpers.cleanResults(
       results,
       req.body.image
     );
@@ -122,7 +123,7 @@ router.post('/automated-scan', auth, async (req, res) => {
     results.text = textResults.text || [];
     results.age = ageResults.age || [];
 
-    const { count, flaggedContent } = helpers.cleanResults(
+    const { count, flaggedContent } = parseHelpers.cleanResults(
       results,
       req.body.data
     );

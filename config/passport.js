@@ -30,26 +30,21 @@ module.exports = function(passport) {
         callbackURL: '/api/passport-auth/auth/twitter/callback'
       },
       async (accessToken, refreshToken, profile, done) => {
-        console.log(profile);
         done(null, { token: accessToken, tokenSecret: refreshToken });
       }
     )
   );
 
   passport.serializeUser((profile, done) => {
-    console.log('SERIAL');
-    console.log(profile);
     done(null, profile);
   });
 
   // deserialize the cookieUserId to user in the database
   passport.deserializeUser((profile, done) => {
-    console.log('DESERIAL');
-    console.log(profile);
     try {
       done(null, profile);
     } catch (err) {
-      console.log('ERROR: ' + err);
+      console.err(err);
       done(new Error('Failed to deserialize an user'));
     }
   });

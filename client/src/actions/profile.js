@@ -2,10 +2,6 @@ import axios from 'axios';
 import { setAlert } from './alert';
 import { loadUser } from './auth';
 import { PROFILE_ERROR, GET_PROFILE } from '../actions/types';
-import {
-  parseFacebookResults,
-  parseTwitterResults,
-} from '../helpers/profilePageHelpers';
 
 /**
  * Remove DB values for selected site
@@ -33,19 +29,12 @@ export const removeSite = (website) => async (dispatch) => {
  */
 
 export const getSocialMediaProfile = (website) => async (dispatch) => {
-  let cleanedResponse = null;
   try {
-    const res = await axios.get(`/api/passport-auth/my-${website}`);
-
-    if (website === 'facebook') {
-      cleanedResponse = parseFacebookResults(res.data);
-    } else {
-      cleanedResponse = parseTwitterResults(res.data);
-    }
+    const { data } = await axios.get(`/api/passport-auth/my-${website}`);
 
     dispatch({
       type: GET_PROFILE,
-      payload: cleanedResponse,
+      payload: data,
     });
 
     dispatch(
