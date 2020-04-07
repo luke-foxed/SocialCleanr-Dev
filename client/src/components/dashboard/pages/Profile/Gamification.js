@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Gamification = ({ isEnabled, onToggleClick, profileScore }) => {
+export const Gamification = ({ isEnabled, onToggleClick }) => {
   const classes = useStyles();
 
   const handleToggleClick = (toggle) => {
@@ -57,7 +57,9 @@ export const Gamification = ({ isEnabled, onToggleClick, profileScore }) => {
         This option can be disabled at any time. When done so, any stored
         images/posts will be deleted from the database.
       </Typography>
-      <br />
+
+      <MiniDivider color={'#4a4a4a'} />
+
       <Button
         disabled={isEnabled}
         variant='contained'
@@ -83,37 +85,6 @@ export const Gamification = ({ isEnabled, onToggleClick, profileScore }) => {
         }>
         Disable
       </Button>
-      <MiniDivider color={'#4a4a4a'} />
-
-      {isEnabled === true && (
-        <div className={classes.scoreContainer}>
-          <Typography> Your social media profile's health score is:</Typography>
-          <br />
-          <Avatar
-            style={{
-              backgroundColor: colors.colorGreen,
-              width: 100,
-              height: 100,
-            }}>
-            <LocalHospital
-              fontSize='large'
-              style={{
-                color: 'white',
-                width: 60,
-                height: 60,
-              }}
-            />
-          </Avatar>
-
-          <CountUp
-            end={profileScore}
-            suffix='%'
-            delay={2}
-            duration={5}
-            style={{ fontSize: '50px', color: colors.colorGreen }}
-          />
-        </div>
-      )}
     </Paper>
   );
 };
