@@ -26,6 +26,12 @@ const useStyles = makeStyles((theme) => ({
       fontFamily: 'Raleway',
     },
   },
+
+  scoreContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
 }));
 
 export const Gamification = ({ isEnabled, onToggleClick, profileScore }) => {
@@ -39,11 +45,11 @@ export const Gamification = ({ isEnabled, onToggleClick, profileScore }) => {
     <Paper elevation={2} className={classes.paper}>
       <IconHeader icon={VideogameAsset} text='Gamification' subheader={true} />
       <Typography style={{ width: '70%', textAlign: 'center' }}>
-        SocialCleanr's Gamification System allows for your profile to be
-        'scored' based off the results of your automated scans. Flagged content{' '}
-        <b>will be stored</b> after each scan and will contribute to your
-        profile score. This will also enable notification reminders to action
-        this stored flagged content.
+        SocialCleanr's Gamification System allows for your selected social media
+        profile to be 'scored' based off the results of your automated scans.
+        Flagged content <b>will be stored</b> after each scan and will
+        contribute to your score. This will also enable notification reminders
+        to action this stored flagged content.
         <br /> <br />
         Once enabled, content that has yet to be actioned can be found at the
         bottom of the <b>'Scan'</b> section
@@ -79,31 +85,35 @@ export const Gamification = ({ isEnabled, onToggleClick, profileScore }) => {
       </Button>
       <MiniDivider color={'#4a4a4a'} />
 
-      <Typography> Your profile's health score is:</Typography>
-      <br />
-      <Avatar
-        style={{
-          backgroundColor: colors.colorGreen,
-          width: 100,
-          height: 100,
-        }}>
-        <LocalHospital
-          fontSize='large'
-          style={{
-            color: 'white',
-            width: 60,
-            height: 60,
-          }}
-        />
-      </Avatar>
+      {isEnabled === true && (
+        <div className={classes.scoreContainer}>
+          <Typography> Your social media profile's health score is:</Typography>
+          <br />
+          <Avatar
+            style={{
+              backgroundColor: colors.colorGreen,
+              width: 100,
+              height: 100,
+            }}>
+            <LocalHospital
+              fontSize='large'
+              style={{
+                color: 'white',
+                width: 60,
+                height: 60,
+              }}
+            />
+          </Avatar>
 
-      <CountUp
-        end={profileScore}
-        suffix='%'
-        delay={2}
-        duration={5}
-        style={{ fontSize: '50px', color: colors.colorGreen }}
-      />
+          <CountUp
+            end={profileScore}
+            suffix='%'
+            delay={2}
+            duration={5}
+            style={{ fontSize: '50px', color: colors.colorGreen }}
+          />
+        </div>
+      )}
     </Paper>
   );
 };
