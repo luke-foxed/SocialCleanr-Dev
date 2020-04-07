@@ -65,8 +65,8 @@ const useStyles = makeStyles((theme) => ({
   },
   gridCell: {
     display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
 }));
 
@@ -129,9 +129,7 @@ const Profile = ({
         <div style={{ flexGrow: 1, width: '40%' }}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={4}>
-              <div
-                className={classes.gridCell}
-                style={{ flexDirection: 'row' }}>
+              <div className={classes.gridCell}>
                 <Mail style={{ marginRight: '10px' }} />
                 <Typography variant='h6'>Email</Typography>
               </div>
@@ -154,9 +152,7 @@ const Profile = ({
             </Grid>
 
             <Grid item xs={12} sm={4}>
-              <div
-                className={classes.gridCell}
-                style={{ flexDirection: 'row' }}>
+              <div className={classes.gridCell}>
                 <Lock style={{ marginRight: '10px' }} />
                 <Typography variant='h6'>Password</Typography>
               </div>
@@ -179,9 +175,7 @@ const Profile = ({
             </Grid>
 
             <Grid item xs={12} sm={4}>
-              <div
-                className={classes.gridCell}
-                style={{ flexDirection: 'row' }}>
+              <div className={classes.gridCell}>
                 <Today style={{ marginRight: '10px' }} />
                 <Typography variant='h6'>Created</Typography>
               </div>
