@@ -30,7 +30,7 @@ export const removeSite = (website) => async (dispatch) => {
 
 export const getSocialMediaProfile = (website) => async (dispatch) => {
   try {
-    const { data } = await axios.get(`http://localhost:8080/api/passport-auth/my-${website}`);
+    const { data } = await axios.get(`/api/passport-auth/my-${website}`);
 
     dispatch({
       type: GET_PROFILE,
