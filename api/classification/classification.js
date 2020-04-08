@@ -32,6 +32,10 @@ let results = {
   age: []
 };
 
+/**
+ * Load classification/detection models once so they can be reused within session
+ */
+
 const loadModels = async () => {
   // clear results from previous scans
   results.people = results.gestures = results.text = results.age = [];
@@ -40,14 +44,9 @@ const loadModels = async () => {
     console.log('\nMODELS ALREADY LOADED\n');
   } else {
     maleClothingModel = await tfImage.load(
-      modelPaths.maleModel.model,
-      modelPaths.maleModel.metadata
+      modelPaths.maleModelOld.model,
+      modelPaths.maleModelOld.metadata
     );
-
-    // maleClothingModel = await tfImage.load(
-    //   'file://C:/Users/Luke/Documents/GitHub/Social-Cleaner/classification/clothing/male/model.json',
-    //   'file://C:/Users/Luke/Documents/GitHub/Social-Cleaner/classification/clothing/male/metadata.json'
-    // );
 
     console.log('\nLoaded Male Model...\n');
 
@@ -84,7 +83,11 @@ const loadModels = async () => {
   }
 };
 
-// ----- CLASSIFICATION FUNCTIONALITY ----- //
+/**
+ * Use CocoSSD to detect people in image
+ * @param {string} image - Input image as base64
+ * @returns {array} Array of images, one for each detected person
+ */
 
 const detectPeople = async image => {
   let boundingBoxes = [];
@@ -104,6 +107,12 @@ const detectPeople = async image => {
   return images;
 };
 
+/**
+ * Use FaceAPI to detect age and gender of people in image
+ * @param {string} image - Input image as base64
+ * @returns {object} Object containing age/gender detections
+ */
+
 const detectMultipleAgeGender = async image => {
   let img = await loadImage(image);
   let ageGenderResults = await faceapi.detectAllFaces(img).withAgeAndGender();
@@ -119,6 +128,12 @@ const detectMultipleAgeGender = async image => {
 
   return results;
 };
+
+/**
+ * Use FaceAPI to detect age and gender of single person
+ * @param {string} image - Input image as base64
+ * @returns {object} Object containing age/gender detections
+ */
 
 const detectAgeGender = async image => {
   let img = await loadImage(image);
@@ -140,6 +155,12 @@ const detectAgeGender = async image => {
 
   return detectedFace;
 };
+
+/**
+ * Detect innapropriate level of clothing
+ * @param {string} image - Input image as base64
+ * @returns {object} Object containing clothing detections
+ */
 
 const detectClothing = async image => {
   results = {
@@ -187,6 +208,12 @@ const detectClothing = async image => {
   return results;
 };
 
+/**
+ * Detect offensive or explicit text
+ * @param {string} text - Input text
+ * @returns {object} Object containing offensive text detections
+ */
+
 const detectText = async text => {
   let words = text.trim().split(' ');
   await generalHelpers.asyncForEach(words, async word => {
@@ -207,6 +234,12 @@ const detectText = async text => {
 
   return results;
 };
+
+/**
+ * Detect offensive or explicit text from image
+ * @param {string} image - Input image
+ * @returns {object} Object containing offensive text detections
+ */
 
 const detectTextFromImage = async image => {
   let text = await classificationHelpers.convertToText(image);
@@ -232,6 +265,12 @@ const detectTextFromImage = async image => {
 
   return results;
 };
+
+/**
+ * Detect offensive gestures using trained gesture detection model
+ * @param {string} text - Input image
+ * @returns {object} Object containing offensive gestures
+ */
 
 const detectGesture = async image => {
   results = {
@@ -300,7 +339,6 @@ const detectGesture = async image => {
   if (objects.length > 0) {
     objects.forEach(gesture => {
       if (gesture.score > 0.7) {
-        console.log(gesture.score);
         results.gestures.push({
           type: gesture.class,
           score: Math.round(100 * gesture.score),

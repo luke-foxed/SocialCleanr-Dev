@@ -12,13 +12,13 @@ const cookieParser = require('cookie-parser');
 // Connect to DB
 connectDB();
 
-// Init mongo session
+// Init session (needed for OAuth)
 app.use(
   session({
     secret: 'test',
     store: new MongoStore({ mongooseConnection: mongoose.connection }),
     resave: true,
-    saveUninitialized: true
+    saveUninitialized: true,
   })
 );
 
@@ -39,7 +39,7 @@ app.use(
   cors({
     origin: 'http://localhost', // allow to server to accept request from different origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true // allow session cookie from browser to pass through
+    credentials: true, // allow session cookie from browser to pass through
   })
 );
 
@@ -50,10 +50,12 @@ app.get('/', (req, res) => {
 
 // Define routes here
 app.use('/api/auth', require('./routes/api/auth'));
-app.use('/api/scrape', require('./routes/api/scrape'));
 app.use('/api/passport-auth', require('./routes/api/auth-passport'));
 app.use('/api/classifier', require('./routes/api/classifier'));
+app.use('/api/user', require('./routes/api/user'));
 
 const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+
+module.exports = app; // for testing

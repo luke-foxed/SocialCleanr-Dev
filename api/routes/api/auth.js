@@ -7,7 +7,12 @@ const config = require('config');
 const { check, validationResult } = require('express-validator');
 const User = require('../../models/User');
 
-// authenticate
+/**
+ * @route    GET api/auth/
+ * @desc     Authenticates user and returns selected DB values
+ * @access   Private
+ */
+
 router.get('/', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id)
@@ -23,7 +28,12 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-// login
+/**
+ * @route    POST api/auth-passport/login
+ * @desc     Finds matching user in DB and returns JWT on success
+ * @access   Public
+ */
+
 router.post(
   '/login',
   [
@@ -79,6 +89,12 @@ router.post(
   }
 );
 
+/**
+ * @route    POST api/auth-passport/register
+ * @desc     Creates new user and generates JWT on success
+ * @access   Public
+ */
+
 router.post(
   '/register',
   [
@@ -112,10 +128,29 @@ router.post(
         });
       }
 
+      // generate random number for random avatar
+      let randNum = Math.floor(Math.random() * 11);
+      let colors = ['63db83', '63c1db', 'db63ab', 'dbaf63'];
+      let randCol = colors[Math.floor(Math.random() * colors.length)];
+
+      let avatar = `https://api.adorable.io/avatars/face/eyes${randNum}/nose${randNum}/mouth${randNum}/${randCol}/300`;
+
       user = new User({
         name,
         email,
-        password
+        password,
+        avatar,
+        statistics: [
+          {
+            custom_scans: 0,
+            automated_scans: 0,
+            images_cleaned: 0,
+            flagged_text: 0,
+            flagged_age: 0,
+            flagged_clothing: 0,
+            flagged_gesture: 0
+          }
+        ]
       });
 
       const salt = await bcrypt.genSalt(10);

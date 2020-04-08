@@ -8,7 +8,7 @@ import {
   Button,
   withStyles,
   Backdrop,
-  CircularProgress
+  CircularProgress,
 } from '@material-ui/core';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
@@ -20,99 +20,94 @@ import {
   TextFormat,
   Image,
   Assessment,
-  CheckCircle
+  CheckCircle,
+  History,
 } from '@material-ui/icons';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { runAutomatedScan } from '../../../../actions/scan';
+import { runAutomatedScan, removeItem } from '../../../../actions/scan';
 import { useState } from 'react';
 import { ResultsTable } from '../../../layout/ResultsTable';
 import {
   drawBlurringBoxURL,
-  drawBoundingBoxURL
+  drawBoundingBoxURL,
 } from '../../../../helpers/classificationHelper';
 import { IconHeader } from '../../../layout/IconHeader';
+import { MiniDivider } from '../../../layout/MiniDivider';
 
-const StyledToggleButtonGroup = withStyles(theme => ({
+const StyledToggleButtonGroup = withStyles((theme) => ({
   grouped: {
     margin: theme.spacing(0.5),
     border: 'none',
-    padding: theme.spacing(0, 1)
-  }
+    padding: theme.spacing(0, 1),
+  },
 }))(ToggleButtonGroup);
 
 const StyledToggleButton = withStyles({
   root: {
     '&$selected': {
       backgroundColor: colors.colorPurple,
-      color: 'white'
-    }
+      color: 'white',
+    },
   },
   selected: {
-    color: 'white'
-  }
+    color: 'white',
+  },
 })(ToggleButton);
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
+    marginTop: theme.spacing(4),
+    marginBottom: theme.spacing(4),
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
-  },
-  divider: {
-    width: '40px',
-    border: 0
-  },
-  paperHeader: {
-    fontFamily: 'Raleway',
-    textTransform: 'uppercase'
+    alignItems: 'center',
+    '& p, h3, h4, h5, h6': {
+      fontFamily: 'Raleway',
+    },
   },
   infoGrid: {
-    width: '40%'
+    width: '40%',
   },
   infoTextHeader: {
     color: '#808080',
-    fontFamily: 'Raleway'
   },
   infoText: {
-    fontFamily: 'Raleway',
     textTransform: 'uppercase',
     color: colors.colorDarkPink,
     fontSize: '18px',
     paddingBottom: '15px',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   toggleButtons: {
     margin: '10px',
     '& button': {
       width: '140px',
-      transition: 'all .2s ease-in-out'
-    }
+      transition: 'all .2s ease-in-out',
+    },
   },
   imageBox: {
     margin: theme.spacing(2),
-    border: '4px solid' + colors.colorPurple
+    border: '4px solid' + colors.colorPurple,
   },
   image: {
     padding: theme.spacing(1),
     height: 600,
     width: '100%',
-    objectFit: 'cover'
+    objectFit: 'cover',
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
-  }
+    alignItems: 'center',
+  },
 }));
 
-const Scan = ({ user, profile }) => {
+const Scan = ({ user, profile, runAutomatedScan, removeItem }) => {
   const classes = useStyles();
   const [boxImage, setBoxImage] = useState('');
   const [scanType, setScanType] = useState('photos');
@@ -121,16 +116,20 @@ const Scan = ({ user, profile }) => {
   const [spinnerVisible, setSpinnerVisible] = useState(false);
 
   const { photos, text } = profile;
+  const storeResults = user.is_gamification_enabled;
+  const storeContent = user.flagged_content;
 
   // time per image + model loading time
   const estimatedTime =
     scanType === 'photos' ? photos.length * 6 + 10 : text.length * 4 + 10;
 
   const handleScanStart = async () => {
+    setBoxImage('');
     setSpinnerVisible(true);
     let clean = await runAutomatedScan(
       scanType,
-      scanType === 'photos' ? photos : text
+      scanType === 'photos' ? photos : text,
+      storeResults
     );
     setFlaggedContent(clean);
     setResultsLoaded(true);
@@ -153,13 +152,18 @@ const Scan = ({ user, profile }) => {
     setBoxImage(boxImage);
   };
 
+  const markFalsePositive = async (id) => {
+    setFlaggedContent(flaggedContent.filter((item) => item.content_id !== id));
+    removeItem(id);
+  };
+
   return (
-    <Container component='main' maxWidth='lg'>
+    <Container component='main' maxWidth='lg' style={{ marginTop: '40px' }}>
       <Paper
         elevation={4}
         className={classes.paper}
         style={{
-          background: colors.colorDarkOrange
+          background: colors.colorDarkOrange,
         }}>
         <IconHeader icon={ImageSearch} text='New Scan' subheader={false} />
       </Paper>
@@ -196,10 +200,7 @@ const Scan = ({ user, profile }) => {
               </StyledToggleButton>
             </StyledToggleButtonGroup>
 
-            <hr
-              className={classes.divider}
-              style={{ borderTop: '2px solid #4a4a4a', padding: '10px' }}
-            />
+            <MiniDivider color={'#4a4a4a'} />
 
             <Grid
               container
@@ -240,10 +241,7 @@ const Scan = ({ user, profile }) => {
               **Calculated time based off a stable internet collection.
             </Typography>
 
-            <hr
-              className={classes.divider}
-              style={{ borderTop: '2px solid #4a4a4a', padding: '10px' }}
-            />
+            <MiniDivider color={'#4a4a4a'} />
 
             <Button
               variant='contained'
@@ -270,6 +268,7 @@ const Scan = ({ user, profile }) => {
                     flaggedContent={flaggedContent}
                     onViewClick={(bbox, content) => showBox(bbox, content)}
                     onCleanClick={(bbox, content) => cleanImage(bbox, content)}
+                    onRemoveClick={(id) => markFalsePositive(id)}
                     resultsType={scanType}
                   />
                 </div>
@@ -289,14 +288,44 @@ const Scan = ({ user, profile }) => {
           )}
         </div>
       ) : (
-        <Typography
-          variant='h6'
-          className={classes.paperHeader}
-          style={{ display: 'flex', textAlign: 'center' }}>
-          To View Your Social Media Content, Select A Website From The 'Profile'
-          Page!
-        </Typography>
+        <Paper elevation={2} className={classes.paper}>
+          <Typography
+            variant='h6'
+            style={{
+              display: 'flex',
+              textAlign: 'center',
+              textTransform: 'uppercase',
+            }}>
+            To Start Scanning, Select A Social Media Profile From The 'Profile'
+            Page!
+          </Typography>
+        </Paper>
       )}
+
+      {user !== null &&
+        user.is_gamification_enabled &&
+        flaggedContent.length === 0 && (
+          <Paper elevation={2} className={classes.paper}>
+            <IconHeader
+              icon={History}
+              text='Previously Flagged Content'
+              subheader={true}
+            />
+            <Typography>
+              Here you will find flagged content from your last profile scan.
+            </Typography>
+
+            <MiniDivider color={'#4a4a4a'} />
+
+            <ResultsTable
+              flaggedContent={user.flagged_content}
+              onViewClick={(bbox, content) => showBox(bbox, content)}
+              onCleanClick={(bbox, content) => cleanImage(bbox, content)}
+              onRemoveClick={(id) => markFalsePositive(id)}
+              resultsType={scanType}
+            />
+          </Paper>
+        )}
 
       {boxImage !== '' && (
         <Paper elevation={2} className={classes.paper}>
@@ -320,12 +349,14 @@ const Scan = ({ user, profile }) => {
 
 Scan.propTypes = {
   user: PropTypes.object.isRequired,
-  profile: PropTypes.object.isRequired
+  profile: PropTypes.object.isRequired,
+  runAutomatedScan: PropTypes.func.isRequired,
+  removeItem: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   user: state.auth.user,
-  profile: state.profile
+  profile: state.profile,
 });
 
-export default connect(mapStateToProps)(Scan);
+export default connect(mapStateToProps, { runAutomatedScan, removeItem })(Scan);

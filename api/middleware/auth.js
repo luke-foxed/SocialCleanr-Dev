@@ -1,6 +1,11 @@
 const jwt = require('jsonwebtoken');
 const config = require('config');
 
+
+ /**
+ * Middleware to authenticate user, if token exists then contiue with request
+ */
+
 module.exports = async function(req, res, next) {
   const authToken = req.header('x-auth-token');
 

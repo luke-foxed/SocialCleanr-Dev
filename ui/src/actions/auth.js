@@ -1,6 +1,5 @@
 import axios from 'axios';
 import {
-  LOGIN_FAILURE,
   LOGIN_SUCCESS,
   REGISTER_FAIL,
   REGISTER_SUCCESS,
@@ -11,6 +10,12 @@ import {
 import { setAlert } from './alert';
 import setAuthToken from '../helpers/tokenHelper';
 
+
+/**
+ * Load User via their JWT token
+ * @returns {object} User object
+ */
+
 export const loadUser = () => async dispatch => {
   if (localStorage.token) {
     setAuthToken(localStorage.token);
@@ -19,7 +24,7 @@ export const loadUser = () => async dispatch => {
   try {
     const res = await axios.get('http://localhost:8080/api/auth');
 
-    dispatch({
+    await dispatch({
       type: USER_LOADED,
       payload: res.data
     });
@@ -31,6 +36,13 @@ export const loadUser = () => async dispatch => {
   }
 };
 
+/**
+ * Register User
+ * @param {string} name - First and second name combined
+ * @param {string} email - User email
+ * @param {string} password - User password
+ */
+
 export const register = ({ name, email, password }) => async dispatch => {
   const config = {
     headers: {
@@ -41,11 +53,7 @@ export const register = ({ name, email, password }) => async dispatch => {
   const body = JSON.stringify({ name, email, password });
 
   try {
-    const res = await axios.post(
-      'http://localhost:8080/api/auth/register',
-      body,
-      config
-    );
+    const res = await axios.post('http://localhost:8080/api/auth/register', body, config);
 
     dispatch({
       type: REGISTER_SUCCESS,
@@ -67,7 +75,12 @@ export const register = ({ name, email, password }) => async dispatch => {
   }
 };
 
-// Login User
+/**
+ * Log User in
+ * @param {string} email - User email
+ * @param {string} password - User password
+ */
+
 export const login = (email, password) => async dispatch => {
   const config = {
     headers: {
@@ -78,19 +91,16 @@ export const login = (email, password) => async dispatch => {
   const body = JSON.stringify({ email, password });
 
   try {
-    const res = await axios.post(
-      'http://localhost:8080/api/auth/login',
-      body,
-      config
-    );
+    const res = await axios.post('http://localhost:8080/api/auth/login', body, config);
 
-    dispatch({
+    await dispatch({
       type: LOGIN_SUCCESS,
       payload: res.data
     });
 
-    dispatch(loadUser());
+    await dispatch(loadUser());
   } catch (err) {
+    console.log(err);
     const errors = err.response.data.errors;
 
     if (errors) {

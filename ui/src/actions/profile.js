@@ -1,47 +1,45 @@
 import axios from 'axios';
 import { setAlert } from './alert';
 import { loadUser } from './auth';
-import { CollectionsOutlined } from '@material-ui/icons';
-import { PROFILE_ERROR, GET_PROFILE } from './types';
-import {
-  parseFacebookResults,
-  parseTwitterResults
-} from '../helpers/profilePageHelpers';
+import { PROFILE_ERROR, GET_PROFILE } from '../actions/types';
 
-export const removeSite = website => async dispatch => {
+/**
+ * Remove DB values for selected site
+ * @param {string} website - Name of site to remove from DB (facebook/twitter)
+ */
+
+export const removeSite = (website) => async (dispatch) => {
   try {
-    await axios.post('http://localhost:8080/api/passport-auth/remove-site', { site: website });
+    await axios.post('/api/passport-auth/remove-site', { site: website });
     dispatch(setAlert('Done!', 'success'));
     await dispatch(loadUser());
   } catch (err) {
     const errors = err.response.data.errors;
     if (errors) {
       console.log(err);
-      errors.forEach(error => dispatch(setAlert(error.msg, 'warning')));
+      errors.forEach((error) => dispatch(setAlert(error.msg, 'warning')));
     }
   }
 };
 
-export const getSocialMediaProfile = site => async dispatch => {
-  let cleanedResponse = null;
-  try {
-    // disabled for debugging to avoid rate limiting
-    const res = await axios.get(`http://localhost:8080/api/passport-auth/my-${site}`);
+/**
+ * Connect to website, adding access token to DB and returning social media content
+ * @param {string} password - User password
+ * @returns {array} A list of User's photos and posts
+ */
 
-    if (site === 'facebook') {
-      cleanedResponse = parseFacebookResults(res.data);
-    } else {
-      cleanedResponse = parseTwitterResults(res.data);
-    }
+export const getSocialMediaProfile = (website) => async (dispatch) => {
+  try {
+    const { data } = await axios.get(`http://localhost:8080/api/passport-auth/my-${website}`);
 
     dispatch({
       type: GET_PROFILE,
-      payload: cleanedResponse
+      payload: data,
     });
 
     dispatch(
       setAlert(
-        `${site.toUpperCase()} has been set! You can now start a scan!`,
+        `${website.toUpperCase()} has been set! You can now start a scan!`,
         'success'
       )
     );
@@ -49,12 +47,12 @@ export const getSocialMediaProfile = site => async dispatch => {
     console.error(err);
 
     dispatch(
-      setAlert(`Error Retrieving data from ${site.toUpperCase()}`, 'error')
+      setAlert(`Error Retrieving data from ${website.toUpperCase()}`, 'error')
     );
 
     dispatch({
       type: PROFILE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: { msg: err.response.statusText, status: err.response.status },
     });
   }
 };

@@ -2,22 +2,23 @@ import * as colors from '../../helpers/colors';
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Grid } from '@material-ui/core';
+import { MiniDivider } from './MiniDivider';
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    margin: theme.spacing(2),
-    padding: theme.spacing(2),
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'
   },
-  divider: {
-    width: '40px',
-    border: 0
-  },
+
   paperHeader: {
     fontFamily: 'Raleway',
-    textTransform: 'uppercase'
+    textTransform: 'uppercase',
+    textAlign: 'center'
   }
 }));
 
@@ -42,20 +43,14 @@ export const IconHeader = ({ icon, text, subheader }) => {
         </Grid>
         <Grid item>
           <Typography
-            variant='h4'
+            variant={subheader ? 'h4' : 'h3'}
             className={classes.paperHeader}
             style={subheader ? { color: 'black' } : { color: color }}>
             {text}
           </Typography>
         </Grid>
       </Grid>
-      <hr
-        className={classes.divider}
-        style={{
-          borderTop: '2px solid ' + color,
-          marginBottom: subheader ? 40 : 0
-        }}
-      />
+      <MiniDivider color={color} />
     </div>
   );
 };

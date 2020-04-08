@@ -4,8 +4,6 @@ import * as colors from '../../helpers/colors';
 import {
   ButtonGroup,
   Container,
-  CssBaseline,
-  Avatar,
   Typography,
   TextField,
   Button,
@@ -27,44 +25,44 @@ import {
   VisibilityOff
 } from '@material-ui/icons';
 import { Redirect } from 'react-router-dom';
+import { IconHeader } from '../layout/IconHeader';
+import { MiniDivider } from '../layout/MiniDivider';
+import { isMobile } from 'react-device-detect';
 
 const useStyles = makeStyles(theme => ({
+  container: {
+    height: '100vh',
+    backgroundImage: 'url(' + require('../../assets/pattern.png') + ')',
+    backgroundRepeat: 'repeat'
+  },
   paper: {
-    marginTop: theme.spacing(10),
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
+    '& p, h3, h4, h5, h6': {
+      fontFamily: 'Raleway'
+    }
   },
-  authAction: {
-    margin: theme.spacing(4)
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: colors.colorPurple,
-    width: 80,
-    height: 80
+  authActionMobile: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: 250,
+    alignItems: 'center',
+    margin: '0 auto'
   },
   input: {
-    width: '300px'
+    width: '100%'
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
-    backgroundColor: colors.colorPurple,
+    backgroundColor: colors.colorDarkPink,
     '&:hover': {
-      background: 'rgb(110,72,167)'
+      background: colors.colorDarkPink
     }
-  },
-
-  authenticateButton: {
-    margin: theme.spacing(2),
-    backgroundColor: colors.colorLightPink
-  },
-  divider: {
-    paddingBottom: theme.spacing(2),
-    width: '40px',
-    border: 0
   }
 }));
 
@@ -121,209 +119,219 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
   };
 
   return (
-    <Container component='main' maxWidth='md'>
-      <Paper elevation={2} className={classes.paper}>
-        <CssBaseline />
-        <Avatar className={classes.avatar} style={{ marginTop: '20px' }}>
-          <VerifiedUser fontSize='large' />
-        </Avatar>
-        <Typography
-          component='h1'
-          variant='h3'
-          style={{ textTransform: 'uppercase', fontFamily: 'Raleway' }}>
-          {authAction}
-        </Typography>
+    <div className={classes.container}>
+      <Container component='main' maxWidth='md'>
+        <div style={{ textAlign: 'center' }}>
+          <img
+            src={require('../../assets/logo.png')}
+            width={250}
+            height={250}
+          />
+        </div>
+        <Paper
+          elevation={4}
+          className={classes.paper}
+          style={{ backgroundColor: colors.colorPurple }}>
+          <IconHeader icon={VerifiedUser} text={authAction} subheader={false} />
+        </Paper>
 
-        <hr
-          className={classes.divider}
-          style={{ borderTop: '2px solid' + colors.colorPurple }}
-        />
+        <Paper elevation={4} className={classes.paper}>
+          <Typography style={{ color: 'rgb(180,180,180)' }}>
+            Would you like to:
+          </Typography>
 
-        <Typography style={{ color: 'rgb(180,180,180)' }}>
-          Would you like to:{' '}
-        </Typography>
+          <MiniDivider color={'#4a4a4a'} />
 
-        <ButtonGroup size='large' className={classes.authAction}>
-          <Button
-            onClick={toggleAuthAction}
-            variant='outlined'
-            id='login'
-            style={
-              authAction === 'login'
-                ? {
-                    backgroundColor: colors.colorBlue,
-                    color: 'white',
-                    width: '250px'
-                  }
-                : { width: '250px' }
-            }
-            endIcon={<LockOpen />}>
-            Login
-          </Button>
-          <Button
-            onClick={toggleAuthAction}
-            variant='outlined'
+          <ButtonGroup
             size='large'
-            style={
-              authAction === 'register'
-                ? {
-                    backgroundColor: colors.colorDarkPink,
-                    color: 'white',
-                    width: '250px'
-                  }
-                : { width: '250px' }
-            }
-            id='register'
-            endIcon={<PersonAdd />}>
-            Register
-          </Button>
-        </ButtonGroup>
-
-        {/* LOGIN */}
-        <Collapse in={authAction === 'login'}>
-          <FormGroup onSubmit={e => e.preventDefault()}>
-            <TextField
-              className={classes.input}
-              margin='normal'
-              required
-              fullWidth
-              onInput={e =>
-                setLoginData({ ...loginData, [e.target.name]: e.target.value })
-              }
-              id='login_email'
-              label='Email Address'
-              name='login_email'
-              autoComplete='email'
-              autoFocus
-            />
-            <TextField
-              className={classes.input}
-              margin='normal'
-              required
-              fullWidth
-              name='login_password'
-              label='Password'
-              type='password'
-              id='login_password'
-              onInput={e =>
-                setLoginData({ ...loginData, [e.target.name]: e.target.value })
-              }
-              autoComplete='current-password'
-            />
-
+            className={isMobile ? classes.authActionMobile : ''}>
             <Button
-              type='submit'
-              size='large'
-              onClick={submitLogin}
-              fullWidth
-              variant='contained'
-              color='primary'
-              className={classes.submit}>
+              onClick={toggleAuthAction}
+              variant='outlined'
+              id='login'
+              style={
+                authAction === 'login'
+                  ? {
+                      backgroundColor: colors.colorPurple,
+                      color: 'white',
+                      width: '250px'
+                    }
+                  : { width: '250px' }
+              }
+              endIcon={<LockOpen />}>
               Login
             </Button>
-          </FormGroup>
-        </Collapse>
-
-        {/* REGISTER */}
-        <Collapse in={authAction === 'register'}>
-          <FormGroup onSubmit={e => e.preventDefault()}>
-            <TextField
-              className={classes.input}
-              margin='normal'
-              required
-              fullWidth
-              onInput={e =>
-                setFormData({ ...formData, [e.target.name]: e.target.value })
-              }
-              id='name'
-              label='Name'
-              name='name'
-              autoFocus
-            />
-            <TextField
-              className={classes.input}
-              margin='normal'
-              required
-              fullWidth
-              onInput={e =>
-                setFormData({ ...formData, [e.target.name]: e.target.value })
-              }
-              id='email'
-              label='Email Address'
-              name='email'
-              autoFocus
-            />
-            <TextField
-              className={classes.input}
-              margin='normal'
-              required
-              fullWidth
-              name='password'
-              label='Password'
-              type={formData.showPassword ? 'text' : 'password'}
-              id='password'
-              onInput={e =>
-                setFormData({ ...formData, [e.target.name]: e.target.value })
-              }
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position='end'>
-                    <IconButton
-                      aria-label='toggle password visibility'
-                      onClick={handleClickShowPassword}>
-                      {formData.showPassword ? (
-                        <Visibility />
-                      ) : (
-                        <VisibilityOff />
-                      )}
-                    </IconButton>
-                  </InputAdornment>
-                )
-              }}
-            />
-
-            <TextField
-              className={classes.input}
-              margin='normal'
-              required
-              fullWidth
-              name='confirm_password'
-              label='Confirm Password'
-              type={formData.showPassword ? 'text' : 'password'}
-              id='confirm_password'
-              onInput={e =>
-                setFormData({ ...formData, [e.target.name]: e.target.value })
-              }
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position='end'>
-                    <IconButton
-                      aria-label='toggle password visibility'
-                      onClick={handleClickShowPassword}>
-                      {formData.showPassword ? (
-                        <Visibility />
-                      ) : (
-                        <VisibilityOff />
-                      )}
-                    </IconButton>
-                  </InputAdornment>
-                )
-              }}
-            />
-
             <Button
-              type='submit'
-              onClick={submitRegister}
-              fullWidth
-              variant='contained'
-              color='primary'
-              className={classes.submit}>
+              onClick={toggleAuthAction}
+              variant='outlined'
+              size='large'
+              style={
+                authAction === 'register'
+                  ? {
+                      backgroundColor: colors.colorPurple,
+                      color: 'white',
+                      width: '250px'
+                    }
+                  : { width: '250px' }
+              }
+              id='register'
+              endIcon={<PersonAdd />}>
               Register
             </Button>
-          </FormGroup>
-        </Collapse>
-      </Paper>
-    </Container>
+          </ButtonGroup>
+
+          {/* LOGIN */}
+          <Collapse in={authAction === 'login'} style={{ width: '50%' }}>
+            <FormGroup fullWidth onSubmit={e => e.preventDefault()}>
+              <TextField
+                className={classes.input}
+                margin='normal'
+                required
+                fullWidth
+                onInput={e =>
+                  setLoginData({
+                    ...loginData,
+                    [e.target.name]: e.target.value
+                  })
+                }
+                id='login_email'
+                label='Email Address'
+                name='login_email'
+                autoComplete='email'
+                autoFocus
+              />
+              <TextField
+                className={classes.input}
+                margin='normal'
+                required
+                fullWidth
+                name='login_password'
+                label='Password'
+                type='password'
+                id='login_password'
+                onInput={e =>
+                  setLoginData({
+                    ...loginData,
+                    [e.target.name]: e.target.value
+                  })
+                }
+                autoComplete='current-password'
+              />
+
+              <Button
+                type='submit'
+                size='large'
+                onClick={submitLogin}
+                fullWidth
+                variant='contained'
+                color='primary'
+                className={classes.submit}>
+                Login
+              </Button>
+            </FormGroup>
+          </Collapse>
+
+          {/* REGISTER */}
+          <Collapse in={authAction === 'register'} style={{ width: '50%' }}>
+            <FormGroup onSubmit={e => e.preventDefault()}>
+              <TextField
+                className={classes.input}
+                margin='normal'
+                required
+                fullWidth
+                onInput={e =>
+                  setFormData({ ...formData, [e.target.name]: e.target.value })
+                }
+                id='name'
+                label='Name'
+                name='name'
+                autoFocus
+              />
+              <TextField
+                className={classes.input}
+                margin='normal'
+                required
+                fullWidth
+                onInput={e =>
+                  setFormData({ ...formData, [e.target.name]: e.target.value })
+                }
+                id='email'
+                label='Email Address'
+                name='email'
+                autoFocus
+              />
+              <TextField
+                className={classes.input}
+                margin='normal'
+                required
+                fullWidth
+                name='password'
+                label='Password'
+                type={formData.showPassword ? 'text' : 'password'}
+                id='password'
+                onInput={e =>
+                  setFormData({ ...formData, [e.target.name]: e.target.value })
+                }
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position='end'>
+                      <IconButton
+                        aria-label='toggle password visibility'
+                        onClick={handleClickShowPassword}>
+                        {formData.showPassword ? (
+                          <Visibility />
+                        ) : (
+                          <VisibilityOff />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }}
+              />
+
+              <TextField
+                className={classes.input}
+                margin='normal'
+                required
+                fullWidth
+                name='confirm_password'
+                label='Confirm Password'
+                type={formData.showPassword ? 'text' : 'password'}
+                id='confirm_password'
+                onInput={e =>
+                  setFormData({ ...formData, [e.target.name]: e.target.value })
+                }
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position='end'>
+                      <IconButton
+                        aria-label='toggle password visibility'
+                        onClick={handleClickShowPassword}>
+                        {formData.showPassword ? (
+                          <Visibility />
+                        ) : (
+                          <VisibilityOff />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }}
+              />
+
+              <Button
+                type='submit'
+                onClick={submitRegister}
+                fullWidth
+                variant='contained'
+                color='primary'
+                className={classes.submit}>
+                Register
+              </Button>
+            </FormGroup>
+          </Collapse>
+        </Paper>
+      </Container>
+    </div>
   );
 };
 
