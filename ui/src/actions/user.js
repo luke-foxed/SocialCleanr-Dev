@@ -16,8 +16,8 @@ export const updateUser = (
 ) => async (dispatch) => {
   const endPoint =
     updateType === 'password'
-      ? 'http://localhost:8080/api/user/update-password'
-      : 'http://localhost:8080/api/user/update-basic';
+      ? '/api/user/update-password'
+      : '/api/user/update-basic';
 
   const config = {
     headers: {
@@ -57,7 +57,7 @@ export const updateUser = (
 
 export const toggleGamification = (toggle) => async (dispatch) => {
   try {
-    await axios.post('http://localhost:8080/api/user/game', { enabled: toggle });
+    await axios.post('/api/user/game', { enabled: toggle });
     dispatch(setAlert('Done!', 'success'));
     await dispatch(loadUser());
   } catch (err) {
@@ -75,7 +75,7 @@ export const toggleGamification = (toggle) => async (dispatch) => {
 
 export const deleteUser = () => async (dispatch) => {
   try {
-    const res = await axios.delete('http://localhost:8080/api/user/delete');
+    const res = await axios.delete('/api/user/delete');
     if (res.status === 200) {
       dispatch(setAlert(res.data.msg, 'success'));
       dispatch(logout());

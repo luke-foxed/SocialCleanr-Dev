@@ -14,7 +14,7 @@ export const runCustomScan = (modelSelection, image) => async (dispatch) => {
   try {
     let { data } = await axios({
       method: 'post',
-      url: 'http://localhost:8080/api/classifier/custom-scan',
+      url: '/api/classifier/custom-scan',
       data: {
         image: image,
         models: modelSelection,

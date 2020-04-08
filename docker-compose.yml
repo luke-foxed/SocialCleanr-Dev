@@ -6,13 +6,16 @@ services:
       - '80:80'
     depends_on:
       - api
+    container_name: ui
   api:
     build: ./api
     ports:
       - '8080:8080'
     depends_on:
       - mongo
+    container_name: api
   mongo:
     image: mongo
     ports:
       - '27017:27017'
+    container_name: db

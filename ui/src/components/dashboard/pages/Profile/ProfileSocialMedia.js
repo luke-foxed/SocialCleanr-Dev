@@ -134,7 +134,7 @@ export const ProfileSocialMedia = ({
                 }
                 disabled={is_connected_facebook}>
                 <a
-                  href={`http://localhost:5000/api/passport-auth/login-facebook/${user._id}`}
+                  href={`http://localhost:8080/api/passport-auth/login-facebook/${user._id}`}
                   target='_self'
                   style={
                     is_connected_facebook
@@ -195,7 +195,7 @@ export const ProfileSocialMedia = ({
                 }
                 disabled={is_connected_twitter}>
                 <a
-                  href={`http://localhost:5000/api/passport-auth/login-twitter/${user._id}`}
+                  href={`http://localhost:8080/api/passport-auth/login-twitter/${user._id}`}
                   target='_self'
                   style={
                     is_connected_twitter
