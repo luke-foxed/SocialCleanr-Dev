@@ -29,7 +29,7 @@ let results = {
   people: [],
   gestures: [],
   text: [],
-  age: []
+  age: [],
 };
 
 /**
@@ -44,8 +44,8 @@ const loadModels = async () => {
     console.log('\nMODELS ALREADY LOADED\n');
   } else {
     maleClothingModel = await tfImage.load(
-      modelPaths.maleModelOld.model,
-      modelPaths.maleModelOld.metadata
+      modelPaths.maleModel.model,
+      modelPaths.maleModel.metadata
     );
 
     console.log('\nLoaded Male Model...\n');
@@ -89,13 +89,13 @@ const loadModels = async () => {
  * @returns {array} Array of images, one for each detected person
  */
 
-const detectPeople = async image => {
+const detectPeople = async (image) => {
   let boundingBoxes = [];
   let canvasImage = await classificationHelpers.createCanvasImage(image);
   let tensor = tf.browser.fromPixels(canvasImage);
   let results = await personDetectionModel.detect(tensor);
-  results.forEach(element => {
-    positiveBox = element.bbox.map(box => Math.abs(Math.round(box)));
+  results.forEach((element) => {
+    positiveBox = element.bbox.map((box) => Math.abs(Math.round(box)));
     boundingBoxes.push(positiveBox);
   });
 
@@ -113,16 +113,16 @@ const detectPeople = async image => {
  * @returns {object} Object containing age/gender detections
  */
 
-const detectMultipleAgeGender = async image => {
+const detectMultipleAgeGender = async (image) => {
   let img = await loadImage(image);
   let ageGenderResults = await faceapi.detectAllFaces(img).withAgeAndGender();
-  ageGenderResults.forEach(person => {
+  ageGenderResults.forEach((person) => {
     let box = person.detection.box;
     results.age.push({
       gender: person.gender,
       age: Math.round(person.age),
       probability: Math.round(100 * person.detection.classScore),
-      bbox: [box._x, box._y, box._width, box._height]
+      bbox: [box._x, box._y, box._width, box._height],
     });
   });
 
@@ -135,22 +135,29 @@ const detectMultipleAgeGender = async image => {
  * @returns {object} Object containing age/gender detections
  */
 
-const detectAgeGender = async image => {
+const detectAgeGender = async (image) => {
   let img = await loadImage(image);
   let ageGenderResults = await faceapi.detectSingleFace(img).withAgeAndGender();
+
   let detectedFace = {};
 
   if (ageGenderResults !== undefined)
     detectedFace = {
       gender: ageGenderResults.gender,
-      age: ageGenderResults.age
+      age: ageGenderResults.age,
     };
   else {
     console.log('No faces detected');
-    detectedFaces = {
-      gender: 'unknown',
-      age: 'unknown'
+
+    // choose randomly and hope for the best
+    const genders = ['male', 'female'];
+    const random = genders[Math.floor(Math.random() * genders.length)];
+
+    detectedFace = {
+      gender: random,
+      age: 'unknown',
     };
+
   }
 
   return detectedFace;
@@ -162,29 +169,29 @@ const detectAgeGender = async image => {
  * @returns {object} Object containing clothing detections
  */
 
-const detectClothing = async image => {
+const detectClothing = async (image) => {
   results = {
     people: [],
     gestures: [],
     text: [],
-    age: []
+    age: [],
   };
 
   let people = await detectPeople(image);
   let peopleAgeGender = [];
   let classifcation = [];
 
-  await generalHelpers.asyncForEach(people, async person => {
+  await generalHelpers.asyncForEach(people, async (person) => {
     let detection = await detectAgeGender(person.image);
 
     peopleAgeGender.push({
       ...person,
       gender: detection.gender,
-      age: detection.age
+      age: detection.age,
     });
   });
 
-  await generalHelpers.asyncForEach(peopleAgeGender, async person => {
+  await generalHelpers.asyncForEach(peopleAgeGender, async (person) => {
     let image = await loadImage(person.image);
 
     if (person.gender === 'male') {
@@ -200,7 +207,7 @@ const detectClothing = async image => {
         topless_prediction: Math.round(100 * classifcation[0].probability),
         age: Math.round(person.age),
         bbox: person.bbox,
-        image: image
+        image: image,
       });
     }
   });
@@ -214,16 +221,16 @@ const detectClothing = async image => {
  * @returns {object} Object containing offensive text detections
  */
 
-const detectText = async text => {
+const detectText = async (text) => {
   let words = text.trim().split(' ');
-  await generalHelpers.asyncForEach(words, async word => {
+  await generalHelpers.asyncForEach(words, async (word) => {
     try {
       let predictions = await toxicityModel.classify(word);
-      predictions.forEach(prediction => {
+      predictions.forEach((prediction) => {
         if (prediction.results[0].match === true) {
           results.text.push({
             text: word,
-            reason: prediction.label
+            reason: prediction.label,
           });
         }
       });
@@ -241,19 +248,19 @@ const detectText = async text => {
  * @returns {object} Object containing offensive text detections
  */
 
-const detectTextFromImage = async image => {
+const detectTextFromImage = async (image) => {
   let text = await classificationHelpers.convertToText(image);
 
   if (text.length > 0) {
-    await generalHelpers.asyncForEach(text, async item => {
+    await generalHelpers.asyncForEach(text, async (item) => {
       try {
         let predictions = await toxicityModel.classify(item.word);
-        predictions.forEach(prediction => {
+        predictions.forEach((prediction) => {
           if (prediction.results[0].match === true) {
             results.text.push({
               text: item.word,
               reason: prediction.label,
-              bbox: item.bbox
+              bbox: item.bbox,
             });
           }
         });
@@ -272,12 +279,12 @@ const detectTextFromImage = async image => {
  * @returns {object} Object containing offensive gestures
  */
 
-const detectGesture = async image => {
+const detectGesture = async (image) => {
   results = {
     people: [],
     gestures: [],
     text: [],
-    age: []
+    age: [],
   };
 
   let canvasImage = await classificationHelpers.createCanvasImage(image);
@@ -291,7 +298,7 @@ const detectGesture = async image => {
     'detection_boxes',
     'detection_scores',
     'detection_classes',
-    'num_detections'
+    'num_detections',
   ]);
 
   const boxes = await output[0].dataSync();
@@ -337,12 +344,12 @@ const detectGesture = async image => {
   );
 
   if (objects.length > 0) {
-    objects.forEach(gesture => {
+    objects.forEach((gesture) => {
       if (gesture.score > 0.7) {
         results.gestures.push({
           type: gesture.class,
           score: Math.round(100 * gesture.score),
-          bbox: gesture.bbox
+          bbox: gesture.bbox,
         });
       }
     });
@@ -359,5 +366,5 @@ module.exports = {
   detectGesture,
   detectText,
   detectTextFromImage,
-  detectMultipleAgeGender
+  detectMultipleAgeGender,
 };

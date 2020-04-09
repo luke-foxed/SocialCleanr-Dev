@@ -8,7 +8,7 @@ const facebookSecret = config.get('facebookTESTSecret');
 const twitterKey = config.get('twitterAPIKey');
 const twitterSecret = config.get('twitterAPISecret');
 
-module.exports = function(passport) {
+module.exports = function (passport) {
   passport.use(
     new FacebookStrategy(
       {
