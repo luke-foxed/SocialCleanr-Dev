@@ -11,52 +11,41 @@ import { loadUser } from './auth';
  * @returns {array} A list of each flagged item
  */
 
-export const runAutomatedScan = (type, data) => async dispatch => {
+export const runAutomatedScan = (type, data, storeResults) => async (
+  dispatch
+) => {
   try {
     let results = [];
-    let count = [];
 
-    // increment scan count by one, the rest will be determined from the scan
-    let totalCount = {
-      flagged_text: 0,
-      flagged_clothing: 0,
-      flagged_gesture: 0,
-      flagged_age: 0,
-      automated_scans: 1
-    };
-
-    await asyncForEach(data, async content => {
-      let response = await axios({
+    await asyncForEach(data, async (content) => {
+      let { data } = await axios({
         method: 'post',
         url: '/api/classifier/automated-scan',
         data: {
           type: type,
-          data: content
-        }
+          data: content,
+          store: storeResults,
+        },
       });
 
-      let filteredResults = cleanResults(response.data, content);
-      results.push(filteredResults.flaggedContent);
-      count.push(filteredResults.count);
+      results.push(data);
     });
 
     const resultsFlattened = [].concat.apply([], results);
-    const countFlattened = [].concat.apply([], count);
 
-    // add each count for every scan together
-    countFlattened.forEach(count => {
-      for (let [key, val] of Object.entries(count)) {
-        totalCount[key] += val;
-      }
-    });
+    // increment automated scans
+    await axios.post('/api/user/write-statistics', { automated_scans: 1 });
 
-    await axios.post('/api/user/write-statistics', totalCount);
+    if (storeResults) {
+      await axios.post('/api/user/store-results', resultsFlattened);
+    }
 
     dispatch(setAlert('Scan Complete', 'success'));
     dispatch(loadUser());
 
     return resultsFlattened;
   } catch (err) {
+    console.error(err);
     dispatch(setAlert(err.response.data.msg, 'error'));
     return [];
   }
@@ -68,18 +57,32 @@ export const runAutomatedScan = (type, data) => async dispatch => {
  * @returns {string} Base64 version of image
  */
 
-export const getImageAsBase64 = async image => {
+export const getImageAsBase64 = async (image) => {
   let response = await axios({
     method: 'post',
     url: '/api/classifier/get-image',
     data: {
-      image: image
-    }
+      image: image,
+    },
   });
   // add header to image
   let base64 = 'data:image/jpeg;base64,' + response.data.toString();
 
   await axios.post('/api/user/write-statistics', { images_cleaned: 1 });
-
   return base64;
+};
+
+/**
+ * Remove flagged content from database (e.g. false positive)
+ * @param {string} image - URL of image to be retrieved
+ */
+
+export const removeItem = (id) => async (dispatch) => {
+  try {
+    await axios.post('/api/user/remove-content', { content_id: id });
+    dispatch(setAlert('Content deleted', 'success'));
+  } catch (err) {
+    console.error(err);
+    dispatch(setAlert(err.response.data.msg, 'error'));
+  }
 };

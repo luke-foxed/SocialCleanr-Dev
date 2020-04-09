@@ -1,6 +1,7 @@
 import { slide as Menu } from 'react-burger-menu';
 import React, { useState } from 'react';
 import { Route, HashRouter, Redirect } from 'react-router-dom';
+import { Notifications } from '@material-ui/icons';
 import SidebarItems from './SidebarItems';
 import Profile from './pages/Profile/Profile';
 import Home from './pages/Home/Home';
@@ -11,22 +12,29 @@ import PropTypes from 'prop-types';
 import { logout } from '../../actions/auth';
 import 'react-image-lightbox/style.css';
 import CustomScan from './pages/CustomScan/CustomScan';
-import { List, makeStyles, Typography } from '@material-ui/core';
+import {
+  List,
+  makeStyles,
+  Typography,
+  Tooltip,
+  IconButton,
+  Badge,
+} from '@material-ui/core';
 import * as colors from '../../helpers/colors';
 import { MiniDivider } from '../layout/MiniDivider';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     backgroundImage: 'url(' + require('../../assets/pattern.png') + ')',
-    backgroundRepeat: 'repeat'
+    backgroundRepeat: 'repeat',
   },
   content: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   container: {
     paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4)
-  }
+    paddingBottom: theme.spacing(4),
+  },
 }));
 
 const DashboardMobile = ({ auth, logout }) => {
@@ -39,43 +47,43 @@ const DashboardMobile = ({ auth, logout }) => {
       width: '36px',
       height: '30px',
       left: '36px',
-      top: '36px'
+      top: '36px',
     },
     bmBurgerBars: {
       transition: 'background-color 0.5s ease-in-out',
-      background: colors.colorPurple
+      background: colors.colorPurple,
     },
 
     bmCrossButton: {
       height: '24px',
-      width: '24px'
+      width: '24px',
     },
     bmCross: {
-      background: colors.colorPurple
+      background: colors.colorPurple,
     },
     bmMenuWrap: {
       width: '220px',
       top: 0,
       bottom: 0,
-      left: 0
+      left: 0,
     },
     bmMenu: {
       background: '#333333',
-      fontSize: '1.15em'
+      fontSize: '1.15em',
     },
     bmMorphShape: {
-      fill: '#373a47'
+      fill: '#373a47',
     },
     bmItemList: {
-      color: '#b8b7ad'
+      color: '#b8b7ad',
     },
     bmItem: {
       margin: '0 auto',
-      outline: 'none'
+      outline: 'none',
     },
     bmOverlay: {
-      background: 'rgba(0, 0, 0, 0.3)'
-    }
+      background: 'rgba(0, 0, 0, 0.3)',
+    },
   };
 
   const handleMenu = () => {
@@ -94,7 +102,7 @@ const DashboardMobile = ({ auth, logout }) => {
                 width={150}
                 style={{
                   padding: '12px',
-                  borderRadius: '50%'
+                  borderRadius: '50%',
                 }}
               />
 
@@ -102,7 +110,7 @@ const DashboardMobile = ({ auth, logout }) => {
                 variant='h4'
                 style={{
                   fontFamily: 'Raleway',
-                  textTransform: 'uppercase'
+                  textTransform: 'uppercase',
                 }}>
                 {auth.user.name}
               </Typography>
@@ -112,6 +120,21 @@ const DashboardMobile = ({ auth, logout }) => {
           <List>
             <SidebarItems onLogoutClick={() => logout()} />
           </List>
+
+          <Tooltip
+            title={
+              auth.user.flagged_content.length === 0
+                ? ''
+                : `You have ${auth.user.flagged_content.length} items from your last scan that have yet to be actioned`
+            }>
+            <IconButton color='inherit'>
+              <Badge
+                badgeContent={auth.user.flagged_content.length}
+                color='secondary'>
+                <Notifications fontSize={'large'} />
+              </Badge>
+            </IconButton>
+          </Tooltip>
         </Menu>
 
         <main className={classes.content}>
@@ -131,9 +154,9 @@ const DashboardMobile = ({ auth, logout }) => {
 
 DashboardMobile.propTypes = {
   auth: PropTypes.object.isRequired,
-  logout: PropTypes.func.isRequired
+  logout: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = state => ({ auth: state.auth });
+const mapStateToProps = (state) => ({ auth: state.auth });
 
 export default connect(mapStateToProps, { logout })(DashboardMobile);

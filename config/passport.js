@@ -8,13 +8,13 @@ const facebookSecret = config.get('facebookTESTSecret');
 const twitterKey = config.get('twitterAPIKey');
 const twitterSecret = config.get('twitterAPISecret');
 
-module.exports = function(passport) {
+module.exports = function (passport) {
   passport.use(
     new FacebookStrategy(
       {
         clientID: facebookID,
         clientSecret: facebookSecret,
-        callbackURL: '/api/passport-auth/auth/facebook/callback'
+        callbackURL: '/api/passport-auth/auth/facebook/callback',
       },
       async (accessToken, refreshToken, profile, done) => {
         done(null, accessToken);
@@ -27,29 +27,24 @@ module.exports = function(passport) {
       {
         consumerKey: twitterKey,
         consumerSecret: twitterSecret,
-        callbackURL: '/api/passport-auth/auth/twitter/callback'
+        callbackURL: '/api/passport-auth/auth/twitter/callback',
       },
       async (accessToken, refreshToken, profile, done) => {
-        console.log(profile);
         done(null, { token: accessToken, tokenSecret: refreshToken });
       }
     )
   );
 
   passport.serializeUser((profile, done) => {
-    console.log('SERIAL');
-    console.log(profile);
     done(null, profile);
   });
 
   // deserialize the cookieUserId to user in the database
   passport.deserializeUser((profile, done) => {
-    console.log('DESERIAL');
-    console.log(profile);
     try {
       done(null, profile);
     } catch (err) {
-      console.log('ERROR: ' + err);
+      console.err(err);
       done(new Error('Failed to deserialize an user'));
     }
   });

@@ -11,28 +11,23 @@ import { loadUser } from './auth';
  * @returns {array} A list of each flagged item
  */
 
-export const runCustomScan = (modelSelection, image) => async dispatch => {
+export const runCustomScan = (modelSelection, image) => async (dispatch) => {
   try {
-    let response = await axios({
+    let { data } = await axios({
       method: 'post',
       url: '/api/classifier/custom-scan',
       data: {
         image: image,
         models: modelSelection,
-        type: 'image'
-      }
+        type: 'image',
+      },
     });
 
-    let parsedResults = cleanResults(response.data, image);
-
-    // add custom scan increment
-    parsedResults.count['custom_scans'] = 1;
-    await axios.post('/api/user/write-statistics', parsedResults.count);
 
     dispatch(setAlert('Scan Complete', 'success'));
     dispatch(loadUser());
 
-    return parsedResults.flaggedContent;
+    return data;
   } catch (err) {
     dispatch(setAlert(err.response.data.msg, 'error'));
     return [];

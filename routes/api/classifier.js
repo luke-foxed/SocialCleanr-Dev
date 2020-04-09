@@ -3,7 +3,8 @@ const axios = require('axios');
 const router = express.Router();
 const auth = require('../../middleware/auth');
 const classification = require('../../classification/classification');
-const helpers = require('../../helpers/generalHelpers');
+const generalHelpers = require('../../helpers/generalHelpers');
+const parseHelpers = require('../../helpers/parseHelpers');
 const User = require('../../models/User');
 require('@tensorflow/tfjs-node');
 
@@ -15,7 +16,7 @@ require('@tensorflow/tfjs-node');
 
 router.post('/get-image', async (req, res) => {
   let response = await axios.get(req.body.image, {
-    responseType: 'arraybuffer'
+    responseType: 'arraybuffer',
   });
 
   let base64 = Buffer.from(response.data, 'binary').toString('base64');
@@ -37,7 +38,7 @@ router.post('/custom-scan', auth, async (req, res) => {
     if (req.body.type === 'image') {
       let selection = req.body.models;
 
-      await helpers.asyncForEach(selection, async model => {
+      await generalHelpers.asyncForEach(selection, async (model) => {
         switch (model) {
           case 'age':
             console.log('\nSELECTED AGE\n');
@@ -73,7 +74,22 @@ router.post('/custom-scan', auth, async (req, res) => {
     results.text = textResults.text || [];
     results.age = ageResults.age || [];
 
-    res.status(200).send(results);
+    const { count, flaggedContent } = parseHelpers.cleanResults(
+      results,
+      req.body.image
+    );
+
+    count['custom_scans'] = 1;
+
+    Object.entries(count).forEach(async ([key, val]) => {
+      await User.findByIdAndUpdate(req.user.id, {
+        $inc: {
+          [`statistics.0.${key}`]: val || 0,
+        },
+      });
+    });
+
+    res.status(200).send(flaggedContent);
   } catch (err) {
     console.error(err.message);
     res
@@ -88,7 +104,7 @@ router.post('/custom-scan', auth, async (req, res) => {
  * @access   Private
  */
 
-router.post('/automated-scan', async (req, res) => {
+router.post('/automated-scan', auth, async (req, res) => {
   try {
     await classification.loadModels();
     let results = {};
@@ -107,7 +123,20 @@ router.post('/automated-scan', async (req, res) => {
     results.text = textResults.text || [];
     results.age = ageResults.age || [];
 
-    res.send(results);
+    const { count, flaggedContent } = parseHelpers.cleanResults(
+      results,
+      req.body.data
+    );
+
+    Object.entries(count).forEach(async ([key, val]) => {
+      await User.findByIdAndUpdate(req.user.id, {
+        $inc: {
+          [`statistics.0.${key}`]: val || 0,
+        },
+      });
+    });
+
+    res.status(200).send(flaggedContent);
   } catch (err) {
     console.error(err.message);
     res
