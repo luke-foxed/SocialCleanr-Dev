@@ -114,11 +114,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const test = {
-  text: ['Fuck you butch', 'This is gay', 'I love you'],
-  photos: [],
-};
-
 const Scan = ({ user, profile, runAutomatedScan, removeItem }) => {
   const classes = useStyles();
   const [boxImage, setBoxImage] = useState('');
@@ -129,10 +124,6 @@ const Scan = ({ user, profile, runAutomatedScan, removeItem }) => {
 
   const { photos, text } = profile;
   const storeResults = user.is_gamification_enabled;
-
-  const flaggedContentType = user.flagged_content[0].content.includes('://')
-    ? 'photos'
-    : 'text';
 
   // time per image + model loading time
   const estimatedTime =
@@ -325,14 +316,19 @@ const Scan = ({ user, profile, runAutomatedScan, removeItem }) => {
             </Typography>
 
             <MiniDivider color={'#4a4a4a'} />
-
-            <ResultsTable
-              flaggedContent={user.flagged_content}
-              onViewClick={(bbox, content) => showBox(bbox, content)}
-              onCleanClick={(bbox, content) => cleanImage(bbox, content)}
-              onRemoveClick={(id) => markFalsePositive(id)}
-              resultsType={flaggedContentType}
-            />
+            {user.flagged_content[0] !== undefined && (
+              <ResultsTable
+                flaggedContent={user.flagged_content}
+                onViewClick={(bbox, content) => showBox(bbox, content)}
+                onCleanClick={(bbox, content) => cleanImage(bbox, content)}
+                onRemoveClick={(id) => markFalsePositive(id)}
+                resultsType={
+                  user.flagged_content[0].content.includes('://')
+                    ? 'photos'
+                    : 'text'
+                }
+              />
+            )}
           </Paper>
         )}
 
