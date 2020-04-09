@@ -130,10 +130,6 @@ const Scan = ({ user, profile, runAutomatedScan, removeItem }) => {
   const { photos, text } = profile;
   const storeResults = user.is_gamification_enabled;
 
-  const flaggedContentType = user.flagged_content[0].content.includes('://')
-    ? 'photos'
-    : 'text';
-
   // time per image + model loading time
   const estimatedTime =
     scanType === 'photos' ? photos.length * 6 + 10 : text.length * 4 + 10;
@@ -325,14 +321,19 @@ const Scan = ({ user, profile, runAutomatedScan, removeItem }) => {
             </Typography>
 
             <MiniDivider color={'#4a4a4a'} />
-
-            <ResultsTable
-              flaggedContent={user.flagged_content}
-              onViewClick={(bbox, content) => showBox(bbox, content)}
-              onCleanClick={(bbox, content) => cleanImage(bbox, content)}
-              onRemoveClick={(id) => markFalsePositive(id)}
-              resultsType={flaggedContentType}
-            />
+            {user.flagged_content[0] !== undefined && (
+              <ResultsTable
+                flaggedContent={user.flagged_content}
+                onViewClick={(bbox, content) => showBox(bbox, content)}
+                onCleanClick={(bbox, content) => cleanImage(bbox, content)}
+                onRemoveClick={(id) => markFalsePositive(id)}
+                resultsType={
+                  user.flagged_content[0].content.includes('://')
+                    ? 'photos'
+                    : 'text'
+                }
+              />
+            )}
           </Paper>
         )}
 
