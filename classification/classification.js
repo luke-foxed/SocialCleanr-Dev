@@ -44,8 +44,8 @@ const loadModels = async () => {
     console.log('\nMODELS ALREADY LOADED\n');
   } else {
     maleClothingModel = await tfImage.load(
-      modelPaths.maleModelOld.model,
-      modelPaths.maleModelOld.metadata
+      modelPaths.maleModel.model,
+      modelPaths.maleModel.metadata
     );
 
     console.log('\nLoaded Male Model...\n');
@@ -157,6 +157,8 @@ const detectAgeGender = async (image) => {
       gender: random,
       age: 'unknown',
     };
+
+    console.log(detectedFace.gender);
   }
 
   return detectedFace;

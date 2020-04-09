@@ -105,6 +105,13 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
   },
+
+  infoHeader: {
+    display: 'flex',
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    color: 'grey',
+  },
 }));
 
 const Scan = ({ user, profile, runAutomatedScan, removeItem }) => {
@@ -289,15 +296,9 @@ const Scan = ({ user, profile, runAutomatedScan, removeItem }) => {
         </div>
       ) : (
         <Paper elevation={2} className={classes.paper}>
-          <Typography
-            variant='h6'
-            style={{
-              display: 'flex',
-              textAlign: 'center',
-              textTransform: 'uppercase',
-            }}>
-            To Start Scanning, Select A Social Media Profile From The 'Profile'
-            Page!
+          <Typography variant='h6' className={classes.infoHeader}>
+            To Start Scanning, Set An Active Social Media Profile From The
+            'Profile' Page!
           </Typography>
         </Paper>
       )}

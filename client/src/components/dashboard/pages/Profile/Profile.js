@@ -106,9 +106,11 @@ const Profile = ({
   };
 
   const profileScore =
-    100 -
-    100 *
-      (user.flagged_content.length / (user.total_images + user.total_posts));
+    user.flagged_content.length !== 0
+      ? 100 -
+        100 *
+          (user.flagged_content.length / (user.total_images + user.total_posts))
+      : 100;
 
   return (
     <Container component='main' maxWidth='lg' style={{ marginTop: '40px' }}>
