@@ -66,7 +66,7 @@ export const ProfileSocialMedia = ({
   const location = window.location.href;
   const pathArray = location.split('/');
   const baseURL = pathArray[0] + '//' + pathArray[2];
-
+  
   const { is_connected_facebook, is_connected_twitter } = user;
 
   const ProfileAuthenticationText = ({ website }) => {

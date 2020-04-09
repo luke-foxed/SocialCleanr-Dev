@@ -105,7 +105,19 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
   },
+
+  infoHeader: {
+    display: 'flex',
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    color: 'grey',
+  },
 }));
+
+const test = {
+  text: ['Fuck you butch', 'This is gay', 'I love you'],
+  photos: [],
+};
 
 const Scan = ({ user, profile, runAutomatedScan, removeItem }) => {
   const classes = useStyles();
@@ -117,7 +129,10 @@ const Scan = ({ user, profile, runAutomatedScan, removeItem }) => {
 
   const { photos, text } = profile;
   const storeResults = user.is_gamification_enabled;
-  const storeContent = user.flagged_content;
+
+  const flaggedContentType = user.flagged_content[0].content.includes('://')
+    ? 'photos'
+    : 'text';
 
   // time per image + model loading time
   const estimatedTime =
@@ -289,15 +304,9 @@ const Scan = ({ user, profile, runAutomatedScan, removeItem }) => {
         </div>
       ) : (
         <Paper elevation={2} className={classes.paper}>
-          <Typography
-            variant='h6'
-            style={{
-              display: 'flex',
-              textAlign: 'center',
-              textTransform: 'uppercase',
-            }}>
-            To Start Scanning, Select A Social Media Profile From The 'Profile'
-            Page!
+          <Typography variant='h6' className={classes.infoHeader}>
+            To Start Scanning, Set An Active Social Media Profile From The
+            'Profile' Page!
           </Typography>
         </Paper>
       )}
@@ -322,7 +331,7 @@ const Scan = ({ user, profile, runAutomatedScan, removeItem }) => {
               onViewClick={(bbox, content) => showBox(bbox, content)}
               onCleanClick={(bbox, content) => cleanImage(bbox, content)}
               onRemoveClick={(id) => markFalsePositive(id)}
-              resultsType={scanType}
+              resultsType={flaggedContentType}
             />
           </Paper>
         )}

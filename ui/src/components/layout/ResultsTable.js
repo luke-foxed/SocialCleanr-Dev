@@ -12,6 +12,7 @@ import {
   Avatar,
   Typography,
   Dialog,
+  Tooltip,
 } from '@material-ui/core';
 import React, { useState } from 'react';
 import { Warning, Visibility, DeleteForever, Brush } from '@material-ui/icons';
@@ -85,25 +86,33 @@ export const ResultsTable = ({
                 )}
               </TableCell>
               <TableCell align='center'>
-                <IconButton
-                  onClick={() => handleViewContent(value.box, value.content)}>
-                  <Visibility />
-                </IconButton>
+                <Tooltip arrow title='View the flagged region'>
+                  <IconButton
+                    onClick={() => handleViewContent(value.box, value.content)}>
+                    <Visibility />
+                  </IconButton>
+                </Tooltip>
 
-                <IconButton
-                  style={
-                    resultsType === 'photos'
-                      ? { display: 'inline' }
-                      : { display: 'none' }
-                  }
-                  onClick={() => handleCleanContent(value.box, value.content)}>
-                  <Brush />
-                </IconButton>
+                <Tooltip arrow title='Clean the flagged region'>
+                  <IconButton
+                    style={
+                      resultsType === 'photos'
+                        ? { display: 'inline' }
+                        : { display: 'none' }
+                    }
+                    onClick={() =>
+                      handleCleanContent(value.box, value.content)
+                    }>
+                    <Brush />
+                  </IconButton>
+                </Tooltip>
 
-                <IconButton
-                  onClick={() => handleRemoveContent(value.content_id)}>
-                  <DeleteForever />
-                </IconButton>
+                <Tooltip arrow title='Mark item as false-positive'>
+                  <IconButton
+                    onClick={() => handleRemoveContent(value.content_id)}>
+                    <DeleteForever />
+                  </IconButton>
+                </Tooltip>
               </TableCell>
             </TableRow>
           ))}

@@ -34,8 +34,12 @@ import { MiniDivider } from '../layout/MiniDivider';
 const drawerWidth = 240;
 
 const CustomTooltip = withStyles(() => ({
+  arrow: {
+    colo: 'rgba(0,0,0,0.4)',
+  },
   tooltip: {
     fontSize: '16px',
+    backgroundColor: 'rgba(0,0,0,0.4)',
   },
 }))(Tooltip);
 
@@ -203,6 +207,7 @@ const Dashboard = ({ auth, logout }) => {
                   />
 
                   <CustomTooltip
+                    arrow
                     title={
                       auth.user.flagged_content.length === 0
                         ? ''

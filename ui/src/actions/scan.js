@@ -1,7 +1,7 @@
 import axios from 'axios';
+import { asyncForEach } from '../helpers/generalHelpers';
 import { setAlert } from './alert';
 import { loadUser } from './auth';
-import { asyncForEach } from '../helpers/generalHelpers';
 
 /**
  * Run automated scan of all photos or posts
@@ -33,15 +33,10 @@ export const runAutomatedScan = (type, data, storeResults) => async (
     const resultsFlattened = [].concat.apply([], results);
 
     // increment automated scans
-    await axios.post('/api/user/write-statistics', {
-      automated_scans: 1,
-    });
+    await axios.post('/api/user/write-statistics', { automated_scans: 1 });
 
     if (storeResults) {
-      await axios.post(
-        '/api/user/store-results',
-        resultsFlattened
-      );
+      await axios.post('/api/user/store-results', resultsFlattened);
     }
 
     dispatch(setAlert('Scan Complete', 'success'));
@@ -72,9 +67,7 @@ export const getImageAsBase64 = async (image) => {
   // add header to image
   let base64 = 'data:image/jpeg;base64,' + response.data.toString();
 
-  await axios.post('/api/user/write-statistics', {
-    images_cleaned: 1,
-  });
+  await axios.post('/api/user/write-statistics', { images_cleaned: 1 });
   return base64;
 };
 
@@ -85,9 +78,7 @@ export const getImageAsBase64 = async (image) => {
 
 export const removeItem = (id) => async (dispatch) => {
   try {
-    await axios.post('/api/user/remove-content', {
-      content_id: id,
-    });
+    await axios.post('/api/user/remove-content', { content_id: id });
     dispatch(setAlert('Content deleted', 'success'));
   } catch (err) {
     console.error(err);
