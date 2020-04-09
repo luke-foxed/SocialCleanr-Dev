@@ -114,6 +114,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const test = {
+  text: ['Fuck you butch', 'This is gay', 'I love you'],
+  photos: [],
+};
+
 const Scan = ({ user, profile, runAutomatedScan, removeItem }) => {
   const classes = useStyles();
   const [boxImage, setBoxImage] = useState('');
@@ -124,7 +129,10 @@ const Scan = ({ user, profile, runAutomatedScan, removeItem }) => {
 
   const { photos, text } = profile;
   const storeResults = user.is_gamification_enabled;
-  const storeContent = user.flagged_content;
+
+  const flaggedContentType = user.flagged_content[0].content.includes('://')
+    ? 'photos'
+    : 'text';
 
   // time per image + model loading time
   const estimatedTime =
@@ -323,7 +331,7 @@ const Scan = ({ user, profile, runAutomatedScan, removeItem }) => {
               onViewClick={(bbox, content) => showBox(bbox, content)}
               onCleanClick={(bbox, content) => cleanImage(bbox, content)}
               onRemoveClick={(id) => markFalsePositive(id)}
-              resultsType={scanType}
+              resultsType={flaggedContentType}
             />
           </Paper>
         )}

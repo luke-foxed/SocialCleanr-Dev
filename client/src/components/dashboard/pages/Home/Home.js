@@ -77,8 +77,8 @@ const Home = ({ user, profile }) => {
               textTransform: 'uppercase',
               color: 'grey',
             }}>
-            To View Your Social Media Content, Set An Active Social Media Profile
-            From The 'Profile' Page!
+            To View Your Social Media Content, Set An Active Social Media
+            Profile From The 'Profile' Page!
           </Typography>
         </Paper>
       )}
