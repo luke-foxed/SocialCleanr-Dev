@@ -114,11 +114,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const test = {
-  text: ['Fuck you butch', 'This is gay', 'I love you'],
-  photos: [],
-};
-
 const Scan = ({ user, profile, runAutomatedScan, removeItem }) => {
   const classes = useStyles();
   const [boxImage, setBoxImage] = useState('');
