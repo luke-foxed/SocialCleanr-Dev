@@ -1,42 +1,38 @@
-import React, { useState } from 'react';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 import {
-  Button,
   Paper,
   Typography,
-  CircularProgress,
   Container,
+  Grid,
+  Button,
+  withStyles,
   Backdrop,
+  CircularProgress,
 } from '@material-ui/core';
-import * as colors from '../../../../helpers/colors';
-import {
-  CloudUpload,
-  Send,
-  Assessment,
-  CheckCircle,
-  EmojiPeople,
-  Spellcheck,
-  ThumbsUpDown,
-  Brush,
-  GetApp,
-  ChildCare,
-  Palette,
-} from '@material-ui/icons';
-import { runCustomScan } from '../../../../actions/customScan.js';
-import {
-  drawBoundingBox,
-  drawBlurringBox,
-  blurAllContent,
-  createDownloadImage,
-} from '../../../../helpers/classificationHelper';
-import { ResultsTable } from '../../../layout/ResultsTable';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+import * as colors from '../../../../helpers/colors';
+import {
+  ImageSearch,
+  ListAlt,
+  Send,
+  TextFormat,
+  Image,
+  Assessment,
+  CheckCircle,
+  History,
+} from '@material-ui/icons';
 import { connect } from 'react-redux';
-import { setAlert } from '../../../../actions/alert';
 import PropTypes from 'prop-types';
+import { runAutomatedScan, removeItem } from '../../../../actions/scan';
+import { useState } from 'react';
+import { ResultsTable } from '../../../layout/ResultsTable';
+import {
+  drawBlurringBoxURL,
+  drawBoundingBoxURL,
+} from '../../../../helpers/classificationHelper';
 import { IconHeader } from '../../../layout/IconHeader';
-import { isMobile } from 'react-device-detect';
 import { MiniDivider } from '../../../layout/MiniDivider';
 
 const StyledToggleButtonGroup = withStyles((theme) => ({
@@ -68,113 +64,103 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    '& p, h3, h4, h5, h6': {
+      fontFamily: 'Raleway',
+    },
   },
-  imageBox: {
-    textAlign: 'center',
-    margin: theme.spacing(2),
+  infoGrid: {
+    width: '40%',
   },
-  image: {
-    padding: '5px',
-    height: 600,
-    width: '80%',
-    objectFit: 'cover',
-    border: '3px solid' + colors.colorPurple,
+  infoTextHeader: {
+    color: '#808080',
+  },
+  infoText: {
+    textTransform: 'uppercase',
+    color: colors.colorDarkPink,
+    fontSize: '18px',
+    paddingBottom: '15px',
+    fontWeight: 'bold',
   },
   toggleButtons: {
+    margin: '10px',
     '& button': {
       width: '140px',
       transition: 'all .2s ease-in-out',
     },
   },
-  toggleButtonsMobile: {
-    display: 'flex',
-    flexDirection: 'column',
-    width: 250,
-    alignItems: 'center',
-    margin: '0 auto',
-    '& button': {
-      width: '140px',
-      transition: 'all .2s ease-in-out',
-    },
+  imageBox: {
+    margin: theme.spacing(2),
+    border: '4px solid' + colors.colorPurple,
   },
-  subtext: {
-    color: '#4a4a4a',
-    width: '50%',
-    textAlign: 'center',
-    fontFamily: 'Raleway',
+  image: {
+    padding: theme.spacing(1),
+    height: 600,
+    width: '100%',
+    objectFit: 'cover',
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+
+  infoHeader: {
+    display: 'flex',
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    color: 'grey',
   },
 }));
 
-const Upload = ({ setAlert, runCustomScan }) => {
+const Scan = ({ user, profile, runAutomatedScan, removeItem }) => {
   const classes = useStyles();
-  const [image, setImage] = useState('');
   const [boxImage, setBoxImage] = useState('');
-  const [spinnerVisible, setSpinnerVisible] = useState(false);
-  const [resultsVisible, setResultsVisible] = useState(false);
-  const [flaggedContent, setFlaggedContent] = useState([]);
   const [scanType, setScanType] = useState('photos');
-  const [models, setModels] = useState(() => []);
+  const [flaggedContent, setFlaggedContent] = useState([]);
+  const [resultsLoaded, setResultsLoaded] = useState(false);
+  const [spinnerVisible, setSpinnerVisible] = useState(false);
 
-  const handleInput = (event) => {
-    setImage('');
-    setBoxImage('');
-    if (event.target.files && event.target.files[0]) {
-      let reader = new FileReader();
-      reader.readAsDataURL(event.target.files[0]);
-      reader.onloadend = () => {
-        setImage(reader.result);
-        setResultsVisible(false);
-      };
-    }
-  };
+  const { photos, text } = profile;
+  const storeResults = user.is_gamification_enabled;
 
-  const handleModelSelect = (event, value) => {
-    setModels(value);
-  };
+  // time per image + model loading time
+  const estimatedTime =
+    scanType === 'photos' ? photos.length * 6 + 10 : text.length * 4 + 10;
 
   const handleScanStart = async () => {
-    if (models.length === 0) {
-      setAlert('No Model Selected', 'error');
-    } else if (image === '') {
-      setAlert('No Image Uploaded', 'error');
-    } else {
-      setSpinnerVisible(true);
-      let response = await runCustomScan(models, image);
-      setFlaggedContent(response);
-      setSpinnerVisible(false);
-      setResultsVisible(true);
-    }
+    setBoxImage('');
+    setSpinnerVisible(true);
+    let clean = await runAutomatedScan(
+      scanType,
+      scanType === 'photos' ? photos : text,
+      storeResults
+    );
+    setFlaggedContent(clean);
+    setResultsLoaded(true);
+    setSpinnerVisible(false);
   };
 
-  const showBox = async (box) => {
-    let boxImage = await drawBoundingBox(image, box);
+  const handleScanTypeSelect = (event, type) => {
+    setScanType(type);
+    setResultsLoaded(false);
+    setBoxImage('');
+  };
+
+  const showBox = async (box, content) => {
+    let boxImage = await drawBoundingBoxURL(content, box);
     setBoxImage(boxImage);
   };
 
-  const cleanImage = async (box) => {
-    let cleanImage = await drawBlurringBox(image, box);
-    setBoxImage(cleanImage);
-  };
-
-  const handleCleanEntireImage = async () => {
-    let boxes = [];
-    flaggedContent.forEach((content) => {
-      boxes.push(content.box);
-    });
-    let cleanImage = await blurAllContent(image, boxes);
-    setBoxImage(cleanImage);
-  };
-
-  const handleDownloadImage = () => {
-    createDownloadImage(boxImage);
+  const cleanImage = async (box, image) => {
+    let boxImage = await drawBlurringBoxURL(image, box);
+    setBoxImage(boxImage);
   };
 
   const markFalsePositive = async (id) => {
     setFlaggedContent(flaggedContent.filter((item) => item.content_id !== id));
+    removeItem(id);
   };
 
   return (
@@ -185,179 +171,197 @@ const Upload = ({ setAlert, runCustomScan }) => {
         style={{
           background: colors.colorDarkOrange,
         }}>
-        <IconHeader icon={Palette} text='Custom Scan' subheader={false} />
+        <IconHeader icon={ImageSearch} text='New Scan' subheader={false} />
       </Paper>
 
-      <Paper elevation={4} className={classes.paper}>
-        <IconHeader
-          icon={CloudUpload}
-          text='Upload An Image'
-          subheader={true}
-        />
-
-        <Typography className={classes.subtext}>
-          Want to scan an image before you upload it to your profile? Simple!
-          Just upload an image, set the content you wish to scan and then
-          submit!
-        </Typography>
-
-        <MiniDivider color={'#4a4a4a'} />
-
-        <input
-          accept='image/*'
-          style={{ display: 'none' }}
-          id='contained-button-file'
-          type='file'
-          onChange={handleInput}
-        />
-        <label htmlFor='contained-button-file'>
-          <Button
-            variant='contained'
-            style={{ backgroundColor: colors.colorDarkPink }}
-            color='primary'
-            size='large'
-            component='span'>
-            Upload
-          </Button>
-        </label>
-
-        {image !== '' && (
-          <div className={classes.imageBox}>
-            <img
-              src={boxImage !== '' ? boxImage : image}
-              className={classes.image}
+      {photos.length > 0 || text.length > 0 ? (
+        <div>
+          <Paper elevation={2} className={classes.paper}>
+            <IconHeader
+              icon={ListAlt}
+              text='Scan Information'
+              subheader={true}
             />
-          </div>
-        )}
 
-        <Typography className={classes.subtext} style={{ padding: '20px' }}>
-          Select which models you wish to use:
-        </Typography>
+            <Typography className={classes.infoTextHeader}>
+              Please Select A Scan Type:
+            </Typography>
 
-        <Container maxWidth='sm'>
-          <StyledToggleButtonGroup
-            orientation='vertical'
-            size='small'
-            className={
-              isMobile ? classes.toggleButtonsMobile : classes.toggleButtons
-            }
-            value={models}
-            onChange={handleModelSelect}>
-            <StyledToggleButton
-              value='clothing'
-              classes={{ selected: classes.toggleSelected }}>
-              Clothing
-              <EmojiPeople fontSize='large' style={{ paddingLeft: '5px' }} />
-            </StyledToggleButton>
+            <StyledToggleButtonGroup
+              size='small'
+              exclusive
+              className={classes.toggleButtons}
+              value={scanType}
+              onChange={handleScanTypeSelect}>
+              <StyledToggleButton
+                value='photos'
+                classes={{ selected: classes.toggleSelected }}>
+                Photos
+                <Image fontSize='large' style={{ paddingLeft: '5px' }} />
+              </StyledToggleButton>
 
-            <StyledToggleButton value='text'>
-              Text
-              <Spellcheck fontSize='large' style={{ paddingLeft: '5px' }} />
-            </StyledToggleButton>
+              <StyledToggleButton value='text'>
+                Text
+                <TextFormat fontSize='large' style={{ paddingLeft: '5px' }} />
+              </StyledToggleButton>
+            </StyledToggleButtonGroup>
 
-            <StyledToggleButton value='gestures'>
-              Gestures
-              <ThumbsUpDown fontSize='large' style={{ paddingLeft: '5px' }} />
-            </StyledToggleButton>
+            <MiniDivider color={'#4a4a4a'} />
 
-            <StyledToggleButton value='age'>
-              Age
-              <ChildCare fontSize='large' style={{ paddingLeft: '5px' }} />
-            </StyledToggleButton>
-          </StyledToggleButtonGroup>
-        </Container>
-
-        <MiniDivider color={'#4a4a4a'} />
-
-        <Button
-          variant='contained'
-          color='primary'
-          size='large'
-          style={{ backgroundColor: colors.colorDarkPink }}
-          className={classes.button}
-          onClick={handleScanStart}
-          endIcon={<Send />}>
-          Submit
-        </Button>
-
-        <Backdrop open={spinnerVisible} className={classes.backdrop}>
-          <CircularProgress
-            value={0}
-            style={{ color: colors.colorLightPink }}
-          />
-        </Backdrop>
-      </Paper>
-
-      {resultsVisible && (
-        <Paper
-          elevation={2}
-          className={classes.paper}
-          style={{ display: 'block', width: '100%', overflowX: 'auto' }}>
-          <IconHeader icon={Assessment} text='Results' subheader={true} />
-
-          {flaggedContent.length > 0 ? (
-            <div>
-              <ResultsTable
-                flaggedContent={flaggedContent}
-                onViewClick={(bbox) => showBox(bbox)}
-                onCleanClick={(bbox) => cleanImage(bbox)}
-                onRemoveClick={(id) => markFalsePositive(id)}
-                resultsType={scanType}
-              />
-
-              <MiniDivider color={'#4a4a4a'} />
-
-              <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <Button
-                  variant='contained'
-                  color='primary'
-                  size='medium'
-                  style={{
-                    backgroundColor: colors.colorDarkPink,
-                    margin: '5px',
-                    width: '200px',
-                  }}
-                  onClick={handleCleanEntireImage}
-                  endIcon={<Brush />}>
-                  Clean All
-                </Button>
-
-                <Button
-                  variant='contained'
-                  color='primary'
-                  size='medium'
-                  style={{
-                    backgroundColor: colors.colorDarkPink,
-                    margin: '5px',
-                    width: '200px',
-                  }}
-                  onClick={handleDownloadImage}
-                  endIcon={<GetApp />}>
-                  Download Image
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div style={{ textAlign: 'center' }}>
-              <CheckCircle
-                style={{ height: '100px', width: '100px', color: 'green' }}
-              />
-              <Typography variant='h6'>Looks Good!</Typography>
-              <Typography variant='subtitle1'>
-                We couldn't find any innapropriate content based off your
-                filters.
+            <Grid
+              container
+              direction='column'
+              alignItems='center'
+              justify='center'
+              className={classes.infoGrid}>
+              <Typography className={classes.infoTextHeader}>
+                Currently Selected Site:
               </Typography>
-            </div>
+              <Typography className={classes.infoText}>
+                {profile.site}
+              </Typography>
+
+              <Typography className={classes.infoTextHeader}>
+                Scan Type:
+              </Typography>
+              <Typography className={classes.infoText}>{scanType}</Typography>
+
+              <Typography className={classes.infoTextHeader}>
+                Number of {scanType[0].toUpperCase() + scanType.slice(1)}:
+              </Typography>
+              <Typography className={classes.infoText}>
+                {scanType === 'photos' ? photos.length : text.length}
+              </Typography>
+
+              <Typography className={classes.infoTextHeader}>
+                **Estimated Time Required:
+              </Typography>
+              <Typography className={classes.infoText}>
+                ~{estimatedTime} Seconds
+              </Typography>
+            </Grid>
+
+            <Typography
+              className={classes.infoTextHeader}
+              style={{ fontSize: '12px', fontStyle: 'italic' }}>
+              **Calculated time based off a stable internet collection.
+            </Typography>
+
+            <MiniDivider color={'#4a4a4a'} />
+
+            <Button
+              variant='contained'
+              color='primary'
+              size='large'
+              style={{ backgroundColor: colors.colorDarkPink }}
+              onClick={() => handleScanStart()}
+              endIcon={<Send />}>
+              Submit
+            </Button>
+
+            <br />
+          </Paper>
+
+          {resultsLoaded && (
+            <Paper
+              elevation={2}
+              className={classes.paper}
+              style={{ display: 'block', width: '100%', overflowX: 'auto' }}>
+              <IconHeader icon={Assessment} text='Results' subheader={true} />
+              {flaggedContent.length > 0 ? (
+                <div>
+                  <ResultsTable
+                    flaggedContent={flaggedContent}
+                    onViewClick={(bbox, content) => showBox(bbox, content)}
+                    onCleanClick={(bbox, content) => cleanImage(bbox, content)}
+                    onRemoveClick={(id) => markFalsePositive(id)}
+                    resultsType={scanType}
+                  />
+                </div>
+              ) : (
+                <div style={{ textAlign: 'center' }}>
+                  <CheckCircle
+                    style={{ height: '100px', width: '100px', color: 'green' }}
+                  />
+                  <Typography variant='h6'>Looks Good!</Typography>
+                  <Typography variant='subtitle1'>
+                    We couldn't find any innapropriate content based off your
+                    filters.
+                  </Typography>
+                </div>
+              )}
+            </Paper>
           )}
+        </div>
+      ) : (
+        <Paper elevation={2} className={classes.paper}>
+          <Typography variant='h6' className={classes.infoHeader}>
+            To Start Scanning, Set An Active Social Media Profile From The
+            'Profile' Page!
+          </Typography>
         </Paper>
       )}
+
+      {user !== null &&
+        user.is_gamification_enabled &&
+        flaggedContent.length === 0 && (
+          <Paper elevation={2} className={classes.paper}>
+            <IconHeader
+              icon={History}
+              text='Previously Flagged Content'
+              subheader={true}
+            />
+            <Typography>
+              Here you will find flagged content from your last profile scan.
+            </Typography>
+
+            <MiniDivider color={'#4a4a4a'} />
+            {user.flagged_content[0] !== undefined && (
+              <ResultsTable
+                flaggedContent={user.flagged_content}
+                onViewClick={(bbox, content) => showBox(bbox, content)}
+                onCleanClick={(bbox, content) => cleanImage(bbox, content)}
+                onRemoveClick={(id) => markFalsePositive(id)}
+                resultsType={
+                  user.flagged_content[0].content.includes('://')
+                    ? 'photos'
+                    : 'text'
+                }
+              />
+            )}
+          </Paper>
+        )}
+
+      {boxImage !== '' && (
+        <Paper elevation={2} className={classes.paper}>
+          <div className={classes.imageBox}>
+            <img src={boxImage} className={classes.image} />
+          </div>
+        </Paper>
+      )}
+
+      <Backdrop open={spinnerVisible} className={classes.backdrop}>
+        <CircularProgress value={0} style={{ color: colors.colorLightPink }} />
+        <br />
+        <Typography>
+          Your content is currently being searched. This may take some time,
+          please do not refresh or close this tab.
+        </Typography>
+      </Backdrop>
     </Container>
   );
 };
 
-Upload.propTypes = {
-  setAlert: PropTypes.func.isRequired,
-  runCustomScan: PropTypes.func.isRequired,
+Scan.propTypes = {
+  user: PropTypes.object.isRequired,
+  profile: PropTypes.object.isRequired,
+  runAutomatedScan: PropTypes.func.isRequired,
+  removeItem: PropTypes.func.isRequired,
 };
 
-export default connect(null, { setAlert, runCustomScan })(Upload);
+const mapStateToProps = (state) => ({
+  user: state.auth.user,
+  profile: state.profile,
+});
+
+export default connect(mapStateToProps, { runAutomatedScan, removeItem })(Scan);
