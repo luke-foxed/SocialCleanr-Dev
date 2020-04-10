@@ -17,8 +17,6 @@ Made with (so far):
 - MongoDB
 - JWT
 - PassportJS
-- CryptoJS
-
-Planned: 
+- Crypto
 - Docker
-- WebdriverIO & Mocha/Chai (for testing)
+- Mocha/Chai (Testing)
