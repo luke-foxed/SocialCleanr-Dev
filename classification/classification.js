@@ -22,6 +22,7 @@ let maleClothingModel = '';
 let femaleClothingModel = '';
 let gestureModel = '';
 let toxicityModel = '';
+let genderModel = '';
 let modelsLoaded = false;
 
 // type of results
@@ -56,6 +57,13 @@ const loadModels = async () => {
     );
 
     console.log('\nLoaded Female Model...\n');
+
+    genderModel = await tfImage.load(
+      modelPaths.genderModel.model,
+      modelPaths.genderModel.metadata
+    );
+
+    console.log('\nLoaded Gender Model...\n');
 
     // taking the longest
     gestureModel = await tf.loadGraphModel(
@@ -149,16 +157,14 @@ const detectAgeGender = async (image) => {
   else {
     console.log('No faces detected');
 
-    // choose randomly and hope for the best
-    const genders = ['male', 'female'];
-    const random = genders[Math.floor(Math.random() * genders.length)];
+    let classifcation = await genderModel.predict(img);
+    let gender = '';
 
-    detectedFace = {
-      gender: random,
-      age: 'unknown',
-    };
-
-    console.log(detectedFace.gender);
+    if (classifcation[0].probability > classifcation[1].probability) {
+      gender = classifcation[0].className.toLowerCase();
+    } else {
+      gender = classifcation[1].className.toLowerCase();
+    }
   }
 
   return detectedFace;

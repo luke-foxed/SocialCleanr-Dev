@@ -9,6 +9,7 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 
+
 // Connect to DB
 connectDB();
 
