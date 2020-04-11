@@ -6,6 +6,10 @@ const jwt = require('jsonwebtoken');
 const config = require('config');
 const { check, validationResult } = require('express-validator');
 const User = require('../../models/User');
+const {
+  loginRateLimit,
+  registerRateLimit,
+} = require('../../middleware/rateLimit');
 
 /**
  * @route    GET api/auth/
@@ -36,9 +40,10 @@ router.get('/', auth, async (req, res) => {
 
 router.post(
   '/login',
+  loginRateLimit,
   [
     check('email', 'Please include a valid email').isEmail(),
-    check('password', 'Password is required').exists()
+    check('password', 'Password is required').exists(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -52,7 +57,7 @@ router.post(
       let user = await User.findOne({ email });
 
       if (!user) {
-        console.log('NO USER FOUND');
+
         return res
           .status(400)
           .json({ errors: [{ msg: 'Invalid Credentials' }] });
@@ -61,7 +66,6 @@ router.post(
       const isMatch = await bcrypt.compare(password, user.password);
 
       if (!isMatch) {
-        console.log('PASSWORD NOT MATCH');
         return res
           .status(400)
           .json({ errors: [{ msg: 'Invalid Credentials' }] });
@@ -69,8 +73,8 @@ router.post(
 
       const payload = {
         user: {
-          id: user._id
-        }
+          id: user._id,
+        },
       };
 
       jwt.sign(
@@ -97,10 +101,9 @@ router.post(
 
 router.post(
   '/register',
+  registerRateLimit,
   [
-    check('name', 'Please provide a name')
-      .not()
-      .isEmpty(),
+    check('name', 'Please provide a name').not().isEmpty(),
     check('email', 'Please include a valid email').isEmail(),
     check(
       'password',
@@ -109,7 +112,7 @@ router.post(
     check(
       'password',
       'Password must contain at least one letter, special character and number'
-    ).matches(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{0,}$/)
+    ).matches(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{0,}$/),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -124,7 +127,7 @@ router.post(
 
       if (user) {
         return res.status(400).json({
-          errors: [{ msg: 'This User already exists, try logging in' }]
+          errors: [{ msg: 'This User already exists, try logging in' }],
         });
       }
 
@@ -148,9 +151,9 @@ router.post(
             flagged_text: 0,
             flagged_age: 0,
             flagged_clothing: 0,
-            flagged_gesture: 0
-          }
-        ]
+            flagged_gesture: 0,
+          },
+        ],
       });
 
       const salt = await bcrypt.genSalt(10);
@@ -161,8 +164,8 @@ router.post(
 
       const payload = {
         user: {
-          id: user.id
-        }
+          id: user.id,
+        },
       };
 
       jwt.sign(

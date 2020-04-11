@@ -22,9 +22,16 @@ const femaleModelOld = {
   model: 'https://teachablemachine.withgoogle.com/models/aWzTCdCP/model.json',
 };
 
+const genderModel = {
+  metadata:
+    'https://teachablemachine.withgoogle.com/models/eyUuY8tFk/metadata.json',
+  model: 'https://teachablemachine.withgoogle.com/models/eyUuY8tFk/model.json',
+};
+
 module.exports = {
   maleModel,
   maleModelOld,
   femaleModel,
   femaleModelOld,
+  genderModel
 };

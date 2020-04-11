@@ -6,6 +6,7 @@ const classification = require('../../classification/classification');
 const generalHelpers = require('../../helpers/generalHelpers');
 const parseHelpers = require('../../helpers/parseHelpers');
 const User = require('../../models/User');
+const { customScanRateLimit } = require('../../middleware/rateLimit');
 require('@tensorflow/tfjs-node');
 
 /**
@@ -29,7 +30,7 @@ router.post('/get-image', async (req, res) => {
  * @access   Private
  */
 
-router.post('/custom-scan', auth, async (req, res) => {
+router.post('/custom-scan', customScanRateLimit, auth, async (req, res) => {
   try {
     await classification.loadModels();
     let results = {};
