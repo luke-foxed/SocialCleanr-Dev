@@ -57,7 +57,7 @@ export const updateUser = (
 
 export const toggleGamification = (toggle) => async (dispatch) => {
   try {
-    await axios.post('/api/user/game', { enabled: toggle });
+    await axios.put('/api/user/toggle-game', { enabled: toggle });
     dispatch(setAlert('Done!', 'success'));
     await dispatch(loadUser());
   } catch (err) {
