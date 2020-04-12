@@ -10,7 +10,7 @@ import { PROFILE_ERROR, GET_PROFILE } from '../actions/types';
 
 export const removeSite = (website) => async (dispatch) => {
   try {
-    await axios.post('/api/passport-auth/remove-site', { site: website });
+    await axios.put('/api/passport-auth/remove-site', { site: website });
     dispatch(setAlert('Done!', 'success'));
     await dispatch(loadUser());
   } catch (err) {

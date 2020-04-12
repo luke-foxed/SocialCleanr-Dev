@@ -6,12 +6,12 @@ const { check, validationResult, oneOf } = require('express-validator');
 const User = require('../../models/User');
 
 /**
- * @route    POST api/user/update-basic
+ * @route    PUT api/user/update-basic
  * @desc     Update either user's email or avatar
  * @access   Private
  */
 
-router.post('/game', auth, async (req, res) => {
+router.put('/toggle-game', auth, async (req, res) => {
   try {
     let user = await User.findById(req.user.id);
     let toggle = req.body.enabled;
@@ -30,12 +30,12 @@ router.post('/game', auth, async (req, res) => {
 });
 
 /**
- * @route    POST api/user/update-basic
+ * @route    PUT api/user/update-basic
  * @desc     Update either user's email or avatar
  * @access   Private
  */
 
-router.post(
+router.put(
   '/update-basic',
   auth,
   [
@@ -89,12 +89,12 @@ router.post(
 );
 
 /**
- * @route    POST api/user/update-password
+ * @route    PUT api/user/update-password
  * @desc     Update user password
  * @access   Private
  */
 
-router.post(
+router.put(
   '/update-password',
   auth,
   [
@@ -164,7 +164,7 @@ router.delete('/delete', auth, async (req, res) => {
  * @access   Private
  */
 
-router.post('/write-statistics', auth, async (req, res) => {
+router.put('/write-statistics', auth, async (req, res) => {
   try {
     let count = req.body;
 
@@ -200,7 +200,7 @@ router.post('/store-results', auth, async (req, res) => {
   }
 });
 
-router.post('/remove-content', auth, async (req, res) => {
+router.put('/remove-content', auth, async (req, res) => {
   try {
     let contentID = req.body.content_id;
 

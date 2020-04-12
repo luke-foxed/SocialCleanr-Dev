@@ -130,12 +130,12 @@ router.get(
 );
 
 /**
- * @route    POST api/auth-passport/remove-site
+ * @route    PUT api/auth-passport/remove-site
  * @desc     Remove user's connection to specified site, clearing DB values
  * @access   Private
  */
 
-router.post('/remove-site', auth, async (req, res) => {
+router.put('/remove-site', auth, async (req, res) => {
   let site = req.body.site;
   try {
     let user = await User.findOneAndUpdate(

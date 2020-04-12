@@ -9,7 +9,6 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 
-
 // Connect to DB
 connectDB();
 
@@ -19,7 +18,7 @@ app.use(
     secret: 'test',
     store: new MongoStore({ mongooseConnection: mongoose.connection }),
     resave: true,
-    saveUninitialized: true
+    saveUninitialized: true,
   })
 );
 
@@ -40,7 +39,7 @@ app.use(
   cors({
     origin: 'http://localhost:3000', // allow to server to accept request from different origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true // allow session cookie from browser to pass through
+    credentials: true, // allow session cookie from browser to pass through
   })
 );
 
@@ -52,7 +51,7 @@ app.get('/', (req, res) => {
 // Define routes here
 app.use('/api/auth', require('./routes/api/auth'));
 app.use('/api/passport-auth', require('./routes/api/auth-passport'));
-app.use('/api/classifier', require('./routes/api/classifier'));
+app.use('/api/scan', require('./routes/api/scan'));
 app.use('/api/user', require('./routes/api/user'));
 
 const PORT = process.env.PORT || 5000;
