@@ -132,7 +132,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Dashboard = ({ auth, logout }) => {
+const Dashboard = ({ auth, logout, profile }) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const handleDrawerOpen = () => {
@@ -209,13 +209,13 @@ const Dashboard = ({ auth, logout }) => {
                   <CustomTooltip
                     arrow
                     title={
-                      auth.user.flagged_content.length === 0
+                      profile.flagged_content.length === 0
                         ? ''
-                        : `You have ${auth.user.flagged_content.length} items from your last scan that have yet to be actioned`
+                        : `You have ${profile.flagged_content.length} items from your last scan that have yet to be actioned`
                     }>
                     <IconButton color='inherit'>
                       <Badge
-                        badgeContent={auth.user.flagged_content.length}
+                        badgeContent={profile.flagged_content.length}
                         color='secondary'>
                         <Notifications fontSize={'large'} />
                       </Badge>
@@ -275,11 +275,13 @@ const Dashboard = ({ auth, logout }) => {
 
 Dashboard.propTypes = {
   auth: PropTypes.object.isRequired,
+  profile: PropTypes.object.isRequired,
   logout: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
+  profile: state.profile,
 });
 
 export default connect(mapStateToProps, { logout })(Dashboard);

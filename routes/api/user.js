@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const auth = require('../../middleware/auth');
 const { check, validationResult, oneOf } = require('express-validator');
 const User = require('../../models/User');
+const Profile = require('../../models/Profile');
 
 /**
  * @route    PUT api/user/update-basic
@@ -212,6 +213,24 @@ router.put('/remove-content', auth, async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ msg: 'Delete Error' });
+  }
+});
+
+router.get('/my-profile', auth, async (req, res) => {
+  try {
+    const profile = await Profile.findOne({
+      user: req.user.id,
+    });
+
+    if (!profile) {
+      return res.status(400).json({ msg: 'There is no profile for this user' });
+    }
+
+    // only populate from user document if profile exists
+    res.json(profile.populate('user', ['name', 'avatar']));
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
   }
 });
 
