@@ -22,7 +22,6 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-
     '& p, h3, h4, h5, h6': {
       fontFamily: 'Raleway',
     },

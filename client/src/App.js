@@ -8,6 +8,7 @@ import PrivateRoute from './components/routing/PrivateRoute';
 import Alerter from './components/layout/Alert';
 import { useEffect } from 'react';
 import { isMobile } from 'react-device-detect';
+import './App.css';
 
 // Redux
 import { Provider } from 'react-redux';
