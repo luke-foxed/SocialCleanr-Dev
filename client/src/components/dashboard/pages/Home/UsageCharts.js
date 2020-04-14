@@ -7,21 +7,21 @@ import {
   VictoryAxis,
   VictoryChart,
   VictoryBar,
-  VictoryLabel
+  VictoryLabel,
 } from 'victory';
 import * as colors from '../../../../helpers/colors';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(4),
     paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
 
     '& p, h3, h4, h5, h6': {
-      fontFamily: 'Raleway'
-    }
+      fontFamily: 'Raleway',
+    },
   },
   chartHeader: {
     width: '95%',
@@ -29,8 +29,8 @@ const useStyles = makeStyles(theme => ({
     paddingTop: '15px',
     backgroundColor: colors.colorPurple,
     textAlign: 'center',
-    boxShadow: 'inset 0 0 10px rgba(0,0,0,0.4)'
-  }
+    boxShadow: 'inset 0 0 10px rgba(0,0,0,0.4)',
+  },
 }));
 
 export const UsageCharts = ({ stats, socialMediaStats }) => {
@@ -40,7 +40,7 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
   const [prevColor, setPrevColor] = useState('');
   const [pieText, setPieValue] = useState({
     scanText: '',
-    socialMedia: ''
+    socialMedia: '',
   });
 
   // needed due to animation bug --> https://github.com/FormidableLabs/victory-native/issues/144
@@ -54,19 +54,19 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
 
   const scanData = [
     { x: 'Automated Scans', y: stats.automated_scans },
-    { x: 'Custom Scans', y: stats.custom_scans }
+    { x: 'Custom Scans', y: stats.custom_scans },
   ];
 
   const contentData = [
     { type: 'Age', count: stats.flagged_age },
     { type: 'Text', count: stats.flagged_text },
     { type: 'Gesture', count: stats.flagged_gesture },
-    { type: 'Clothing', count: stats.flagged_clothing }
+    { type: 'Clothing', count: stats.flagged_clothing },
   ];
 
   const socialMediaData = [
     { x: 'Photos', y: photos },
-    { x: 'Posts', y: text }
+    { x: 'Posts', y: text },
   ];
 
   const events = [
@@ -77,7 +77,7 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
           return [
             {
               target: 'data',
-              mutation: props => {
+              mutation: (props) => {
                 setPrevColor(props.style.fill);
                 // if event has slice data
                 if (props.slice) {
@@ -86,18 +86,18 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
                     setPieValue({ scanText: Math.round(props.slice.data.y) });
                   } else {
                     setPieValue({
-                      socialMedia: Math.round(props.slice.data.y)
+                      socialMedia: Math.round(props.slice.data.y),
                     });
                   }
                 }
                 return {
                   style: {
                     fill: 'rgb(220,220,220)',
-                    transition: 'all .2s ease-in-out'
-                  }
+                    transition: 'all .2s ease-in-out',
+                  },
                 };
-              }
-            }
+              },
+            },
           ];
         },
         onMouseOut: () => {
@@ -109,15 +109,15 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
                 return {
                   style: {
                     fill: prevColor,
-                    transition: 'all .2s ease-in-out'
-                  }
+                    transition: 'all .2s ease-in-out',
+                  },
                 };
-              }
-            }
+              },
+            },
           ];
-        }
-      }
-    }
+        },
+      },
+    },
   ];
 
   return (
@@ -128,7 +128,7 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
           className={classes.paper}
           style={{
             color: 'white',
-            height: 500
+            height: 500,
           }}>
           <div className={classes.chartHeader}>
             <Typography variant='h5'>Scanning Stats</Typography>
@@ -140,7 +140,7 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
               style={{
                 marginTop: 200,
                 color: 'grey',
-                textAlign: 'center'
+                textAlign: 'center',
               }}>
               No Scans Recorded!
             </Typography>
@@ -152,10 +152,10 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
                 colorScale={[colors.colorDarkPink, '#783664']}
                 animate={{
                   duration: 800,
-                  easing: 'exp'
+                  easing: 'exp',
                 }}
                 style={{
-                  labels: { fill: 'black' }
+                  labels: { fill: 'black' },
                 }}
                 labelRadius={180}
                 endAngle={angle}
@@ -182,7 +182,7 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
           className={classes.paper}
           style={{
             color: 'white',
-            height: 500
+            height: 500,
           }}>
           <div className={classes.chartHeader}>
             <Typography variant='h5'>Flagged Content Stats</Typography>
@@ -195,9 +195,9 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
             width={400}
             animate={{
               duration: 800,
-              easing: 'exp'
+              easing: 'exp',
             }}>
-            <VictoryAxis dependentAxis tickFormat={x => x} />
+            <VictoryAxis dependentAxis tickFormat={(x) => x} />
             <VictoryAxis
               tickValues={[1, 2, 3, 4]}
               tickFormat={['Age', 'Text', 'Gesture', 'Clothing']}
@@ -209,8 +209,8 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
               style={{
                 data: {
                   fill: ({ index }) =>
-                    index % 2 === 0 ? colors.colorDarkPink : '#783664'
-                }
+                    index % 2 === 0 ? colors.colorDarkPink : '#783664',
+                },
               }}
             />
           </VictoryChart>
@@ -231,7 +231,7 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
           className={classes.paper}
           style={{
             color: 'white',
-            height: 500
+            height: 500,
           }}>
           <div className={classes.chartHeader}>
             <Typography variant='h5'>Social Media Stats</Typography>
@@ -242,7 +242,7 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
               style={{
                 marginTop: 200,
                 color: 'grey',
-                textAlign: 'center'
+                textAlign: 'center',
               }}>
               Please Set An Active Social Media Profile First
             </Typography>
@@ -254,10 +254,10 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
                 colorScale={[colors.colorDarkPink, '#783664']}
                 animate={{
                   duration: 800,
-                  easing: 'exp'
+                  easing: 'exp',
                 }}
                 style={{
-                  labels: { fill: 'black' }
+                  labels: { fill: 'black' },
                 }}
                 labelRadius={180}
                 endAngle={angle}

@@ -16,7 +16,6 @@ import { UsageCharts } from './UsageCharts';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(4),
     marginBottom: theme.spacing(4),
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
@@ -44,7 +43,7 @@ const Home = ({ user, profile }) => {
   return (
     <Container component='main' maxWidth='lg' style={{ marginTop: '40px' }}>
       <Paper
-        elevation={4}
+        elevation={2}
         className={classes.paper}
         style={{
           background: colors.colorDarkOrange,

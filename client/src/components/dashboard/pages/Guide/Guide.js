@@ -6,7 +6,7 @@ import {
   Container,
   ExpansionPanel,
   ExpansionPanelSummary,
-  ExpansionPanelDetails
+  ExpansionPanelDetails,
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import * as colors from '../../../../helpers/colors';
@@ -15,31 +15,30 @@ import { IconHeader } from '../../../layout/IconHeader';
 import { MiniDivider } from '../../../layout/MiniDivider';
 import { QuestionsAnswers } from './QuestionsAnswers';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(4),
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     '& p, h3, h4, h5, h6': {
-      fontFamily: 'Raleway'
-    }
+      fontFamily: 'Raleway',
+    },
   },
   panelHeader: {
     fontSize: '16px',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   links: {
     textAlign: 'center',
     listStyleType: 'none',
     '& a': {
       fontSize: '18px',
-      color: colors.colorDarkOrange
-    }
-  }
+      color: colors.colorDarkOrange,
+    },
+  },
 }));
 
 const Guide = () => {
@@ -48,22 +47,22 @@ const Guide = () => {
   return (
     <Container component='main' maxWidth='lg' style={{ marginTop: '40px' }}>
       <Paper
-        elevation={4}
+        elevation={2}
         className={classes.paper}
         style={{
-          background: colors.colorDarkOrange
+          background: colors.colorDarkOrange,
         }}>
         <IconHeader icon={MenuBook} text='Guide' subheader={false} />
       </Paper>
 
-      <Paper elevation={4} className={classes.paper}>
+      <Paper elevation={2} className={classes.paper}>
         <IconHeader
           icon={QuestionAnswer}
           text='Questions & Answers'
           subheader={true}
         />
 
-        {QuestionsAnswers.map(item => (
+        {QuestionsAnswers.map((item) => (
           <ExpansionPanel style={{ width: '70%' }}>
             <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
               <Typography className={classes.panelHeader}>
@@ -77,7 +76,7 @@ const Guide = () => {
         ))}
       </Paper>
 
-      <Paper elevation={4} className={classes.paper}>
+      <Paper elevation={2} className={classes.paper}>
         <IconHeader
           text='Tips When Posting on Social Media Sites'
           icon={ContactSupport}
