@@ -159,11 +159,7 @@ const Landing = () => {
           },
         }}>
         <DialogTitle>
-          <Typography
-            variant='h5'
-            style={{
-              color: '#845EC2',
-            }}>
+          <Typography variant='h5' style={{ fontFamily: 'raleway' }}>
             ABOUT SOCIALCLEANR
           </Typography>
         </DialogTitle>
