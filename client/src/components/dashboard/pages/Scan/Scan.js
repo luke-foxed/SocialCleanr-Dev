@@ -57,7 +57,6 @@ const StyledToggleButton = withStyles({
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(4),
     marginBottom: theme.spacing(4),
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
@@ -166,7 +165,7 @@ const Scan = ({ user, profile, runAutomatedScan, removeItem }) => {
   return (
     <Container component='main' maxWidth='lg' style={{ marginTop: '40px' }}>
       <Paper
-        elevation={4}
+        elevation={2}
         className={classes.paper}
         style={{
           background: colors.colorDarkOrange,
@@ -283,7 +282,7 @@ const Scan = ({ user, profile, runAutomatedScan, removeItem }) => {
                   <CheckCircle
                     style={{ height: '100px', width: '100px', color: 'green' }}
                   />
-                  <Typography variant='h6'>Looks Good!</Typography>
+                  <Typography variant='h5'>Looks Good!</Typography>
                   <Typography variant='subtitle1'>
                     We couldn't find any innapropriate content based off your
                     filters.

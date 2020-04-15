@@ -13,10 +13,10 @@ export const QuestionsAnswers = [
     ],
   },
   {
-    question: 'How does each model work?.',
+    question: 'How does each model work?',
     answer: [
       'The gesture model in its current state will only detect middle finger gesutres, though this will be\
-        worked on in future to include more offensive gestures!.',
+        worked on in future to include more offensive gestures!',
       <br />,
       <br />,
       'The clothing model works by detecting people in the given image. If people are detected, each person will\

@@ -121,13 +121,12 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
   },
   centerIcon: {
-    marginTop: '5px',
+    marginTop: '35px',
     borderRadius: '50%',
     zIndex: 99999,
     height: 120,
     width: 120,
     backgroundColor: 'white',
-    paddingBottom: '5px',
     border: '5px solid ' + colors.colorPurple,
   },
 }));

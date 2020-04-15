@@ -61,13 +61,15 @@ const StyledToggleButton = withStyles({
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(4),
     marginBottom: theme.spacing(4),
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    '& p, h3, h4, h5, h6': {
+      fontFamily: 'Raleway',
+    },
   },
   imageBox: {
     textAlign: 'center',
@@ -180,7 +182,7 @@ const Upload = ({ setAlert, runCustomScan }) => {
   return (
     <Container component='main' maxWidth='lg' style={{ marginTop: '40px' }}>
       <Paper
-        elevation={4}
+        elevation={2}
         className={classes.paper}
         style={{
           background: colors.colorDarkOrange,
@@ -188,7 +190,7 @@ const Upload = ({ setAlert, runCustomScan }) => {
         <IconHeader icon={Palette} text='Custom Scan' subheader={false} />
       </Paper>
 
-      <Paper elevation={4} className={classes.paper}>
+      <Paper elevation={2} className={classes.paper}>
         <IconHeader
           icon={CloudUpload}
           text='Upload An Image'
@@ -342,7 +344,7 @@ const Upload = ({ setAlert, runCustomScan }) => {
               <CheckCircle
                 style={{ height: '100px', width: '100px', color: 'green' }}
               />
-              <Typography variant='h6'>Looks Good!</Typography>
+              <Typography variant='h5'>Looks Good!</Typography>
               <Typography variant='subtitle1'>
                 We couldn't find any innapropriate content based off your
                 filters.

@@ -1,20 +1,12 @@
 import React from 'react';
-import {
-  Typography,
-  Paper,
-  Button,
-  Avatar,
-  makeStyles,
-} from '@material-ui/core';
-import { VideogameAsset, LocalHospital } from '@material-ui/icons';
+import { Typography, Paper, Button, makeStyles } from '@material-ui/core';
+import { VideogameAsset, ToggleOn, ToggleOff } from '@material-ui/icons';
 import * as colors from '../../../../helpers/colors';
 import { IconHeader } from '../../../layout/IconHeader';
 import { MiniDivider } from '../../../layout/MiniDivider';
-import CountUp from 'react-countup';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(4),
     marginBottom: theme.spacing(4),
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
@@ -69,9 +61,11 @@ export const Gamification = ({ isEnabled, onToggleClick }) => {
           isEnabled
             ? { backgroundColor: '#c8c8c8', color: '#8a8a8a' }
             : { backgroundColor: colors.colorDarkPink, color: 'white' }
-        }>
+        }
+        endIcon={<ToggleOn />}>
         Enable
       </Button>
+
       <br />
       <Button
         disabled={!isEnabled}
@@ -82,7 +76,8 @@ export const Gamification = ({ isEnabled, onToggleClick }) => {
           !isEnabled
             ? { backgroundColor: '#c8c8c8', color: '#8a8a8a' }
             : { backgroundColor: colors.colorDarkPink, color: 'white' }
-        }>
+        }
+        endIcon={<ToggleOff />}>
         Disable
       </Button>
     </Paper>

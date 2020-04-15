@@ -11,7 +11,7 @@ import {
   Collapse,
   FormGroup,
   InputAdornment,
-  IconButton
+  IconButton,
 } from '@material-ui/core';
 import { register, login } from '../../actions/auth';
 import { connect } from 'react-redux';
@@ -22,48 +22,49 @@ import {
   PersonAdd,
   VerifiedUser,
   Visibility,
-  VisibilityOff
+  VisibilityOff,
+  Home,
 } from '@material-ui/icons';
 import { Redirect } from 'react-router-dom';
 import { IconHeader } from '../layout/IconHeader';
 import { MiniDivider } from '../layout/MiniDivider';
 import { isMobile } from 'react-device-detect';
+import { Link } from 'react-router-dom';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   container: {
     height: '100vh',
     backgroundImage: 'url(' + require('../../assets/pattern.png') + ')',
-    backgroundRepeat: 'repeat'
+    backgroundRepeat: 'repeat',
   },
   paper: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(4),
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     '& p, h3, h4, h5, h6': {
-      fontFamily: 'Raleway'
-    }
+      fontFamily: 'Raleway',
+    },
   },
   authActionMobile: {
     display: 'flex',
     flexDirection: 'column',
     width: 250,
     alignItems: 'center',
-    margin: '0 auto'
+    margin: '0 auto',
   },
   input: {
-    width: '100%'
+    width: '100%',
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
     backgroundColor: colors.colorDarkPink,
     '&:hover': {
-      background: colors.colorDarkPink
-    }
-  }
+      background: colors.colorDarkPink,
+    },
+  },
 }));
 
 const Auth = ({ setAlert, register, isAuthenticated, login }) => {
@@ -74,12 +75,12 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
     email: '',
     password: '',
     confirm_password: '',
-    showPassword: false
+    showPassword: false,
   });
 
   const [loginData, setLoginData] = useState({
     login_email: '',
-    login_password: ''
+    login_password: '',
   });
 
   const { login_email, login_password } = loginData;
@@ -89,7 +90,7 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
     return <Redirect to='/dashboard' />;
   }
 
-  const toggleAuthAction = e => {
+  const toggleAuthAction = (e) => {
     if (e.currentTarget.id === 'register') {
       setFormData({ ...formData, email: '', password: '' });
     }
@@ -129,13 +130,25 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
           />
         </div>
         <Paper
-          elevation={4}
+          elevation={2}
           className={classes.paper}
           style={{ backgroundColor: colors.colorPurple }}>
           <IconHeader icon={VerifiedUser} text={authAction} subheader={false} />
         </Paper>
 
-        <Paper elevation={4} className={classes.paper}>
+        <Paper elevation={2} className={classes.paper}>
+          <Link
+            to='/'
+            style={{
+              textAlign: 'center',
+              width: '100%',
+              textDecoration: 'none',
+            }}>
+            <IconButton>
+              <Home />
+            </IconButton>
+          </Link>
+
           <Typography style={{ color: 'rgb(180,180,180)' }}>
             Would you like to:
           </Typography>
@@ -154,7 +167,7 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
                   ? {
                       backgroundColor: colors.colorPurple,
                       color: 'white',
-                      width: '250px'
+                      width: '250px',
                     }
                   : { width: '250px' }
               }
@@ -170,7 +183,7 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
                   ? {
                       backgroundColor: colors.colorPurple,
                       color: 'white',
-                      width: '250px'
+                      width: '250px',
                     }
                   : { width: '250px' }
               }
@@ -182,16 +195,16 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
 
           {/* LOGIN */}
           <Collapse in={authAction === 'login'} style={{ width: '50%' }}>
-            <FormGroup fullWidth onSubmit={e => e.preventDefault()}>
+            <FormGroup fullWidth onSubmit={(e) => e.preventDefault()}>
               <TextField
                 className={classes.input}
                 margin='normal'
                 required
                 fullWidth
-                onInput={e =>
+                onInput={(e) =>
                   setLoginData({
                     ...loginData,
-                    [e.target.name]: e.target.value
+                    [e.target.name]: e.target.value,
                   })
                 }
                 id='login_email'
@@ -209,10 +222,10 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
                 label='Password'
                 type='password'
                 id='login_password'
-                onInput={e =>
+                onInput={(e) =>
                   setLoginData({
                     ...loginData,
-                    [e.target.name]: e.target.value
+                    [e.target.name]: e.target.value,
                   })
                 }
                 autoComplete='current-password'
@@ -233,13 +246,13 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
 
           {/* REGISTER */}
           <Collapse in={authAction === 'register'} style={{ width: '50%' }}>
-            <FormGroup onSubmit={e => e.preventDefault()}>
+            <FormGroup onSubmit={(e) => e.preventDefault()}>
               <TextField
                 className={classes.input}
                 margin='normal'
                 required
                 fullWidth
-                onInput={e =>
+                onInput={(e) =>
                   setFormData({ ...formData, [e.target.name]: e.target.value })
                 }
                 id='name'
@@ -252,7 +265,7 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
                 margin='normal'
                 required
                 fullWidth
-                onInput={e =>
+                onInput={(e) =>
                   setFormData({ ...formData, [e.target.name]: e.target.value })
                 }
                 id='email'
@@ -269,7 +282,7 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
                 label='Password'
                 type={formData.showPassword ? 'text' : 'password'}
                 id='password'
-                onInput={e =>
+                onInput={(e) =>
                   setFormData({ ...formData, [e.target.name]: e.target.value })
                 }
                 InputProps={{
@@ -285,7 +298,7 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
                         )}
                       </IconButton>
                     </InputAdornment>
-                  )
+                  ),
                 }}
               />
 
@@ -298,7 +311,7 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
                 label='Confirm Password'
                 type={formData.showPassword ? 'text' : 'password'}
                 id='confirm_password'
-                onInput={e =>
+                onInput={(e) =>
                   setFormData({ ...formData, [e.target.name]: e.target.value })
                 }
                 InputProps={{
@@ -314,7 +327,7 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
                         )}
                       </IconButton>
                     </InputAdornment>
-                  )
+                  ),
                 }}
               />
 
@@ -339,11 +352,11 @@ Auth.propTypes = {
   setAlert: PropTypes.func.isRequired,
   register: PropTypes.func.isRequired,
   login: PropTypes.func.isRequired,
-  isAuthenticated: PropTypes.bool
+  isAuthenticated: PropTypes.bool,
 };
 
-const mapStateToProps = state => ({
-  isAuthenticated: state.auth.isAuthenticated
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.auth.isAuthenticated,
 });
 
 export default connect(mapStateToProps, { setAlert, register, login })(Auth);

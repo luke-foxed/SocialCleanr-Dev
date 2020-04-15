@@ -16,14 +16,12 @@ import { UsageCharts } from './UsageCharts';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: theme.spacing(4),
     marginBottom: theme.spacing(4),
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-
     '& p, h3, h4, h5, h6': {
       fontFamily: 'Raleway',
     },
@@ -44,7 +42,7 @@ const Home = ({ user, profile }) => {
   return (
     <Container component='main' maxWidth='lg' style={{ marginTop: '40px' }}>
       <Paper
-        elevation={4}
+        elevation={2}
         className={classes.paper}
         style={{
           background: colors.colorDarkOrange,

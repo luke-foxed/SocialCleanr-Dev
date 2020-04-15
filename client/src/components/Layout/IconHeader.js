@@ -4,23 +4,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Grid } from '@material-ui/core';
 import { MiniDivider } from './MiniDivider';
 
-const useStyles = makeStyles(theme => ({
-  paper: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center'
-  },
-
+const useStyles = makeStyles({
   paperHeader: {
     fontFamily: 'Raleway',
     textTransform: 'uppercase',
-    textAlign: 'center'
-  }
-}));
+    textAlign: 'center',
+  },
+});
 
 export const IconHeader = ({ icon, text, subheader }) => {
   const classes = useStyles();
@@ -28,7 +18,7 @@ export const IconHeader = ({ icon, text, subheader }) => {
   const iconSize = subheader ? 40 : 60;
   const Icon = icon;
   return (
-    <div>
+    <div className={classes.paper}>
       <Grid container direction='row' alignItems='center' justify='center'>
         <Grid item>
           <Icon
@@ -37,7 +27,7 @@ export const IconHeader = ({ icon, text, subheader }) => {
               height: iconSize,
               width: iconSize,
               color: color,
-              paddingRight: '10px'
+              paddingRight: '10px',
             }}
           />
         </Grid>
