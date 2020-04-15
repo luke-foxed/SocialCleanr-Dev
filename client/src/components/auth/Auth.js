@@ -23,11 +23,13 @@ import {
   VerifiedUser,
   Visibility,
   VisibilityOff,
+  Home,
 } from '@material-ui/icons';
 import { Redirect } from 'react-router-dom';
 import { IconHeader } from '../layout/IconHeader';
 import { MiniDivider } from '../layout/MiniDivider';
 import { isMobile } from 'react-device-detect';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -135,6 +137,18 @@ const Auth = ({ setAlert, register, isAuthenticated, login }) => {
         </Paper>
 
         <Paper elevation={2} className={classes.paper}>
+          <Link
+            to='/'
+            style={{
+              textAlign: 'center',
+              width: '100%',
+              textDecoration: 'none',
+            }}>
+            <IconButton>
+              <Home />
+            </IconButton>
+          </Link>
+
           <Typography style={{ color: 'rgb(180,180,180)' }}>
             Would you like to:
           </Typography>

@@ -1,21 +1,25 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Grid, Button, Typography } from '@material-ui/core';
+import {
+  Grid,
+  Button,
+  Typography,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import landing2 from '../../assets/landing2.jpg';
+import landing from '../../assets/landing-small.jpg';
 import { MiniDivider } from '../layout/MiniDivider';
 import Particles from 'react-particles-js';
 import { isMobile } from 'react-device-detect';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 
 const useStyles = makeStyles({
   root: {
     minHeight: '100vh',
-    backgroundImage: 'url(' + landing2 + ')',
+    backgroundImage: 'url(' + landing + ')',
     backgroundBlendMode: 'overlay',
     backgroundSize: 'cover',
   },
@@ -41,7 +45,6 @@ const useStyles = makeStyles({
     width: isMobile ? 160 : 280,
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center',
     margin: '20px',
   },
 
@@ -61,6 +64,17 @@ const useStyles = makeStyles({
     '&:hover': {
       backgroundColor: 'rgba(255,255,255,0.4)',
     },
+  },
+
+  dialogAction: {
+    display: 'flex',
+    justifyContent: 'center',
+    width: '100%',
+    height: '50px',
+    margin: 0,
+    padding: 0,
+    background:
+      'linear-gradient(90deg, rgba(132,94,194,1) 0%, rgba(214,93,177,1) 100%)',
   },
 });
 
@@ -144,8 +158,14 @@ const Landing = () => {
             borderRadius: '20px',
           },
         }}>
-        <DialogTitle style={{ color: '#845EC2' }}>
-          ABOUT SOCIALCLEANR
+        <DialogTitle>
+          <Typography
+            variant='h5'
+            style={{
+              color: '#845EC2',
+            }}>
+            ABOUT SOCIALCLEANR
+          </Typography>
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -160,8 +180,11 @@ const Landing = () => {
             filters to the necessary regions of the image.
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} style={{ color: '#845EC2' }}>
+        <DialogActions className={classes.dialogAction}>
+          <Button
+            onClick={handleClose}
+            className={classes.button}
+            style={{ textAlign: 'center' }}>
             Got It!
           </Button>
         </DialogActions>

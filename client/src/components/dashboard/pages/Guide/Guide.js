@@ -131,6 +131,12 @@ const Guide = () => {
           </li>
         </div>
       </Paper>
+
+      <Paper elevation={2} className={classes.paper}>
+        <Typography style={{ color: 'grey', textTransform: 'uppercase' }}>
+          SocialCleanr - By Luke Fox
+        </Typography>
+      </Paper>
     </Container>
   );
 };

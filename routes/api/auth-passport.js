@@ -214,9 +214,9 @@ router.get('/my-twitter', auth, async (req, res) => {
     const twitterClient = new TwitterLite(twitterConfig);
 
     const options = {
-      user_id: 155659213, // --> RONALDO
-      // user_id: decryptedToken.split('-')[0]
-      count: 15,
+      // user_id: 155659213,
+      user_id: decryptedToken.split('-')[0],
+      count: 100,
       trim_user: false,
     };
 
