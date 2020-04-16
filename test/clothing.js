@@ -16,7 +16,7 @@ let clothingImageMale = '';
 let clothingImageFemale = '';
 
 describe('Clothing Detection', () => {
-  before(done => {
+  before((done) => {
     chai
       .request(server)
       .post('/api/auth/register')
@@ -32,78 +32,79 @@ describe('Clothing Detection', () => {
       });
   });
 
-  before(done => {
+  before((done) => {
     // load images and add headers
-
     clothingImageMale =
       'data:image/jpeg;base64,' +
       fs.readFileSync(jsonPath + '/clothing_male.jpg', {
-        encoding: 'base64'
+        encoding: 'base64',
       });
 
     clothingImageFemale =
       'data:image/jpeg;base64,' +
       fs.readFileSync(jsonPath + '/clothing_female.jpg', {
-        encoding: 'base64'
+        encoding: 'base64',
       });
     done();
   });
 
-  it('Should detect man with little clothing', done => {
+  it('Should detect man with little clothing', (done) => {
     chai
       .request(server)
-      .post('/api/classifier/custom-scan')
+      .post('/api/scan/custom-scan')
       .set('x-auth-token', accountToken)
       .send({
         models: ['clothing'],
-        image: clothingImageMale
+        image: clothingImageMale,
+        type: 'image',
       })
       .end((err, res) => {
         expect(res.status).to.equal(200, 'Expected API call to return 200');
         expect(res.body).to.be.an(
-          'object',
-          'Expected result returned from scan to be an object'
+          'array',
+          'Expected result returned from scan to be an array'
         );
-        expect(res.body.people.length).to.be.greaterThan(
+        expect(res.body.length).to.be.greaterThan(
           0,
-          'Expected length of people array to be greater than 0 '
+          'Expected length of array to be greater than 0 '
         );
 
         done();
       });
   });
 
-  it('Should detect women with little clothing', done => {
+  it('Should detect women with little clothing', (done) => {
     chai
       .request(server)
-      .post('/api/classifier/custom-scan')
+      .post('/api/scan/custom-scan')
       .set('x-auth-token', accountToken)
       .send({
         models: ['clothing'],
-        image: clothingImageMale
+        image: clothingImageFemale,
+        type: 'image',
       })
       .end((err, res) => {
         expect(res.status).to.equal(200, 'Expected API call to return 200');
         expect(res.body).to.be.an(
-          'object',
-          'Expected result returned from scan to be an object'
+          'array',
+          'Expected result returned from scan to be an array'
         );
-        expect(res.body.people.length).to.be.greaterThan(
+        expect(res.body.length).to.be.greaterThan(
           0,
-          'Expected length of people array to be greater than 0 '
+          'Expected length of array to be greater than 0 '
         );
 
         done();
       });
   });
 
-  after(done => {
+  after((done) => {
     chai
       .request(server)
       .delete('/api/user/delete')
       .set('x-auth-token', accountToken)
       .end((err, res) => {
-        res.should.have.status(200);
+        expect(res.status).to.equal(200);
         done();
       });
   });

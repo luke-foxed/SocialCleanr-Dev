@@ -53,8 +53,8 @@ export const UsageCharts = ({ stats, socialMediaStats }) => {
   const { photos, text } = socialMediaStats;
 
   const scanData = [
-    { x: 'Automated Scans', y: stats.automated_scans },
-    { x: 'Custom Scans', y: stats.custom_scans },
+    { x: 'Automated', y: stats.automated_scans },
+    { x: 'Custom', y: stats.custom_scans },
   ];
 
   const contentData = [

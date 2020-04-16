@@ -44,24 +44,24 @@ router.post('/custom-scan', customScanRateLimit, auth, async (req, res) => {
           case 'age':
             console.log('\nSELECTED AGE\n');
             ageResults = await classification.detectMultipleAgeGender(
-              req.body.image
+              req.body.data
             );
             break;
           case 'text':
             console.log('\nSELECTED TEXT\n');
             textResults = await classification.detectTextFromImage(
-              req.body.image
+              req.body.data
             );
             break;
           case 'clothing':
             console.log('\nSELECTED CLOTHING\n');
             clothingResults = await classification.detectClothing(
-              req.body.image
+              req.body.data
             );
             break;
           case 'gestures':
             console.log('\nSELECTED GESTURE\n');
-            gestureResults = await classification.detectGesture(req.body.image);
+            gestureResults = await classification.detectGesture(req.body.data);
             break;
         }
       });
@@ -77,7 +77,7 @@ router.post('/custom-scan', customScanRateLimit, auth, async (req, res) => {
 
     const { count, flaggedContent } = parseHelpers.cleanResults(
       results,
-      req.body.image
+      req.body.data
     );
 
     count['custom_scans'] = 1;

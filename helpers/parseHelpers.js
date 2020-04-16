@@ -89,6 +89,7 @@ const cleanResults = (results, content) => {
  */
 
 const parseFacebookResults = (response) => {
+  console.log(response.posts.data);
   let cleanedResults = { photos: [], text: [], site: 'facebook' };
 
   response.posts.data.forEach((post) => {
@@ -101,9 +102,11 @@ const parseFacebookResults = (response) => {
     }
   });
 
-  response.photos.data.forEach((photoArray) => {
-    cleanedResults.photos.push(photoArray.images[0].source);
-  });
+  if (response.photos) {
+    response.photos.data.forEach((photoArray) => {
+      cleanedResults.photos.push(photoArray.images[0].source);
+    });
+  }
 
   return cleanedResults;
 };

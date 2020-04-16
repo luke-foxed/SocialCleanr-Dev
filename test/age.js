@@ -16,7 +16,7 @@ let toddlerImage = '';
 let teenagerImage = '';
 
 describe('Age Detection', () => {
-  before(done => {
+  before((done) => {
     chai
       .request(server)
       .post('/api/auth/register')
@@ -32,76 +32,80 @@ describe('Age Detection', () => {
       });
   });
 
-  before(done => {
+  before((done) => {
     // load images and add headers
     toddlerImage =
       'data:image/jpeg;base64,' +
       fs.readFileSync(jsonPath + '/toddler.jpg', {
-        encoding: 'base64'
+        encoding: 'base64',
       });
 
     teenagerImage =
       'data:image/jpeg;base64,' +
       fs.readFileSync(jsonPath + '/teenager.jpg', {
-        encoding: 'base64'
+        encoding: 'base64',
       });
 
     done();
   });
 
-  it('Should detect a toddler in image', done => {
+  it('Should detect a toddler in image', (done) => {
     chai
       .request(server)
-      .post('/api/classifier/custom-scan')
+      .post('/api/scan/custom-scan')
       .set('x-auth-token', accountToken)
       .send({
         models: ['age'],
-        image: toddlerImage
+        image: toddlerImage,
+        type: 'image',
       })
       .end((err, res) => {
+        console.log(res.body);
         expect(res.status).to.equal(200, 'Expected API call to return 200');
         expect(res.body).to.be.an(
-          'object',
-          'Expected result returned from scan to be an object'
+          'array',
+          'Expected result returned from scan to be an array'
         );
-        expect(res.body.age[0].age).to.be.lessThan(
-          10,
+        expect(res.body[0].type).to.be.equal(
+          'Child Detected',
           'Expected age of person to be below 10'
         );
         done();
       });
   });
 
-  it('Should not flag a teenager as being a toddler', done => {
+  it('Should not flag a teenager as being a toddler', (done) => {
     chai
       .request(server)
-      .post('/api/classifier/custom-scan')
+      .post('/api/scan/custom-scan')
       .set('x-auth-token', accountToken)
       .send({
         models: ['age'],
-        image: teenagerImage
+        image: teenagerImage,
+        type: 'image',
       })
       .end((err, res) => {
+        console.log(res.body);
         expect(res.status).to.equal(200, 'Expected API call to return 200');
         expect(res.body).to.be.an(
-          'object',
+          'array',
           'Expected result returned from scan to be an object'
         );
-        expect(res.body.age[0].age).to.be.greaterThan(
-          12,
-          'Expected age of person to be above 12'
+        expect(res.body.length).to.equal(
+          0,
+          'Expected teenager to not be flagged as a toddler'
         );
         done();
       });
   });
 
-  after(done => {
+  after((done) => {
     chai
       .request(server)
       .delete('/api/user/delete')
       .set('x-auth-token', accountToken)
       .end((err, res) => {
-        res.should.have.status(200);
+        expect(res.status).to.equal(200);
         done();
       });
   });

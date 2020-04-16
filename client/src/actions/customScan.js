@@ -17,7 +17,7 @@ export const runCustomScan = (modelSelection, image) => async (dispatch) => {
       method: 'post',
       url: '/api/scan/custom-scan',
       data: {
-        image: image,
+        data: image,
         models: modelSelection,
         type: 'image',
       },
