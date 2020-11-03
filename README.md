@@ -24,8 +24,14 @@ Made with:
 ## Screenshots
 
 ![](https://i.imgur.com/mW3R4sL.png)
+---
 ![](https://i.imgur.com/Yf3H4L6.png)
+---
 ![](https://i.imgur.com/eOGKO17.png)
+---
 ![](https://i.imgur.com/jPuBGYe.png)
+---
 ![](https://i.imgur.com/lfwcfDi.png)
+---
 ![](https://i.imgur.com/XhkLSw9.png)
+---
