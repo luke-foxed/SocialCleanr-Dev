@@ -27,7 +27,7 @@
     "@tensorflow-models/mobilenet": "^2.0.4",
     "@tensorflow-models/toxicity": "^1.2.2",
     "@tensorflow/tfjs-node": "1.4.0",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "canvas": "^2.6.1",
