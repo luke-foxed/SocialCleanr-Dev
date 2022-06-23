@@ -46,7 +46,7 @@
     "express-validator": "^6.4.0",
     "face-api.js": "^0.22.0",
     "fbgraph": "^1.4.4",
-    "jsdom": "^15.2.1",
+    "jsdom": "^16.5.0",
     "jsonwebtoken": "^8.5.1",
     "mocha": "^7.1.1",
     "mongoose": "^5.7.5",
